@@ -2,14 +2,27 @@ from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
 
-
-class EditNgram(object):
+class Ngram(object):
     SUBSTITUTION = 'SUB'
+    service = None
+    
+    @staticmethod
+    def _is_subst(ngram):
+        return Ngram.SUBSTITUTION in set(ngram.split())
+    
+    @staticmethod
+    def ngram_freq(ngram):
+        if Ngram._is_subst(ngram):
+            pass
+        else:
+            return service.get_freq(ngram)
+
+
+class EditNgram(Ngram):
     def __init__(self, ngram, edit_pos):
         """:type ngram: list"""
         self.ngram = ngram
         self.edit_pos = edit_pos
-        self.ngram[edit_pos] = self.SUBSTITUTION
 
     def __unicode__(self):
         return u' '.join(self.ngram)
@@ -21,7 +34,13 @@ class EditNgram(object):
         return unicode(self).encode('utf-8')
         
     @property
-    def pmi_preps():
+    def subst_ngram(self):
+        subst_ngram = self.ngram[:]
+        subst_ngram[self.edit_pos] = self.SUBSTITUTION
+        return subst_ngram
+        
+    @property
+    def pmi_preps(self):
         dist = self._get_freq_distributions()
         
         if len(self.ngram) == 2:
@@ -42,19 +61,16 @@ class EditNgram(object):
         return collocs
     
     def _get_freq_distributions(self):
-        word_fd = self._prep_wfd(ngram)
+        subst_ngram = self.subst_ngram
+        word_fd = self.ngram_freq(subst_ngram)
+        whole_fd = self.ngram_freq([' '.join(subst_ngram)]
         if n == 1:
-            dist = (word_fd, self._prep_ngram_distribution(position, ngram))
+            dist = (word_fd, whole_fd)
         elif n == 2:
-            # need to add wild card distribution and bigram distribution
-            tfd = self._prep_ngram_distribution(position, ngram)
-            wildfd = self._prep_wildfd(position, ngram)
-            bfd = self._prep_bfd(position, ngram)
-            dist = (word_fd, bfd, wildfd, tfd)
+            # need to add wild-card and bigram distributions
+            wildfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[2])
+            bfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[1], subst_ngram[1] + u' ' + subst_ngram[2]])
+            dist = (word_fd, bfd, wildfd, whole_fd)
         else:
             raise NotImplementedError
         return dist
-        
-
-class Ngram(object):
-    pass
