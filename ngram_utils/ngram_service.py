@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import division
+import time
 
 from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
