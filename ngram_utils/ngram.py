@@ -1,9 +1,7 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
-from .ngram_service import NgramService
-
-SUBSTITUTION_TOKEN = 'SUB'
+from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
 class Ngram(object):
     
