@@ -16,7 +16,7 @@ class Ngram(object):
         :returns: list of counts, size=1 if not a substitution, otherwise available counts for all substitutions
         :rtype: list
         """
-        return ngram_service.get_freq(ngram, Ngram._is_subst(ngram))
+        return ngram_service.NgramService.get_freq(ngram, Ngram._is_subst(ngram))
 
 
 class EditNgram(Ngram):
