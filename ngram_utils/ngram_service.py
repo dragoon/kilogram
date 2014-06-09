@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import division
 import time
+from collections import defaultdict
 
 from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
@@ -14,7 +15,7 @@ class NgramService(object):
     
     @staticmethod
     def _is_subst(ngram):
-        return SUBSTITUTION_TOKEN in set(ngram.split())
+        return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
     def configure(cls, substitutions, mongo_host='localhost', hbase_host=('localhost', '9090')):
@@ -33,7 +34,7 @@ class NgramService(object):
         cls.h_rate = 0
         cls.h_start = time.time()
         
-        cls.substitution_counts = dict([(subst, cls.get_freq(subst)[subst]) for subst in cls.substitutions])
+        cls.substitution_counts = dict([((subst,), cls.get_freq(subst)[subst]) for subst in cls.substitutions])
 
     @classmethod
     def hbase_count(cls, table, ngram):
@@ -55,8 +56,10 @@ class NgramService(object):
     @classmethod
     def get_freq(cls, ngram):
         """Get ngram frequency from Google Ngram corpus"""
-        split_len = len(ngram.split())
-        if NgramService._is_subst(ngram):
+        split_ngram = ngram.split()
+        split_len = len(split_ngram)
+        if NgramService._is_subst(split_ngram):
+            sub_index = split_ngram.index(SUBSTITUTION_TOKEN)
             if split_len == 1:
                 return cls.substitution_counts
             if split_len == 2:
@@ -67,9 +70,13 @@ class NgramService(object):
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
                 counts = res['count']
-                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), long(counts.get(subst, 0))) for subst in cls.substitutions])
             except:
-                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), 0) for subst in cls.substitutions])
+                counts = defaultdict(lambda: 0)
+            res = {}
+            for subst in cls.substitutions:
+                cur_ngram = split_ngram[:]
+                cur_ngram[sub_index] = subst
+                res[tuple(cur_ngram)] = long(counts.get(subst, 0))
         else:
             if split_len == 1:
                 try:
@@ -80,5 +87,5 @@ class NgramService(object):
                 count = cls.hbase_count('ngrams2', ngram)
             else:
                 raise Exception('%d-grams are not supported' % split_len)
-            res = {ngram: count}
+            res = {tuple(ngram.split()): count}
         return res
