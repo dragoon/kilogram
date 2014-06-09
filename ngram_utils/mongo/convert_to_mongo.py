@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Run as: cat google_ngram_file | ./convert_to_mongo --sub subs_file.txt | sort -k1,1 -t $'\t' > output
+Run as: cat google_ngram_file | ./convert_to_mongo.py --sub subs_file.txt | sort -k1,1 -t $'\t' > output
 Then proceed to mongodb import
 """
 import sys
