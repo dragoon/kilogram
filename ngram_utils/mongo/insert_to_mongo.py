@@ -43,7 +43,7 @@ def _insert_preps(tsv_file):
             if i - 200000 > 0:
                 j += i
                 i = 0
-                self.col.insert(temp_list)
+                COLLECTION.insert(temp_list)
                 temp_list = []
                 print 'Inserted: ', j
         i += 1
