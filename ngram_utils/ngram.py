@@ -1,22 +1,27 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
-from . import ngram_service
+from .ngram_service import NgramService
+
+SUBSTITUTION_TOKEN = 'SUB'
 
 class Ngram(object):
-    SUBSTITUTION = 'SUB'
     
     @staticmethod
     def _is_subst(ngram):
-        return Ngram.SUBSTITUTION in set(ngram.split())
+        return SUBSTITUTION_TOKEN in set(ngram.split())
     
     @staticmethod
-    def ngram_freq(ngram):
+    def ngram_freq(ngrams):
         """
+        :param ngrams: list of n-gram to query counts
         :returns: list of counts, size=1 if not a substitution, otherwise available counts for all substitutions
         :rtype: list
         """
-        return ngram_service.NgramService.get_freq(ngram, Ngram._is_subst(ngram))
+        result = {}
+        for ngram in ngrams:
+            result.update(NgramService.get_freq(ngram, Ngram._is_subst(ngram)))
+        return FreqDist(result)
 
 
 class EditNgram(Ngram):
@@ -37,7 +42,7 @@ class EditNgram(Ngram):
     @property
     def subst_ngram(self):
         subst_ngram = self.ngram[:]
-        subst_ngram[self.edit_pos] = self.SUBSTITUTION
+        subst_ngram[self.edit_pos] = SUBSTITUTION_TOKEN
         return subst_ngram
         
     @property
