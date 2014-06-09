@@ -64,7 +64,7 @@ class EditNgram(Ngram):
     def _get_freq_distributions(self):
         subst_ngram = self.subst_ngram
         word_fd = self.ngram_freq(subst_ngram)
-        whole_fd = self.ngram_freq([' '.join(subst_ngram)]
+        whole_fd = self.ngram_freq([' '.join(subst_ngram)])
         if n == 1:
             dist = (word_fd, whole_fd)
         elif n == 2:
