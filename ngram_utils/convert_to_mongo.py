@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--sub', dest='subst_file', action='store',
                    help='path to sustitutions file')
 args = parser.parse_args()
-print args
+SUBST_SET = set(open(args.subst_file).read().split('\n'))
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
