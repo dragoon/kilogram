@@ -4,7 +4,7 @@ from __future__ import division
 from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
-from .libs.hbase import Hbase
+from .hbase import Hbase
 import pymongo
 
 
