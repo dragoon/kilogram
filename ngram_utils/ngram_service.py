@@ -11,6 +11,10 @@ import pymongo
 SUBSTITUTION_TOKEN = 'SUB'
 
 class NgramService(object):
+    
+    @staticmethod
+    def _is_subst(ngram):
+        return SUBSTITUTION_TOKEN in set(ngram.split())
 
     @classmethod
     def configure(cls, mongo_host, hbase_host):
@@ -45,10 +49,10 @@ class NgramService(object):
             return 0
 
     @classmethod
-    def get_freq(cls, ngram, is_sub):
+    def get_freq(cls, ngram):
         """Get ngram frequency from Google Ngram corpus"""
         split_len = len(ngram.split())
-        if is_sub:
+        if NgramService._is_subst(ngram):
             if split_len == 2:
                 res = cls.m_2grams.find_one({'ngram': ngram})
             elif split_len == 3:
