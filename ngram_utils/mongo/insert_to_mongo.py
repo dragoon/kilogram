@@ -67,9 +67,9 @@ def _insert_all(tsv_file):
     print 'Inserted', i
 
 if args.subs:
-    insert_func = self._insert_preps
+    insert_func = _insert_preps
 else:
-    insert_func = self._insert_all
+    insert_func = _insert_all
 
 for tsv_file in args.files:
     print 'Processing file {0}...'.format(tsv_file)
