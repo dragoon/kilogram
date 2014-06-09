@@ -1,10 +1,10 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
+from . import ngram_service
 
 class Ngram(object):
     SUBSTITUTION = 'SUB'
-    service = None
     
     @staticmethod
     def _is_subst(ngram):
@@ -16,7 +16,7 @@ class Ngram(object):
         :returns: list of counts, size=1 if not a substitution, otherwise available counts for all substitutions
         :rtype: list
         """
-        return service.get_freq(ngram, Ngram._is_subst(ngram))
+        return ngram_service.get_freq(ngram, Ngram._is_subst(ngram))
 
 
 class EditNgram(Ngram):
