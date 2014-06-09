@@ -2,7 +2,7 @@
 import os.path
 
 from setuptools import setup, find_packages
-import stackexchange_utils as se
+import ngram_utils as module_base
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -12,22 +12,22 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name='stackexchange-utils',
-    version=se.__version__,
-    author=se.__author__,
-    author_email=se.__email__,
-    maintainer=se.__maintainer__,
-    maintainer_email=se.__email__,
-    url=se.__url__,
-    download_url=se.__url__,
+    name='ngram-utils',
+    version=module_base.__version__,
+    author=module_base.__author__,
+    author_email=module_base.__email__,
+    maintainer=module_base.__maintainer__,
+    maintainer_email=module_base.__email__,
+    url=module_base.__url__,
+    download_url=module_base.__url__,
 
-    description=se.__summary__,
+    description=module_base.__summary__,
     long_description = read('README.md'),
 
-    license=se.__license__,
+    license=module_base.__license__,
     packages=find_packages(),
 
-    requires=['lxml (>=3.0)', 'unicodecsv'],
+    requires=['pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
