@@ -67,7 +67,7 @@ class NgramService(object):
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
                 counts = res['count']
-                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), long(counts.get(subst))) for subst in cls.substitutions])
+                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), long(counts.get(subst, 0))) for subst in cls.substitutions])
             except:
                 res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), 0) for subst in cls.substitutions])
         else:
