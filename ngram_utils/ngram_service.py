@@ -33,7 +33,7 @@ class NgramService(object):
         cls.h_rate = 0
         cls.h_start = time.time()
         
-        cls.substitution_counts = dict([(subst, cls.get_freq(subst)) for subst in cls.substitutions])
+        cls.substitution_counts = dict([(subst, cls.get_freq(subst).value()) for subst in cls.substitutions])
 
     @classmethod
     def hbase_count(cls, table, ngram):
