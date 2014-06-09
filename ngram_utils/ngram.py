@@ -6,10 +6,6 @@ from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 class Ngram(object):
     
     @staticmethod
-    def _is_subst(ngram):
-        return SUBSTITUTION_TOKEN in set(ngram.split())
-    
-    @staticmethod
     def ngram_freq(ngrams):
         """
         :param ngrams: list of n-gram to query counts
@@ -18,7 +14,7 @@ class Ngram(object):
         """
         result = {}
         for ngram in ngrams:
-            result.update(NgramService.get_freq(ngram, Ngram._is_subst(ngram)))
+            result.update(NgramService.get_freq(ngram))
         return FreqDist(result)
 
 
