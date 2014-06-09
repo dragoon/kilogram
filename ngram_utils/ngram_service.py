@@ -54,7 +54,7 @@ class NgramService(object):
             else:
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
-                res = dict([((ngram.replace('SUB', subst), count) for subst, count in res['count'].items()]
+                res = dict([ (ngram.replace('SUB', subst), count) for subst, count in res['count'].items()])
             except:
                 res = {ngram: 0}
         else:
