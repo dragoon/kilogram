@@ -27,7 +27,7 @@ class Ngram(object):
 class EditNgram(Ngram):
     def __init__(self, ngram, edit_pos):
         """:type ngram: list"""
-        asser hasattr(ngram, '__iter__')
+        assert hasattr(ngram, '__iter__')
         self.ngram = ngram
         self.edit_pos = edit_pos
 
