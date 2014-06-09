@@ -69,7 +69,7 @@ class EditNgram(Ngram):
             dist = (word_fd, whole_fd)
         elif n == 2:
             # need to add wild-card and bigram distributions
-            wildfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[2])
+            wildfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[2]])
             bfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[1], subst_ngram[1] + u' ' + subst_ngram[2]])
             dist = (word_fd, bfd, wildfd, whole_fd)
         else:
