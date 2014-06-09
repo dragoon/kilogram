@@ -1,32 +1,71 @@
+# coding=utf-8
+from __future__ import division
+
 from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
-from libs.hbase import Hbase
+from .libs.hbase import Hbase
+import pymongo
+
 
 class NgramService(object):
 
-    def __init__(self, mongo_host, hbase_host):
-    mclient = settings.MONGO_CLIENT
-    unigram_db = mclient['unigrams']
-    bigram_db = mclient['bigrams']
-    trigram_db = mclient['trigrams']
-    unigram_col_all = unigram_db['all']
-    bigram_col_preps = bigram_db['preps']
-    trigram_col_preps = trigram_db['preps']
-    # No Determinatives
-    trigram_db_nodt = mclient['tetragrams']
-    bigram_db_nodt = mclient['bigrams_nodt']
-    trigram_preps_nodt1 = trigram_db_nodt['preps1']
-    trigram_preps_nodt2 = trigram_db_nodt['preps2']
-    bigram_col_preps_nodt = bigram_db_nodt['preps']
+    @classmethod
+    def configure(cls, mongo_host, hbase_host):
+        cls.m_client = pymongo.MongoClient(host=mongo_host)
+        cls.m_1grams = cls.m_client['1grams']['default']
+        cls.m_2grams = cls.m_client['2grams']['default']
+        cls.m_3grams = cls.m_client['3grams']['default']
+    
+        # HBASE
+        cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
+        protocol = TBinaryProtocol.TBinaryProtocolAccelerated(cls.h_transport)
+        cls.h_client = Hbase.Client(protocol)
+        cls.h_transport.open()
+        cls.h_rate = 0
+        cls.h_start = time.time()
 
-    # HBASE
-    h_unigrams = 'ngrams1'
-    h_bigrams = 'ngrams2'
-    h_trigrams_skips = 'ngrams3'
-    transport = TTransport.TBufferedTransport(TSocket.TSocket(*settings.HBASE_HOST))
-    protocol = TBinaryProtocol.TBinaryProtocolAccelerated(transport)
-    client = Hbase.Client(protocol)
-    transport.open()
-    rate = 0
-    start = time.time()
+    @classmethod
+    def hbase_count(cls, table, ngram):
+        """
+        :rtype: int
+        """
+        cls.h_rate += 1
+        time_diff = time.time() - cls.h_start
+        if time_diff > 30:
+            print "HBase req rate:", cls.h_rate/time_diff, "r/s"
+            cls.start = time.time()
+            cls.rate = 0
+        try:
+            res = cls.h_client.get(table, ngram, "ngram:cnt", None)
+            return long(res[0].value)
+        except (ValueError, IndexError):
+            return 0
+
+    @classmethod
+    def get_freq(cls, ngram, is_sub):
+        """Get ngram frequency from Google Ngram corpus"""
+        split_len = len(ngram.split())
+        if is_sub:
+            if split_len == 2:
+                res = cls.m_2grams.find_one({'ngram': ngram})
+            elif split_len == 3:
+                res = cls.m_3grams.find_one({'ngram': ngram})
+            else:
+                raise Exception('%d-grams are not supported yet' % split_len)
+            try:
+                res = dict([((ngram.replace('SUB', subst), count) for subst, count in res['count'].items()]
+            except:
+                res = {ngram: 0}
+        else:
+            if split_len == 1:
+                try:
+                    count = cls.m_1grams.find_one({'ngram': ngram})['count']
+                except:
+                    count = 0
+            elif split_len == 2:
+                count = cls.hbase_count('ngrams2', ngram)
+            else:
+                raise Exception('%d-grams are not supported' % split_len)
+            res = {ngram: count}
+        return res
