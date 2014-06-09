@@ -17,7 +17,8 @@ class NgramService(object):
         return SUBSTITUTION_TOKEN in set(ngram.split())
 
     @classmethod
-    def configure(cls, mongo_host, hbase_host):
+    def configure(cls, substitutions, mongo_host='localhost', hbase_host=('localhost', '9090')):
+        cls.substitutions = sorted(substitutions)
         cls.m_client = pymongo.MongoClient(host=mongo_host)
         cls.m_1grams = cls.m_client['1grams']['default']
         cls.m_2grams = cls.m_client['2grams']['default']
@@ -60,9 +61,10 @@ class NgramService(object):
             else:
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
-                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), count) for subst, count in res['count'].items()])
+                counts = res['count']
+                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), long(counts.get(subst))) for subst in cls.substitutions])
             except:
-                res = {ngram: 0}
+                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), 0) for subst in cls.substitutions])
         else:
             if split_len == 1:
                 try:
