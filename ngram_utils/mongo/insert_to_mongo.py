@@ -59,7 +59,7 @@ def _insert_all(tsv_file):
         ngram, count = line.strip().split('\t')
         temp_list.append({'ngram': ngram, 'count': int(count)})
         if i != 0 and i % 100000 == 0:
-            self.col.insert(temp_list)
+            COLLECTION.insert(temp_list)
             temp_list = []
             print 'Inserted: ', i
         i += 1
