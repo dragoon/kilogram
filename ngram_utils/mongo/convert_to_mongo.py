@@ -5,6 +5,8 @@ Then proceed to mongodb import
 """
 import sys
 import argparse
+
+from .ngram import SUBSTITUTION_TOKEN
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--sub', dest='subst_file', action='store',
                    help='path to sustitutions file')
@@ -20,6 +22,6 @@ for line in sys.stdin:
     for i, word in enumerate(words):
         if word in SUBST_SET:
             ngram = words[:]
-            ngram[i] = 'SUB'
+            ngram[i] = SUBSTITUTION_TOKEN
             ngram.append(str(i))
             print '\t'.join([' '.join(ngram), word, count])
