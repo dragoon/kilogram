@@ -7,3 +7,6 @@ __maintainer__  = __author__
 __email__       = 'roman.prokofyev@gmail.com'
 __url__         = 'https://github.com/dragoon/ngram-utils/'
 __summary__     = __doc__
+
+from .ngram import *
+from .ngram_service import *
