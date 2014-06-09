@@ -19,6 +19,7 @@ class NgramService(object):
     @classmethod
     def configure(cls, substitutions, mongo_host='localhost', hbase_host=('localhost', '9090')):
         cls.substitutions = sorted(substitutions)
+        
         cls.m_client = pymongo.MongoClient(host=mongo_host)
         cls.m_1grams = cls.m_client['1grams']['default']
         cls.m_2grams = cls.m_client['2grams']['default']
@@ -31,6 +32,8 @@ class NgramService(object):
         cls.h_transport.open()
         cls.h_rate = 0
         cls.h_start = time.time()
+        
+        cls.substitution_counts = dict([(subst, Ngram.get_freq(subst)) for subst in cls.substitutions])
 
     @classmethod
     def hbase_count(cls, table, ngram):
@@ -54,6 +57,8 @@ class NgramService(object):
         """Get ngram frequency from Google Ngram corpus"""
         split_len = len(ngram.split())
         if NgramService._is_subst(ngram):
+            if split_len == 1:
+                return cls.substitution_counts
             if split_len == 2:
                 res = cls.m_2grams.find_one({'ngram': ngram})
             elif split_len == 3:
