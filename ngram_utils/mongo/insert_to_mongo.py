@@ -9,7 +9,7 @@ import argparse
 import pymongo
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('-h', '--host', dest='host', action='store', default='localhost',
+parser.add_argument('--host', dest='host', action='store', default='localhost',
                    help='mongodb host')
 parser.add_argument('-d', '--database', dest='db', action='store', required=True,
                    help='database name')
