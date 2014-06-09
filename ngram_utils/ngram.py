@@ -12,10 +12,11 @@ class Ngram(object):
     
     @staticmethod
     def ngram_freq(ngram):
-        if Ngram._is_subst(ngram):
-            pass
-        else:
-            return service.get_freq(ngram)
+        """
+        :returns: list of counts, size=1 if not a substitution, otherwise available counts for all substitutions
+        :rtype: list
+        """
+        return service.get_freq(ngram, Ngram._is_subst(ngram))
 
 
 class EditNgram(Ngram):
