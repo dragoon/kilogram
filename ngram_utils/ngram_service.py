@@ -8,6 +8,7 @@ from thrift.transport import TTransport
 from .hbase import Hbase
 import pymongo
 
+SUBSTITUTION_TOKEN = 'SUB'
 
 class NgramService(object):
 
@@ -55,7 +56,7 @@ class NgramService(object):
             else:
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
-                res = dict([ (ngram.replace('SUB', subst), count) for subst, count in res['count'].items()])
+                res = dict([ (ngram.replace(SUBSTITUTION_TOKEN, subst), count) for subst, count in res['count'].items()])
             except:
                 res = {ngram: 0}
         else:
