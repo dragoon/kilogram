@@ -28,6 +28,7 @@ setup(
     packages=find_packages(),
 
     requires=['pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
+    scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
