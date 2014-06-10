@@ -34,7 +34,7 @@ class NgramService(object):
         cls.h_rate = 0
         cls.h_start = time.time()
         
-        cls.substitution_counts = dict([((subst,), cls.get_freq(subst)[(subst,)]) for subst in cls.substitutions])
+        cls.substitution_counts = dict([(subst, cls.get_freq(subst)[subst]) for subst in cls.substitutions])
 
     @classmethod
     def hbase_count(cls, table, ngram):
@@ -83,9 +83,11 @@ class NgramService(object):
                     count = cls.m_1grams.find_one({'ngram': ngram})['count']
                 except:
                     count = 0
+                # Stupid NLTK needs a word when 1gram, and tuple if n>1
+                res = {ngram: count}
             elif split_len == 2:
                 count = cls.hbase_count('ngrams2', ngram)
+                res = {tuple(split_ngram): count}
             else:
                 raise Exception('%d-grams are not supported' % split_len)
-            res = {tuple(ngram.split()): count}
         return res
