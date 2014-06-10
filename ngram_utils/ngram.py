@@ -36,9 +36,9 @@ class EditNgram(Ngram):
         
     @property
     def subst_ngram(self):
-        subst_ngram = list(self.ngram)
-        subst_ngram[self.edit_pos] = SUBSTITUTION_TOKEN
-        return subst_ngram
+        ngram = list(self.ngram)
+        ngram[self.edit_pos] = SUBSTITUTION_TOKEN
+        return ngram
         
     @property
     def pmi_preps(self):
