@@ -37,6 +37,7 @@ class EditNgram(Ngram):
     @property
     def subst_ngram(self):
         ngram = list(self.ngram)
+        print ngram
         ngram[self.edit_pos] = SUBSTITUTION_TOKEN
         return ngram
         
