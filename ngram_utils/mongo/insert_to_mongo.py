@@ -32,13 +32,13 @@ def _insert_preps(tsv_file):
     for line in tsv_file:
         ngram_pos, subst, count = line.strip().split('\t')
         if cur_ngram_pos == ngram_pos:
-            subs[subst] = count
+            subs[subst] = long(count)
         else:
             if cur_ngram_pos is not None:
                 cur_ngram, cur_pos = cur_ngram_pos.rsplit(' ', 1)
                 temp_list.append({'ngram': cur_ngram, 'count': subs})
-                preps = {}
-            subs[subst] = count
+                subs = {}
+            subs[subst] = long(count)
             cur_ngram_pos = ngram_pos
             if i - 200000 > 0:
                 j += i
