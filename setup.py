@@ -12,7 +12,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name='ngram-utils',
+    name='kilogram',
     version=module_base.__version__,
     author=module_base.__author__,
     author_email=module_base.__email__,
