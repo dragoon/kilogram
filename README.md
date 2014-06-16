@@ -1,2 +1,2 @@
 # Kilogram
-### a collection of utils to for large n-gram corpora
+### a collection of utils for large n-gram corpora
