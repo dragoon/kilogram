@@ -4,7 +4,7 @@ from nltk.collocations import BigramAssocMeasures as bigram_measures
 from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
 class Ngram(object):
-    
+
     @staticmethod
     def ngram_freq(ngrams):
         """
@@ -27,29 +27,29 @@ class EditNgram(Ngram):
 
     def __unicode__(self):
         return u' '.join(self.ngram)
-        
+
     def __repr__(self):
-        return unicode(self).encode('utf-8') 
-    
+        return unicode(self).encode('utf-8')
+
     def __str__(self):
         return unicode(self).encode('utf-8')
-        
+
     @property
     def subst_ngram(self):
         ngram = list(self.ngram)
         ngram[self.edit_pos] = SUBSTITUTION_TOKEN
         return ngram
-        
+
     @property
-    def pmi_preps(self):
+    def association(self, measure='pmi'):
         dist = self._get_freq_distributions()
-        
+
         if len(self.ngram) == 2:
             finder = BigramCollocationFinder(*dist)
-            measures = bigram_measures.pmi
+            measures = getattr(bigram_measures, measure)
         else:
             finder = TrigramCollocationFinder(*dist)
-            measures = trigram_measures.pmi
+            measures = getattr(trigram_measures, measure)
 
         try:
             collocs = finder.score_ngrams(measures)
@@ -60,7 +60,7 @@ class EditNgram(Ngram):
             print dist
             collocs = []
         return collocs
-    
+
     def _get_freq_distributions(self):
         subst_ngram = self.subst_ngram
         word_fd = self.ngram_freq(subst_ngram)
