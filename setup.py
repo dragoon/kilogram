@@ -2,7 +2,7 @@
 import os.path
 
 from setuptools import setup, find_packages
-import ngram_utils as module_base
+import kilogram as module_base
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
