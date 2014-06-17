@@ -40,7 +40,6 @@ class EditNgram(Ngram):
         ngram[self.edit_pos] = SUBSTITUTION_TOKEN
         return ngram
 
-    @property
     def association(self, measure='pmi'):
         dist = self._get_freq_distributions()
 
