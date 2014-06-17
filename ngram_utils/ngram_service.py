@@ -11,21 +11,25 @@ import pymongo
 
 SUBSTITUTION_TOKEN = 'SUB'
 
+
 class NgramService(object):
-    
+    h_rate = None
+    h_start = None
+    h_client = None
+
     @staticmethod
     def _is_subst(ngram):
         return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
-    def configure(cls, substitutions, mongo_host='localhost', hbase_host=('localhost', '9090')):
+    def configure(cls, substitutions, mongo_host=('localhost', '27017'), hbase_host=('localhost', '9090')):
         cls.substitutions = sorted(substitutions)
-        
-        cls.m_client = pymongo.MongoClient(host=mongo_host)
+
+        cls.m_client = pymongo.MongoClient(host=mongo_host[0], port=int(mongo_host[1]))
         cls.m_1grams = cls.m_client['1grams']['default']
         cls.m_2grams = cls.m_client['2grams']['default']
         cls.m_3grams = cls.m_client['3grams']['default']
-    
+
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
         protocol = TBinaryProtocol.TBinaryProtocolAccelerated(cls.h_transport)
@@ -33,7 +37,7 @@ class NgramService(object):
         cls.h_transport.open()
         cls.h_rate = 0
         cls.h_start = time.time()
-        
+
         cls.substitution_counts = dict([(subst, cls.get_freq(subst)[subst]) for subst in cls.substitutions])
 
     @classmethod
