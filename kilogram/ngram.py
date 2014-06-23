@@ -3,13 +3,15 @@ from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
 from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
+
 class Ngram(object):
 
     @staticmethod
     def ngram_freq(ngrams):
         """
         :param ngrams: list of n-gram to query counts
-        :returns: list of counts, size=1 if not a substitution, otherwise available counts for all substitutions
+        :returns: list of counts, size=1 if not a substitution,
+        otherwise available counts for all substitutions
         :rtype: list
         """
         result = {}
@@ -70,7 +72,8 @@ class EditNgram(Ngram):
         elif n == 3:
             # need to add wild-card and bigram distributions
             wildfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[2]])
-            bfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[1], subst_ngram[1] + u' ' + subst_ngram[2]])
+            bfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[1],
+                                   subst_ngram[1] + u' ' + subst_ngram[2]])
             dist = (word_fd, bfd, wildfd, whole_fd)
         else:
             raise NotImplementedError

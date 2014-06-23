@@ -1,3 +1,4 @@
 unicodecsv
 thrift
 pymongo
+nltk
