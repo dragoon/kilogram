@@ -3,7 +3,7 @@
 import sys
 import string
 
-from kilogram.lang import RE_NUM_SUBS
+from kilogram.lang import number_replace
 
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
 
@@ -23,12 +23,7 @@ for line in sys.stdin:
 
     new_words = []
     for word in words:
-        word1 = word
-        for repl, regex in RE_NUM_SUBS:
-            word1 = regex.sub(repl, word)
-            if word1 != word:
-                break
-        new_words.append(word1)
+        new_words.append(number_replace(word))
     ngram = ' '.join(new_words)
 
     print '%s\t%s' % (ngram, num)
