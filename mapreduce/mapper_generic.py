@@ -1,24 +1,11 @@
 #!/usr/bin/env python
 
-import re
 import sys
 import string
 
+from kilogram.lang import RE_NUM_SUBS
+
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
-
-# we ensure it starts with digit, since otherwise we will detect NUMBER after the dot anyway
-FLOAT_REGEX = r'(?:[1-9]\d*|0)(?:[\.,]\d+)?'
-
-PERCENT_RE = re.compile(r'\b\d{1,2}([\.,]\d{1,2})?\%(\s|$)')
-NUM_RE = re.compile(FLOAT_REGEX)
-TIME_RE1 = re.compile(r'\b\d{1,2}:\d{2}\b')
-TIME_RE2 = re.compile(r'\b[01]\d(?:[:\.][0-5]\d)?(a\.m\.|p\.m\.|am|pm)(\s|$)')
-# we need to separate square and volume, otherwise they will be mixed
-VOL_RE = re.compile(r'\b{0}m3(\s|$)'.format(FLOAT_REGEX))
-SQ_RE = re.compile(r'\b{0}m2(\s|$)'.format(FLOAT_REGEX))
-
-RE_SUBS = [('AREA', SQ_RE), ('VOL', VOL_RE),
-           ('PERCENT', PERCENT_RE), ('TIME1', TIME_RE1), ('TIME2', TIME_RE2), ('NUM', NUM_RE)]
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
@@ -37,7 +24,7 @@ for line in sys.stdin:
     new_words = []
     for word in words:
         word1 = word
-        for repl, regex in RE_SUBS:
+        for repl, regex in RE_NUM_SUBS:
             word1 = regex.sub(repl, word)
             if word1 != word:
                 break
