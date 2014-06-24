@@ -49,8 +49,8 @@ class NgramService(object):
         time_diff = time.time() - cls.h_start
         if time_diff > 30:
             print "HBase req rate:", cls.h_rate/time_diff, "r/s"
-            cls.start = time.time()
-            cls.rate = 0
+            cls.h_start = time.time()
+            cls.h_rate = 0
         try:
             res = cls.h_client.get(table, ngram, "ngram:cnt", None)
             return long(res[0].value)
