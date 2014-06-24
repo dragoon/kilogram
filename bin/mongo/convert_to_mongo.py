@@ -6,7 +6,7 @@ Then proceed to mongodb import
 import sys
 import argparse
 
-from .ngram_service import SUBSTITUTION_TOKEN
+from kilogram.ngram_service import SUBSTITUTION_TOKEN
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--sub', dest='subst_file', action='store',
                    help='path to sustitutions file')
