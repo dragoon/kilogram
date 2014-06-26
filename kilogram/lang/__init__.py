@@ -6,7 +6,7 @@ FLOAT_REGEX = r'(?:[1-9]\d*|0)(?:[\.,]\d+)?'
 PERCENT_RE = re.compile(r'\b\d{1,2}([\.,]\d{1,2})?\%(\s|$)')
 NUM_RE = re.compile(FLOAT_REGEX)
 TIME_RE1 = re.compile(r'\b\d{1,2}:\d{2}\b')
-TIME_RE2 = re.compile(r'\b[01]\d(?:[:\.][0-5]\d)?(a\.m\.|p\.m\.|am|pm)(\s|$)')
+TIME_RE2 = re.compile(r'\b\d{1,2}(?:[:\.][0-5]\d)?(a\.m\.|p\.m\.|am|pm)(\s|$)')
 # we need to separate square and volume, otherwise they will be mixed
 VOL_RE = re.compile(r'\b{0}m3(\s|$)'.format(FLOAT_REGEX))  # often occurs in Google N-grams
 SQ_RE = re.compile(r'\b{0}m2(\s|$)'.format(FLOAT_REGEX))
