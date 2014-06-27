@@ -16,14 +16,29 @@ for line in sys.stdin:
     if not MY_PRINTABLE.issuperset(ngram):
         continue
     # skip POS tags
-    words = ngram.split()
-    is_pos = [1 for word in words if '_' in word and word != '_']
+    is_pos = [1 for word in ngram.split() if '_' in word and word != '_']
     if is_pos:
         continue
 
-    new_words = []
-    for word in words:
-        new_words.append(number_replace(word))
-    ngram = ' '.join(new_words)
+    # replace apostrophes without duplicating
+    if "'" in ngram:
+        ngram = ngram.replace(" '", "'")
+        ngram = ngram.replace("' ", "'")
+    # percentages as well
+    ngram = ngram.replace(" %", "%")
 
-    print '%s\t%s' % (ngram, num)
+    ngrams = {ngram}
+    if '-' in ngram:
+        ngram = ngram.replace(' -', '-')
+        ngram = ngram.replace('- ', '-')
+        ngrams.add(ngram)
+
+    for ngram in ngrams:
+        words = ngram.split()
+        new_words = []
+        for word in words:
+            # numeric entities
+            new_words.append(number_replace(word))
+        ngram = ' '.join(new_words)
+
+        print '%s\t%s' % (ngram, num)
