@@ -10,7 +10,7 @@ MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
 # input comes from STDIN (standard input)
 for line in sys.stdin:
     # remove leading and trailing whitespace
-    line = line.strip().lower()
+    line = line.strip()
     # split the line into words
     ngram, num = line.split('\t')
     if not MY_PRINTABLE.issuperset(ngram):
