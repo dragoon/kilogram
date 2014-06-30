@@ -2,10 +2,27 @@
 
 import sys
 import string
+from zipfile import ZipFile
 
 from kilogram.lang import number_replace
 
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
+
+# wget http://download.geonames.org/export/dump/cities15000.zip
+GEONAMES_FILE = '/home/roman/cities15000.zip'
+
+# Prepare geonames
+CITIES = set()
+with ZipFile(GEONAMES_FILE) as zip_file:
+    for filename in zip_file.namelist():
+        contents = zip_file.open(filename)
+        for line in contents:
+            geonameid, name, asciiname, alternatenames, _ = line.split('\t', 4)
+            CITIES.add(name)
+            CITIES.add(asciiname)
+            for name in alternatenames.split(','):
+                CITIES.add(name)
+
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
