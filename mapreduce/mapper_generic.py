@@ -15,7 +15,7 @@ for f in names.fileids():
     NAME_SET = NAME_SET.union(names.words(f))
 
 # wget http://download.geonames.org/export/dump/cities15000.zip
-GEONAMES_FILE = '/home/roman/cities15000.zip'
+GEONAMES_FILE = 'cities15000.zip'
 
 # Prepare geonames
 CITIES = set()
