@@ -23,7 +23,11 @@ with ZipFile(GEONAMES_FILE) as zip_file:
     for filename in zip_file.namelist():
         contents = zip_file.open(filename)
         for line in contents:
-            geonameid, name, asciiname, alternatenames, _ = line.split('\t', 4)
+            geonameid, name, asciiname, alternatenames, other = line.split('\t', 4)
+            other = other.split('\t')
+            population = int(other[-5])
+            if population < 100000:
+                continue
             CITIES.add(name)
             CITIES.add(asciiname)
             for name in alternatenames.split(','):
