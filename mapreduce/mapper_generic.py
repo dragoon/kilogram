@@ -8,6 +8,12 @@ from kilogram.lang import number_replace
 
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
 
+# NAMES corpus
+from nltk.corpus import names
+NAME_SET = set()
+for f in names.fileids():
+    NAME_SET = NAME_SET.union(names.words(f))
+
 # wget http://download.geonames.org/export/dump/cities15000.zip
 GEONAMES_FILE = '/home/roman/cities15000.zip'
 
@@ -45,6 +51,27 @@ for line in sys.stdin:
     ngram = ngram.replace(" %", "%")
 
     ngrams = {ngram}
+
+    #-----PERSON ENTITIES--
+    new_words = []
+    for word in ngram.split():
+        if word in NAME_SET:
+            new_words.append('PERSON')
+        else:
+            new_words.append(word)
+    ngrams.add(' '.join(new_words))
+    #-----END-------------
+
+    #---GEO ENTITIES-------
+    new_words = []
+    for word in ngram.split():
+        if word in CITIES:
+            new_words.append('CITY')
+        else:
+            new_words.append(word)
+    ngrams.add(' '.join(new_words))
+    #-----END-------------
+
     if '-' in ngram:
         ngram = ngram.replace(' -', '-')
         ngram = ngram.replace('- ', '-')
