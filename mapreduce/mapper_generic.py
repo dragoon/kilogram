@@ -39,54 +39,62 @@ for line in sys.stdin:
     # remove leading and trailing whitespace
     line = line.strip()
     # split the line into words
-    ngram, num = line.split('\t')
-    if not MY_PRINTABLE.issuperset(ngram):
+    orig_ngram, num = line.split('\t')
+    if not MY_PRINTABLE.issuperset(orig_ngram):
         continue
     # skip POS tags
-    is_pos = [1 for word in ngram.split() if '_' in word and word != '_']
+    is_pos = [1 for word in orig_ngram.split() if '_' in word and word != '_']
     if is_pos:
         continue
 
     # replace apostrophes without duplicating
-    if "'" in ngram:
-        ngram = ngram.replace(" '", "'")
-        ngram = ngram.replace("' ", "'")
+    if "'" in orig_ngram:
+        orig_ngram = orig_ngram.replace(" '", "'")
+        orig_ngram = orig_ngram.replace("' ", "'")
     # percentages as well
-    ngram = ngram.replace(" %", "%")
+    orig_ngram = orig_ngram.replace(" %", "%")
 
-    ngrams = {ngram}
+    ngrams = set()
 
     #-----PERSON ENTITIES--
     new_words = []
-    for word in ngram.split():
+    for word in orig_ngram.split():
         if word in NAME_SET:
             new_words.append('PERSON')
         else:
             new_words.append(word)
-    ngrams.add(' '.join(new_words))
+    new_ngram = ' '.join(new_words)
+    if new_ngram != orig_ngram:
+        ngrams.add(new_ngram)
     #-----END-------------
 
     #---GEO ENTITIES-------
     new_words = []
-    for word in ngram.split():
+    for word in orig_ngram.split():
         if word in CITIES:
             new_words.append('CITY')
         else:
             new_words.append(word)
-    ngrams.add(' '.join(new_words))
+    new_ngram = ' '.join(new_words)
+    if new_ngram != orig_ngram:
+        ngrams.add(new_ngram)
     #-----END-------------
 
-    if '-' in ngram:
-        ngram = ngram.replace(' -', '-')
-        ngram = ngram.replace('- ', '-')
-        ngrams.add(ngram)
+    #--DBPEDIA ENTITIES-------
+    #--END--------------------
+
+    ngrams.add(orig_ngram.lower())
+    if '-' in orig_ngram:
+        for ngram in ngrams:
+            ngram = ngram.replace(' -', '-')
+            ngram = ngram.replace('- ', '-')
+            ngrams.add(ngram)
 
     for ngram in ngrams:
         words = ngram.split()
         new_words = []
         for word in words:
-            # numeric entities
+            # numeric entities, DBPEDIA entities can contain numbers, so replace last
             new_words.append(number_replace(word))
-        ngram = ' '.join(new_words)
 
-        print '%s\t%s' % (ngram, num)
+        print '%s\t%s' % (' '.join(new_words), num)
