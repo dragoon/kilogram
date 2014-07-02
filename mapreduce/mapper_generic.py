@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 import sys
+import re
 import string
 from zipfile import ZipFile
 
 from kilogram.lang import number_replace
 
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
+MULTI_PUNCT_RE = re.compile(r'(^| )\W+ \W+($| )')
 
 # NAMES corpus
 from nltk.corpus import names
@@ -45,6 +47,9 @@ for line in sys.stdin:
     # skip POS tags
     is_pos = [1 for word in orig_ngram.split() if '_' in word and word != '_']
     if is_pos:
+        continue
+
+    if MULTI_PUNCT_RE.search(orig_ngram):
         continue
 
     # replace apostrophes without duplicating
