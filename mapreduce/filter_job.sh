@@ -31,7 +31,7 @@ hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.job.reduces=$REDUCERS \
   -files ./filter/mapper_filter.py,reducer_generic.py,words.txt \
   -cmdenv NGRAM=$N \
-  -mapper ./filter/mapper_filter.py \
+  -mapper mapper_filter.py \
   -reducer reducer_generic.py \
   -input $1 -output $2
 rm words.txt
