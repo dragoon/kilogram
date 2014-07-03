@@ -5,6 +5,7 @@ import re
 import string
 from zipfile import ZipFile
 
+import nltk
 from kilogram.lang import number_replace
 
 MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
@@ -30,10 +31,10 @@ with ZipFile(GEONAMES_FILE) as zip_file:
             population = int(other[-5])
             if population < 100000:
                 continue
-            CITIES.add(name)
-            CITIES.add(asciiname)
+            CITIES.add(tuple(name.split()))
+            CITIES.add(tuple(asciiname.split()))
             for name in alternatenames.split(','):
-                CITIES.add(name)
+                CITIES.add(tuple(name.split()))
 
 
 # input comes from STDIN (standard input)
@@ -74,15 +75,19 @@ for line in sys.stdin:
     #-----END-------------
 
     #---GEO ENTITIES-------
-    new_words = []
-    for word in orig_ngram.split():
-        if word in CITIES:
-            new_words.append('CITY')
-        else:
-            new_words.append(word)
-    new_ngram = ' '.join(new_words)
-    if new_ngram != orig_ngram:
-        ngrams.add(new_ngram)
+    for i in range(len(words),0,-1):
+        stop = 0
+        for j, ngram in enumerate(nltk.ngrams(words, i)):
+            if ngram in CITIES:
+                stop = 1
+                new_words = []
+                new_words.extend(words[:j])
+                new_words.append('CITY')
+                new_words.extend(words[j+len(ngram):])
+                new_ngram = ' '.join(new_words)
+                ngrams.add(new_ngram.strip())
+        if stop:
+            break
     #-----END-------------
 
     #--DBPEDIA ENTITIES-------
