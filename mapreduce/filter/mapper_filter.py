@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
 import sys
+import os
 FILTER_FILE = 'words.txt'
 
 FILTER = set(open(FILTER_FILE).read().splitlines())
+N = os.environ['NGRAM']
+if not N:
+    print 'N is not specified'
+    exit(0)
 
 
 # input comes from STDIN (standard input)
