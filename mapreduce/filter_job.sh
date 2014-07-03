@@ -29,7 +29,7 @@ hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.framework.name=yarn \
   -Dmapreduce.job.contract=false \
   -Dmapreduce.job.reduces=$REDUCERS \
-  -cmdenv NGRAM=$N
+  -cmdenv NGRAM=$N \
   -files filter/mapper_filter.py,reducer_generic.py,words.txt \
   -mapper filter/mapper_filter.py \
   -reducer reducer_generic.py \
