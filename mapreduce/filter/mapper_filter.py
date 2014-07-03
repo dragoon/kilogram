@@ -5,7 +5,7 @@ import os
 FILTER_FILE = 'words.txt'
 
 FILTER = set(open(FILTER_FILE).read().splitlines())
-N = os.environ['NGRAM']
+N = int(os.environ['NGRAM'])
 if not N:
     print 'N is not specified'
     exit(0)
