@@ -17,6 +17,8 @@ for line in sys.stdin:
     line = line.strip()
     ngram, num = line.split('\t')
     words = ngram.split()
+    if len(words) != N:
+        continue
     if not FILTER.intersection(words):
         continue
 
