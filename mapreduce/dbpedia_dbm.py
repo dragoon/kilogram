@@ -13,10 +13,9 @@ for line in p.stdout:
     try:
         uri, predicate, name = line.split(' ', 2)
     except:
-        print line
         # continue for the first line
         continue
-    name = name[1:-6]
+    name = name[1:-7]
     dbpediadb[name] = uri
 
 dbpediadb.close()
