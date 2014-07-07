@@ -4,18 +4,36 @@ We then ship the DB with the job
 """
 import anydbm
 import subprocess
-DBPEDIA_FILE = 'labels_en.nt.bz2'
+import nltk
+from nltk.corpus import stopwords,words
+STOPWORDS = set(stopwords.words('english') + words.words('en-basic'))
+REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
+EXCLUDES = set()
 
-dbpediadb = anydbm.open('dbpedia.dbm', 'n')
+dbpediadb = anydbm.open('dbpedia.dbm', 'c')
 # BZ2File module cannot process multi-stream files, so use subprocess
-p = subprocess.Popen('bzcat -q ' + DBPEDIA_FILE, shell=True, stdout=subprocess.PIPE)
+p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
     try:
-        uri, predicate, name = line.split(' ', 2)
+        uri_redirect, predicate, uri_canon = line.split(' ', 2)
     except:
-        # continue for the first line
         continue
-    name = name[1:-7]
-    dbpediadb[name] = uri
+    name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
+    name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4].replace('_', ' ')
+    #if '(disambiguation)' in name_redirect:
+    #    EXCLUDES.add(name_canon)
+    #    continue
+    #if name_redirect != name_canon:
+    #    EXCLUDES.add(name_redirect)
+    if len(name_canon) < 2:
+        continue
+    if name_canon.lower() in STOPWORDS:
+        continue
+    if '(disambiguation)' in name_redirect:
+        EXCLUDES.add(name_canon)
+    dbpediadb[name_canon] = uri_canon[:-3]
+
+for name in EXCLUDES:
+    del dbpediadb[name]
 
 dbpediadb.close()
