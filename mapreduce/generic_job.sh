@@ -19,16 +19,12 @@ shift $((OPTIND-1))
 
 hadoop fs -rm -r $2
 cp ../extra/cities15000.zip .
-echo 'Parsing DBPedia...'
-python dbpedia_dbm.py
-echo 'Starting MapReduce Job...'
 hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.framework.name=yarn \
   -Dmapreduce.job.contract=false \
   -Dmapreduce.job.reduces=$REDUCERS \
-  -files mapper_generic.py,reducer_generic.py,cities15000.zip,dbpedia.dbm \
+  -files mapper_generic.py,reducer_generic.py,cities15000.zip \
   -mapper mapper_generic.py \
   -reducer reducer_generic.py \
   -input $1 -output $2
 rm cities15000.zip
-rm dbpedia.dbm
