@@ -6,6 +6,7 @@ import anydbm
 
 # Open just for read
 dbpediadb = anydbm.open('dbpedia.dbm', 'r')
+URI_EXCLUDES = set(open('dbpedia_uri_excludes.txt').read().splitlines())
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -19,8 +20,16 @@ for line in sys.stdin:
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
+                uri = dbpediadb[ngram_joined]
+                if uri in URI_EXCLUDES:
+                    continue
                 stop = True
-                print '%s\t%s' % (dbpediadb[ngram_joined], num)
+                new_words = []
+                new_words.extend(words[:j])
+                new_words.append(uri)
+                new_words.extend(words[j+len(ngram):])
+                new_ngram = ' '.join(new_words)
+                print '%s\t%s' % (new_ngram.strip(), num)
         if stop:
             break
 
