@@ -4,8 +4,8 @@ We then ship the DB with the job
 """
 import anydbm
 import subprocess
-import nltk
-from nltk.corpus import stopwords,words
+from nltk.corpus import stopwords, words
+
 STOPWORDS = set(stopwords.words('english') + words.words('en-basic'))
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 EXCLUDES = set()
@@ -20,11 +20,6 @@ for line in p.stdout:
         continue
     name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
     name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4].replace('_', ' ')
-    #if '(disambiguation)' in name_redirect:
-    #    EXCLUDES.add(name_canon)
-    #    continue
-    #if name_redirect != name_canon:
-    #    EXCLUDES.add(name_redirect)
     if len(name_canon) < 2:
         continue
     if name_canon.lower() in STOPWORDS:
