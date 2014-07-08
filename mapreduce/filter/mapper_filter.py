@@ -2,7 +2,8 @@
 
 import sys
 import os
-FILTER_FILE = 'words.txt'
+
+FILTER_FILE = os.environ['FILTER_FILE']
 
 FILTER = set(open(FILTER_FILE).read().splitlines())
 N = int(os.environ['NGRAM'])
