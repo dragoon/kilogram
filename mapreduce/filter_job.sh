@@ -24,15 +24,21 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 hadoop fs -rm -r $2
-cp $FILTER_FILE words.txt
+if [[ $FILTER_FILE ]]; then
+    cp $FILTER_FILE filter_file.txt
+else
+    touch filter_file.txt
+if
+
 hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.framework.name=yarn \
   -Dmapreduce.job.contract=false \
   -Dmapreduce.job.reduces=$REDUCERS \
-  -files ./filter/mapper_filter.py,reducer_generic.py,words.txt \
+  -files ./filter/mapper_filter.py,reducer_generic.py,filter_file.txt \
   -cmdenv NGRAM=$N \
-  -cmdenv FILTER_FILE=words.txt \
+  -cmdenv FILTER_FILE=filter_file.txt \
   -mapper mapper_filter.py \
   -reducer reducer_generic.py \
   -input $1 -output $2
-rm words.txt
+
+rm filter_file.txt
