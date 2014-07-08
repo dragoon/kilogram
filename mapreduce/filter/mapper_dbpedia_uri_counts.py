@@ -19,12 +19,12 @@ for line in sys.stdin:
     if MULTI_PUNCT_RE.search(ngram):
         continue
     words = ngram.split()
-    new_words = []
-    for i in range(len(words),0,-1):
+    for i in range(len(words), 0, -1):
         stop = 0
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
+                stop = True
                 print '%s\t%s' % (dbpediadb[ngram_joined], num)
         if stop:
             break
