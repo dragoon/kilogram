@@ -8,9 +8,9 @@ import os.path
 import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('-cmd', '--extra-command', nargs='*', dest='extra_commands',
+parser.add_argument('-cmd', '--extra-command', nargs='*', dest='extra_commands', default=[],
                     action='store', help='extra commands to execute before starting the job')
-parser.add_argument('-file', '--extra-file', nargs='*', dest='extra_files',
+parser.add_argument('-file', '--extra-file', nargs='*', dest='extra_files', default=[],
                     action='store', help='extra file to copy with the job')
 parser.add_argument('--filter-file', dest='filter_file', required=False,
                     action='store', help='filter file to copy with the job')
@@ -30,7 +30,7 @@ MAPPER_PATH = args.mapper
 MAPPER = os.path.basename(MAPPER_PATH)
 
 # Remove output if exists
-subprocess.call(["hadoop fs -rm -r $2"], shell=True)
+subprocess.call(["hadoop fs -rm -r {0}".format(args.output)], shell=True)
 
 for command in args.extra_commands:
     subprocess.call([command], shell=True)
