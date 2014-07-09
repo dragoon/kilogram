@@ -24,7 +24,7 @@ parser.add_argument('input', help='input path on HDFS')
 parser.add_argument('output', help='output path on HDFS, removed before starting the job')
 
 args = parser.parse_args()
-print args
+#print args
 
 MAPPER_PATH = args.mapper
 MAPPER = os.path.basename(MAPPER_PATH)
@@ -57,4 +57,4 @@ hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop
                                    reducers=args.reducers_num, extra_files=extra_files, n=args.n,
                                    filter_file=filter_file)
 
-#subprocess.call(hadoop_cmd, shell=True)
+subprocess.call(hadoop_cmd, shell=True)
