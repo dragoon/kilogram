@@ -40,6 +40,9 @@ if args.extra_files:
     extra_files = ',' + ','.join(args.extra_files)
 if args.filter_file:
     extra_files += ',' + args.filter_file
+    filter_file = os.path.basename(args.filter_file)
+else:
+    filter_file = ''
 
 hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.framework.name=yarn \
@@ -52,6 +55,6 @@ hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop
   -reducer reducer_generic.py \
   -input {0} -output {1}""".format(args.input, args.output, mapper_path=MAPPER_PATH, mapper=MAPPER,
                                    reducers=args.reducers_num, extra_files=extra_files, n=args.n,
-                                   filter_file=os.path.basename(args.filter_file))
+                                   filter_file=filter_file)
 
 #subprocess.call(hadoop_cmd, shell=True)
