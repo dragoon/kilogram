@@ -54,6 +54,7 @@ for line in sys.stdin:
     #-----END-------------
 
     #---GEO ENTITIES-------
+    words = orig_ngram.split()
     for i in range(len(words), 0, -1):
         stop = 0
         for j, ngram in enumerate(nltk.ngrams(words, i)):
