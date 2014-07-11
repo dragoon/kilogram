@@ -33,7 +33,7 @@ class PreparedNgramModel(NgramModel):
                 self._ngrams.add(ngram)
                 context = tuple(ngram[:-1])
                 token = ngram[-1]
-                cfd[context].inc(token, count)
+                cfd[context].inc(token, long(count))
 
         if not estimator_args and not estimator_kwargs:
             self._model = ConditionalProbDist(cfd, estimator, len(cfd))
