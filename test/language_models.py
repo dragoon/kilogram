@@ -28,7 +28,7 @@ class PreparedNgramModel(NgramModel):
 
         for line in open(ngram_file):
             ngram, count = line.strip().split('\t')
-            ngram = ngram.split()
+            ngram = tuple(ngram.split())
             if len(ngram) == n:
                 self._ngrams.add(ngram)
                 context = tuple(ngram[:-1])
