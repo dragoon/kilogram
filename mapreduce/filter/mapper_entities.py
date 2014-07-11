@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 
 import sys
-import re
-import string
 from zipfile import ZipFile
 
 import nltk
 from kilogram.lang import number_replace
-
-MY_PRINTABLE = set(string.letters+string.digits+string.punctuation+' ')
-MULTI_PUNCT_RE = re.compile(r'(^| )\W+ \W+($| )')
 
 # NAMES corpus
 from nltk.corpus import names
@@ -43,22 +38,6 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     orig_ngram, num = line.split('\t')
-    if not MY_PRINTABLE.issuperset(orig_ngram):
-        continue
-    # skip POS tags
-    is_pos = [1 for word in orig_ngram.split() if '_' in word and word != '_']
-    if is_pos:
-        continue
-
-    if MULTI_PUNCT_RE.search(orig_ngram):
-        continue
-
-    # replace apostrophes without duplicating
-    if "'" in orig_ngram:
-        orig_ngram = orig_ngram.replace(" '", "'")
-        orig_ngram = orig_ngram.replace("' ", "'")
-    # percentages as well
-    orig_ngram = orig_ngram.replace(" %", "%")
 
     ngrams = set()
 
@@ -90,18 +69,11 @@ for line in sys.stdin:
             break
     #-----END-------------
 
-    ngrams.add(orig_ngram.lower())
-    if '-' in orig_ngram:
-        for ngram in ngrams:
-            ngram = ngram.replace(' -', '-')
-            ngram = ngram.replace('- ', '-')
-            ngrams.add(ngram)
-
     for ngram in ngrams:
         words = ngram.split()
         new_words = []
         for word in words:
-            # numeric entities, DBPEDIA entities can contain numbers, so replace last
+            # numeric replace
             new_words.append(number_replace(word))
 
         print '%s\t%s' % (' '.join(new_words), num)
