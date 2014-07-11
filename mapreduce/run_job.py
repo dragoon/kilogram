@@ -16,7 +16,7 @@ parser.add_argument('--filter-file', dest='filter_file', required=False,
                     action='store', help='filter file to copy with the job')
 parser.add_argument('-r', '--reducers', dest='reducers_num', action='store', required=False,
                     default=20, type=int, help='number of reducers')
-parser.add_argument('-m', '--mapper', dest='mapper', action='store', default='mapper_generic.py',
+parser.add_argument('-m', '--mapper', dest='mapper', action='store', default='mapper_prefilter.py',
                     help='path to the mapper script')
 parser.add_argument('-n', dest='n', action='store', type=int, required=False, default=0,
                     help='size of n-gram to extract (when doing filter)')
