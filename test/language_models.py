@@ -12,6 +12,10 @@ def _estimator(fdist, bins):
 
 
 class PreparedNgramModel(NgramModel):
+    """
+    Build a model from Google N-gram.
+    NLTK's implementation consumes insane amount of RAM, for 3G file (1+2grams) you would need ~50G.
+    """
 
     def __init__(self, n, ngram_file, pad_left=True, pad_right=False,
                  estimator=None, *estimator_args, **estimator_kwargs):
