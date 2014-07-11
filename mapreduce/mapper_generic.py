@@ -4,7 +4,6 @@ import sys
 import re
 import string
 from zipfile import ZipFile
-import anydbm
 
 import nltk
 from kilogram.lang import number_replace
@@ -38,8 +37,6 @@ with ZipFile(GEONAMES_FILE) as zip_file:
                 CITIES.add(tuple(name.split()))
 
 
-# Open just for read
-dbpediadb = anydbm.open('dbpedia.dbm', 'r')
 # input comes from STDIN (standard input)
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -93,22 +90,6 @@ for line in sys.stdin:
             break
     #-----END-------------
 
-    #--DBPEDIA ENTITIES-------
-    for i in range(len(words), 0, -1):
-        stop = 0
-        for j, ngram in enumerate(nltk.ngrams(words, i)):
-            if ngram in dbpediadb:
-                stop = 1
-                new_words = []
-                new_words.extend(words[:j])
-                new_words.append(dbpediadb[ngram])
-                new_words.extend(words[j+len(ngram):])
-                new_ngram = ' '.join(new_words)
-                ngrams.add(new_ngram.strip())
-        if stop:
-            break
-    #--END--------------------
-
     ngrams.add(orig_ngram.lower())
     if '-' in orig_ngram:
         for ngram in ngrams:
@@ -124,6 +105,3 @@ for line in sys.stdin:
             new_words.append(number_replace(word))
 
         print '%s\t%s' % (' '.join(new_words), num)
-
-
-dbpediadb.close()
