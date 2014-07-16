@@ -26,7 +26,7 @@ for line in p.stdout:
         continue
     if '(disambiguation)' in name_redirect:
         EXCLUDES.add(name_canon)
-    dbpediadb[name_canon] = uri_canon[:-3]
+    dbpediadb[name_canon] = '<' + name_canon.replace(' ', '_') + '>'
 
 for name in EXCLUDES:
     del dbpediadb[name]
