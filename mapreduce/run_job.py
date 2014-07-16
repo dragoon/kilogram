@@ -44,6 +44,9 @@ if args.filter_file:
 else:
     filter_file = ''
 
+input_paths = args.input.split(':')
+input_paths = ' '.join(['-input ' + x for x in input_paths])
+
 hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
   -Dmapreduce.framework.name=yarn \
   -Dmapreduce.job.contract=false \
@@ -53,7 +56,7 @@ hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop
   -cmdenv FILTER_FILE={filter_file} \
   -mapper {mapper} \
   -reducer reducer_generic.py \
-  -input {0} -output {1}""".format(args.input, args.output, mapper_path=MAPPER_PATH, mapper=MAPPER,
+  {0} -output {1}""".format(input_paths, args.output, mapper_path=MAPPER_PATH, mapper=MAPPER,
                                    reducers=args.reducers_num, extra_files=extra_files, n=args.n,
                                    filter_file=filter_file)
 
