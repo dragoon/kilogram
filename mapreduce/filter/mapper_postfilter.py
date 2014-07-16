@@ -22,4 +22,4 @@ for line in sys.stdin:
             else:
                 new_words.append(word.lower())
 
-        print '%s\t%s' % (' '.join(new_words), num)
+    print '%s\t%s' % (' '.join(new_words), num)
