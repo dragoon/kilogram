@@ -1,6 +1,7 @@
 """
-Prepare DBPediaDB, we use DBM since in-memory python dictionary will occupy ~2GB and slow down the job.
-We then ship the DB with the job
+Prepares DBPedia dict with entity labels as keys and URIs as values.
+We use DBM since in-memory python dictionary will occupy ~2GB and slow down the job.
+It then shipped with the job.
 """
 import anydbm
 import subprocess
