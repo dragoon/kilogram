@@ -45,7 +45,7 @@ for line in sys.stdin:
     new_words = []
     for word in orig_ngram.split():
         if word in NAME_SET:
-            new_words.append('PERSON')
+            new_words.append('<PERSON>')
         else:
             new_words.append(word)
     new_ngram = ' '.join(new_words)
@@ -62,7 +62,7 @@ for line in sys.stdin:
                 stop = 1
                 new_words = []
                 new_words.extend(words[:j])
-                new_words.append('CITY')
+                new_words.append('<CITY>')
                 new_words.extend(words[j+len(ngram):])
                 new_ngram = ' '.join(new_words)
                 ngrams.add(new_ngram.strip())
@@ -71,10 +71,4 @@ for line in sys.stdin:
     #-----END-------------
 
     for ngram in ngrams:
-        words = ngram.split()
-        new_words = []
-        for word in words:
-            # numeric replace
-            new_words.append(number_replace(word))
-
         print '%s\t%s' % (' '.join(new_words), num)
