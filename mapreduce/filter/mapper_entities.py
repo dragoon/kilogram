@@ -4,7 +4,6 @@ import sys
 from zipfile import ZipFile
 
 import nltk
-from kilogram.lang import number_replace
 
 # NAMES corpus
 from nltk.corpus import names

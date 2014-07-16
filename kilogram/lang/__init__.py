@@ -11,8 +11,8 @@ TIME_RE2 = re.compile(r'\b\d{1,2}(?:[:\.][0-5]\d)?(a\.m\.|p\.m\.|am|pm)(\s|$)')
 VOL_RE = re.compile(r'\b{0}m3(\s|$)'.format(FLOAT_REGEX))  # often occurs in Google N-grams
 SQ_RE = re.compile(r'\b{0}m2(\s|$)'.format(FLOAT_REGEX))
 
-_RE_NUM_SUBS = [('AREA', SQ_RE), ('VOL', VOL_RE), ('PERCENT', PERCENT_RE),
-                ('TIME1', TIME_RE1), ('TIME2', TIME_RE2), ('NUM', NUM_RE)]
+_RE_NUM_SUBS = [('<AREA>', SQ_RE), ('<VOL>', VOL_RE), ('<PERCENT>', PERCENT_RE),
+                ('<TIME1>', TIME_RE1), ('<TIME2>', TIME_RE2), ('<NUM>', NUM_RE)]
 
 
 def number_replace(word):
