@@ -7,7 +7,7 @@ import shelve
 import subprocess
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
-EXCLUDES = {'<Agent>', '<TimePeriod>', 'PersonFunction'}
+EXCLUDES = {'<Agent>', '<TimePeriod>', '<PersonFunction>'}
 
 dbpediadb = shelve.open('dbpedia_types.dbm')
 # BZ2File module cannot process multi-stream files, so use subprocess
@@ -23,7 +23,7 @@ for line in p.stdout:
     type_uri = type_uri.replace('http://dbpedia.org/ontology/', '')[:-3]
     if type_uri in EXCLUDES:
         continue
-    if not dbpediadb.has_key(uri):
+    if uri not in dbpediadb:
         dbpediadb[uri] = [type_uri]
     else:
         dbpediadb[uri].append(type_uri)
