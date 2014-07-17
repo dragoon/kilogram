@@ -4,7 +4,7 @@ import sys
 import shelve
 
 # Open just for read
-dbpediadb = shelve.open('dbpedia_types.dbm')
+dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
