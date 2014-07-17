@@ -19,8 +19,8 @@ for line in sys.stdin:
         if dbpediadb.has_key(word):
             dbp_dict[i] = dbpediadb[word]
     ngrams = [words[:]]
-    new_ngrams = []
     for i, types in dbp_dict.items():
+        new_ngrams = []
         for words in ngrams:
             for dbp_type in types:
                 new_words = words[:]
