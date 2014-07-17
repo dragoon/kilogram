@@ -9,7 +9,7 @@ import subprocess
 TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'<Agent>', '<TimePeriod>', '<PersonFunction>'}
 
-dbpediadb = shelve.open('dbpedia_types.dbm')
+dbpediadb = shelve.open('dbpedia_types.dbm', writeback=True)
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + TYPES_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
