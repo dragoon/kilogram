@@ -16,8 +16,12 @@ for line in sys.stdin:
     dbpedia_words = [(i, word) for i, word in enumerate(words) if word[0] == '<' and word[-1] == '>']
     dbp_dict = {}
     for i, word in dbpedia_words:
-        if dbpediadb.has_key(word):
+        if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
+
+    if not dbp_dict:
+        continue
+
     ngrams = [words[:]]
     for i, types in dbp_dict.items():
         new_ngrams = []
