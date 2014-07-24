@@ -1,7 +1,9 @@
 """
-Prepares DBPedia type dict with entity URIs as keys and types as values.
+Creates DBPedia type dict with entity URIs as keys and types as values.
 We use shelve here since the dict is quite large in memory(~2G) and we need a set as value.
 It then shipped with the job.
+
+Format: {'<Tramore>': ['<Town>', '<Settlement>', '<PopulatedPlace>', '<Place>'], ...}
 """
 import shelve
 import subprocess

@@ -1,7 +1,9 @@
 """
-Prepares DBPedia dict with entity labels as keys and URIs as values.
+Creates DBPedia dict with entity **MAIN** labels as keys and canonical URIs as values.
 We use DBM since in-memory python dictionary will occupy ~2GB and slow down the job.
 It then shipped with the job.
+
+Format: {'Historical Vedic religion': '<Historical_Vedic_religion>', ...}
 """
 import anydbm
 import subprocess
