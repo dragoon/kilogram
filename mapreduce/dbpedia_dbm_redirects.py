@@ -1,7 +1,8 @@
 """
 Creates DBPedia dict with **ALL** entity labels as keys and canonical URIs as values.
 
-Format: {'Historical_Vedic_religion': '<Historical_Vedic_religion>', ...}
+Format: {'<Timeline_of_the_cosmos>': '<Chronology_of_the_universe>',
+         '<Lockheed_C-5>': '<Lockheed_C-5_Galaxy>', ...}
 """
 import anydbm
 import subprocess
