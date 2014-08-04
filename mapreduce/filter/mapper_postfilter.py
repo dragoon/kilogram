@@ -40,4 +40,18 @@ for line in sys.stdin:
                 # TODO: to lower or not to lower? That is the question.
                 new_words.append(word)
 
-    print '%s\t%s' % (' '.join(new_words), num)
+    orig_ngram = ' '.join(new_words)
+    # replace apostrophes without duplicating
+    if "'" in orig_ngram:
+        orig_ngram = orig_ngram.replace(" '", "'")
+        orig_ngram = orig_ngram.replace("' ", "'")
+
+    ngrams = {orig_ngram}
+
+    if '-' in orig_ngram:
+        ngram = orig_ngram.replace(' -', '-')
+        ngram = ngram.replace('- ', '-')
+        ngrams.add(ngram)
+
+    for ngram in ngrams:
+        print '%s\t%s' % (ngram, num)

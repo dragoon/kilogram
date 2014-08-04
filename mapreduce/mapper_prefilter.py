@@ -24,19 +24,7 @@ for line in sys.stdin:
     if MULTI_PUNCT_RE.search(orig_ngram):
         continue
 
-    # replace apostrophes without duplicating
-    if "'" in orig_ngram:
-        orig_ngram = orig_ngram.replace(" '", "'")
-        orig_ngram = orig_ngram.replace("' ", "'")
     # percentages as well
     orig_ngram = orig_ngram.replace(" %", "%")
 
-    ngrams = {orig_ngram}
-
-    if '-' in orig_ngram:
-        ngram = orig_ngram.replace(' -', '-')
-        ngram = ngram.replace('- ', '-')
-        ngrams.add(ngram)
-
-    for ngram in ngrams:
-        print '%s\t%s' % (ngram, num)
+    print '%s\t%s' % (orig_ngram, num)
