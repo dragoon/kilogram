@@ -6,7 +6,7 @@ import nltk
 from kilogram.lang import number_replace
 
 FILTER_FILE = os.environ['FILTER_FILE']
-FILTER = set([x[29:-1].replace('_', ' ') for x in open(FILTER_FILE).read().splitlines()])
+FILTER = set([x[1:-1].replace('_', ' ') for x in open(FILTER_FILE).read().splitlines()])
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
