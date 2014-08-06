@@ -18,6 +18,8 @@ for line in sys.stdin:
     for i, word in dbpedia_words:
         if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
+        else:
+            words[i] = words[i][1:-1]
 
     if not dbp_dict:
         continue
@@ -30,6 +32,9 @@ for line in sys.stdin:
                 new_words = words[:]
                 new_words[i] = dbp_type
                 new_ngrams.append(new_words)
+                # take only the first type for now!!
+                # TODO: to type or not to type. That is the question.
+                break
         ngrams = new_ngrams
 
     for new_words in ngrams:
