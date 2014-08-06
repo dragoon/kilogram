@@ -19,7 +19,7 @@ for line in sys.stdin:
         if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
         else:
-            words[i] = words[i][1:-1]
+            words[i:i+1] = words[i][1:-1].split('_')
 
     if not dbp_dict:
         continue
