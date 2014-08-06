@@ -4,7 +4,7 @@ p = subprocess.Popen('hdfs dfs -cat /user/roman/ngrams_merged/*', shell=True, st
 
 VOCAB_FILE = open('1gms/vocab_cs', 'w')
 N_2_FILE = open('2gms/2gm-0001', 'w')
-N_3_FILE = open('3gms/2gm-0001', 'w')
+N_3_FILE = open('3gms/3gm-0001', 'w')
 
 for line in p.stdout:
     line_len = len(line.split('\t')[0].split())
