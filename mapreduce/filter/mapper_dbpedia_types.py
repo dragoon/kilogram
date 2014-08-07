@@ -20,7 +20,8 @@ for line in sys.stdin:
         if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
         else:
-            to_replace_index.append(i)
+            # always insert in the beginning to later iterate from the highest position
+            to_replace_index.insert(0, i)
 
     if not dbp_dict:
         continue
