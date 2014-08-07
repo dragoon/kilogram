@@ -15,11 +15,12 @@ for line in sys.stdin:
     words = ngram.split()
     dbpedia_words = [(i, word) for i, word in enumerate(words) if word[0] == '<' and word[-1] == '>']
     dbp_dict = {}
+    to_replace_index = []
     for i, word in dbpedia_words:
         if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
         else:
-            words[i:i+1] = words[i][1:-1].split('_')
+            to_replace_index.append(i)
 
     if not dbp_dict:
         continue
@@ -36,6 +37,11 @@ for line in sys.stdin:
                 # TODO: to type or not to type. That is the question.
                 break
         ngrams = new_ngrams
+
+    # Replace after to not alter the positions
+    for i in to_replace_index:
+        for new_words in ngrams:
+            new_words[i:i+1] = new_words[i][1:-1].split('_')
 
     for new_words in ngrams:
         print '%s\t%s' % (' '.join(new_words), num)
