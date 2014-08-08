@@ -34,4 +34,4 @@ for name in EXCLUDES:
     dbpedia_set.discard(name)
 
 # save
-open('dbpedia_labels.txt').write('\n'.join(dbpedia_set))
+open('dbpedia_labels.txt', 'w').write('\n'.join(dbpedia_set))
