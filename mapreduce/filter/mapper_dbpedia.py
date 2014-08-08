@@ -3,9 +3,11 @@
 import sys
 import nltk
 import anydbm
+import shelve
 
 # Open just for read
 dbpediadb = anydbm.open('dbpedia.dbm', 'r')
+dbpedia_typesdb = shelve.open('dbpedia_types.dbm', flag='r')
 URI_EXCLUDES = set(open('dbpedia_uri_excludes.txt').read().splitlines())
 
 
@@ -16,7 +18,7 @@ def resolve_entity(words):
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
                 uri = dbpediadb[ngram_joined]
-                if uri in URI_EXCLUDES:
+                if uri in URI_EXCLUDES or uri not in dbpedia_typesdb:
                     continue
                 new_words = []
                 new_words.extend(words[:j])
@@ -37,3 +39,4 @@ for line in sys.stdin:
         print '%s\t%s' % (new_ngram.strip(), num)
 
 dbpediadb.close()
+dbpedia_typesdb.close()
