@@ -1,5 +1,18 @@
-import subprocess
+"""Retrieves n-gram from HDFS, stores in a format suitable for BerkeleyLM and trains the model."""
 
+import subprocess
+import os
+import argparse
+
+parser = argparse.ArgumentParser(description=__doc__)
+args = parser.parse_args()
+parser.add_argument('data_dir', help='base path to store n-gram data')
+parser.add_argument('model_dir', help='base path to store the model')
+
+DATA_DIR = args.data_dir
+MODEL_DIR = args.model_dir
+
+os.chdir(DATA_DIR)
 p = subprocess.Popen('hdfs dfs -cat /user/roman/ngrams_merged/*', shell=True, stdout=subprocess.PIPE)
 
 VOCAB_FILE = open('1gms/vocab_cs', 'w')
@@ -26,3 +39,7 @@ print 'Removing old vocabulary...'
 subprocess.call(["rm 1gms/vocab_cs.gz"], shell=True)
 print 'Compressing new vocabulary...'
 subprocess.call(["gzip 1gms/vocab_cs"], shell=True)
+
+os.chdir(MODEL_DIR)
+print 'Building the model'
+subprocess.call(["java -ea -mx25g -server -cp ./src edu.berkeley.nlp.lm.io.MakeLmBinaryFromGoogle {0} google_model_types.bin".format(DATA_DIR)], shell=True)
