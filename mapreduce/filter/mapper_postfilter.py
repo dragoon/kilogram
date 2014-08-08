@@ -5,8 +5,9 @@ import os
 import nltk
 from kilogram.lang import number_replace
 
-FILTER_FILE = os.environ['FILTER_FILE']
-FILTER = set([x[1:-1].replace('_', ' ') for x in open(FILTER_FILE).read().splitlines()])
+#FILTER_FILE = os.environ['FILTER_FILE']
+#FILTER = set([x[1:-1].replace('_', ' ') for x in open(FILTER_FILE).read().splitlines()])
+FILTER = set()
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
@@ -29,7 +30,7 @@ for line in sys.stdin:
 
     new_words = []
     for word in orig_ngram.split():
-        if word.startswith('<') and word.endswith('>'):
+        if word.startswith('<dbpedia:') and word.endswith('>'):
             new_words.append(word)
         else:
             # numeric replace
