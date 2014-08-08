@@ -1,8 +1,8 @@
 """
 Creates DBPedia dict with **ALL** entity labels as keys and canonical URIs as values.
 
-Format: {'<Timeline_of_the_cosmos>': '<Chronology_of_the_universe>',
-         '<Lockheed_C-5>': '<Lockheed_C-5_Galaxy>', ...}
+Format: {'Timeline_of_the_cosmos': 'Chronology_of_the_universe',
+         'Lockheed_C-5': 'Lockheed_C-5_Galaxy', ...}
 """
 import anydbm
 import subprocess
@@ -18,8 +18,8 @@ for line in p.stdout:
         uri_redirect, predicate, uri_canon = line.split(' ', 2)
     except:
         continue
-    name_redirect = uri_redirect.replace('http://dbpedia.org/resource/', '')
-    name_canon = uri_canon.replace('http://dbpedia.org/resource/', '')[:-3]
+    name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
+    name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
     if '(disambiguation)' in name_redirect:
         continue
     dbpediadb[name_redirect] = name_canon
