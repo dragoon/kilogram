@@ -5,9 +5,10 @@ import os
 import argparse
 
 parser = argparse.ArgumentParser(description=__doc__)
-args = parser.parse_args()
 parser.add_argument('data_dir', help='base path to store n-gram data')
 parser.add_argument('model_dir', help='base path to store the model')
+
+args = parser.parse_args()
 
 DATA_DIR = args.data_dir
 MODEL_DIR = args.model_dir
