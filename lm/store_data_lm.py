@@ -38,7 +38,7 @@ N_2_FILE.close()
 N_3_FILE.close()
 
 print 'Sorting vocabulary...'
-subprocess.call(["cat 1gms/vocab_cs | sort --parallel=4 -k2,2 -n -r -t $'\t' > vocab_cs1 && mv vocab_cs1 1gms/vocab_cs"], shell=True)
+subprocess.call(["cat 1gms/vocab_cs | sort --parallel=4 -k2,2 -n -r -t $'\\t' > vocab_cs1 && mv vocab_cs1 1gms/vocab_cs"], shell=True)
 print 'Removing old vocabulary...'
 try:
     os.remove("1gms/vocab_cs.gz")
