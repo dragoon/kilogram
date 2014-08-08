@@ -1,11 +1,9 @@
 """
-Creates DBPedia dict with entity **MAIN** labels as keys and canonical URIs as values.
-We use DBM since in-memory python dictionary will occupy ~2GB and slow down the job.
-It then shipped with the job.
+Creates DBPedia set with entity **MAIN** labels as entries.
+It then shipped with the appropriate mapreduce job.
 
 Format: {'Historical Vedic religion': '<Historical_Vedic_religion>', ...}
 """
-import anydbm
 import subprocess
 from nltk.corpus import stopwords, words
 
@@ -13,7 +11,7 @@ STOPWORDS = set(stopwords.words('english') + words.words('en-basic'))
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 EXCLUDES = set()
 
-dbpediadb = anydbm.open('dbpedia.dbm', 'c')
+dbpedia_set = set()
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -29,9 +27,11 @@ for line in p.stdout:
         continue
     if '(disambiguation)' in name_redirect:
         EXCLUDES.add(name_canon)
-    dbpediadb[name_canon] = '<' + name_canon.replace(' ', '_') + '>'
+    dbpedia_set.add(name_canon)
 
+# remove in the end because disambiguations might have been added after
 for name in EXCLUDES:
-    del dbpediadb[name]
+    dbpedia_set.discard(name)
 
-dbpediadb.close()
+# save
+open('dbpedia_labels.txt').write('\n'.join(dbpedia_set))
