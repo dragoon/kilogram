@@ -16,9 +16,10 @@ def resolve_entity(words):
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
-                uri = '<dbpedia:'+ngram_joined.replace(' ', '_')+'>'
+                uri = ngram_joined.replace(' ', '_')
                 if uri in URI_EXCLUDES or uri not in dbpedia_typesdb:
                     continue
+                uri = '<dbpedia:'+uri+'>'
                 new_words = []
                 new_words.extend(words[:j])
                 new_words.append(uri)
