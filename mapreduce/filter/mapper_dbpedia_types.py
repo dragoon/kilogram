@@ -13,10 +13,11 @@ for line in sys.stdin:
     ngram, num = line.split('\t')
 
     words = ngram.split()
-    dbpedia_words = [(i, word) for i, word in enumerate(words) if word[0] == '<' and word[-1] == '>']
+    dbpedia_words = [(i, word) for i, word in enumerate(words) if word[0] == '<dbpedia:' and word[-1] == '>']
     dbp_dict = {}
     to_replace_index = []
     for i, word in dbpedia_words:
+        word = word[9:-1]
         if word in dbpediadb:
             dbp_dict[i] = dbpediadb[word]
         else:
@@ -32,7 +33,7 @@ for line in sys.stdin:
         for words in ngrams:
             for dbp_type in types:
                 new_words = words[:]
-                new_words[i] = dbp_type
+                new_words[i] = '<dbpedia:'+dbp_type+'>'
                 new_ngrams.append(new_words)
                 # take only the first type for now!!
                 # TODO: to type or not to type. That is the question.
