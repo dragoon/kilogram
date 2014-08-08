@@ -2,11 +2,10 @@
 
 import sys
 import nltk
-import anydbm
 import shelve
 
 # Open just for read
-dbpediadb = anydbm.open('dbpedia.dbm', 'r')
+dbpediadb = set(open('dbpedia_labels.txt').read().splitlines())
 dbpedia_typesdb = shelve.open('dbpedia_types.dbm', flag='r')
 URI_EXCLUDES = set(open('dbpedia_uri_excludes.txt').read().splitlines())
 
@@ -17,7 +16,7 @@ def resolve_entity(words):
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
-                uri = dbpediadb[ngram_joined]
+                uri = '<dbpedia:'+ngram_joined.replace(' ', '_')+'>'
                 if uri in URI_EXCLUDES or uri not in dbpedia_typesdb:
                     continue
                 new_words = []
@@ -38,5 +37,4 @@ for line in sys.stdin:
     if new_ngram != orig_ngram:
         print '%s\t%s' % (new_ngram.strip(), num)
 
-dbpediadb.close()
 dbpedia_typesdb.close()
