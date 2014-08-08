@@ -2,10 +2,9 @@
 
 import sys
 import nltk
-import anydbm
 
 # Open just for read
-dbpediadb = anydbm.open('dbpedia.dbm', 'r')
+dbpediadb = set(open('dbpedia_labels.txt').read().splitlines())
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -20,8 +19,6 @@ for line in sys.stdin:
             ngram_joined = ' '.join(ngram)
             if ngram_joined in dbpediadb:
                 stop = True
-                print '%s\t%s' % (dbpediadb[ngram_joined], num)
+                print '<%s>\t%s' % (ngram_joined.replace(' ', '_'), num)
         if stop:
             break
-
-dbpediadb.close()
