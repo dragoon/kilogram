@@ -9,7 +9,7 @@ import shelve
 import subprocess
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
-EXCLUDES = {'<Agent>', '<TimePeriod>', '<PersonFunction>'}
+EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
 dbpediadb = shelve.open('dbpedia_types.dbm', writeback=True)
 # BZ2File module cannot process multi-stream files, so use subprocess
