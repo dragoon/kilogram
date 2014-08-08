@@ -13,7 +13,7 @@ for line in sys.stdin:
     ngram, num = line.split('\t')
 
     words = ngram.split()
-    dbpedia_words = [(i, word) for i, word in enumerate(words) if word[:9] == '<dbpedia:' and word[-1] == '>']
+    dbpedia_words = [(i, word) for i, word in enumerate(words) if word.startswith('<dbpedia:') and word[-1] == '>']
     dbp_dict = {}
     to_replace_index = []
     for i, word in dbpedia_words:
