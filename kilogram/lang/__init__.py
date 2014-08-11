@@ -3,7 +3,7 @@ import re
 
 FLOAT_REGEX = r'(?:[1-9]\d*|0)(?:[\.,]\d+)?'
 
-INT_RE = re.compile(r'[1-9]+')
+INT_RE = re.compile(r'^[1-9]\d*$')
 PERCENT_RE = re.compile(r'\b\d{1,2}([\.,]\d{1,2})?\%(\s|$)')
 NUM_RE = re.compile(FLOAT_REGEX)
 TIME_RE1 = re.compile(r'\b\d{1,2}:\d{2}\b')
