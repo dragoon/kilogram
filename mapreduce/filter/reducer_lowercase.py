@@ -13,7 +13,7 @@ def process_values(values):
     # prevent zero division
     non_entity_counts = [1]
     for value in values:
-        ngram_type, num = value.replace('|--|')
+        ngram_type, num = value.split('|--|')
         if ngram_type == 'lower':
             non_entity_counts.append(int(num))
         else:
