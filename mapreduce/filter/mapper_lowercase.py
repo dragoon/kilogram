@@ -14,6 +14,8 @@ for line in sys.stdin:
 
     if ngram in dbpediadb:
         print '%s\t%s|--|%s' % (ngram.lower(), ngram.replace(' ', '_'), num)
-    if ngram.lower() in dbpediadb_lower:
+        if ngram.lower() == ngram:
+            print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
+    if ngram in dbpediadb_lower:
         print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
 
