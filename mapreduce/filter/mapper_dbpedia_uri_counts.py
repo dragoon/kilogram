@@ -12,13 +12,6 @@ for line in sys.stdin:
     # split the line into words
     ngram, num = line.split('\t')
 
-    words = ngram.split()
-    for i in range(len(words), 0, -1):
-        stop = 0
-        for j, ngram in enumerate(nltk.ngrams(words, i)):
-            ngram_joined = ' '.join(ngram)
-            if ngram_joined in dbpediadb:
-                stop = True
-                print '<%s>\t%s' % (ngram_joined.replace(' ', '_'), num)
-        if stop:
-            break
+    if ngram in dbpediadb:
+        print '<%s>\t%s' % (ngram.replace(' ', '_'), num)
+
