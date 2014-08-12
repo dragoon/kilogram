@@ -11,7 +11,7 @@ def process_values(values):
     orig_ngram = None
     entity_counts = []
     # prevent zero division
-    non_entity_counts = [1]
+    non_entity_counts = []
     for value in values:
         ngram_type, num = value.split('|--|')
         if ngram_type == 'lower':
@@ -20,6 +20,8 @@ def process_values(values):
             orig_ngram = ngram_type
             entity_counts.append(int(num))
     if orig_ngram:
+        if not non_entity_counts:
+            non_entity_counts = [1]
         print '%s\t%s' % (orig_ngram, sum(entity_counts)/sum(non_entity_counts))
 
 
@@ -40,7 +42,7 @@ for line in sys.stdin:
         cur_values.append(value)
     else:
         process_values(cur_values)
-        cur_values = []
+        cur_values = [value]
         current_ngram = ngram
 
 process_values(cur_values)
