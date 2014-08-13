@@ -21,7 +21,7 @@ def resolve_entity(words):
                     continue
                 uri = '<dbpedia:'+uri+'>'
                 new_words = []
-                new_words.extend(words[:j])
+                new_words.extend(resolve_entity(words[:j]))
                 new_words.append(uri)
                 new_words.extend(resolve_entity(words[j+len(ngram):]))
                 return new_words
