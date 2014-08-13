@@ -12,5 +12,5 @@ for line in sys.stdin:
     ngram, num = line.split('\t')
 
     if ngram in dbpediadb:
-        print '<%s>\t%s' % (ngram.replace(' ', '_'), num)
+        print '%s\t%s' % (ngram.replace(' ', '_'), num)
 
