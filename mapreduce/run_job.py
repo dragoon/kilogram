@@ -14,10 +14,12 @@ parser.add_argument('-file', '--extra-file', nargs='*', dest='extra_files', defa
                     action='store', help='extra file to copy with the job')
 parser.add_argument('--filter-file', dest='filter_file', required=False,
                     action='store', help='filter file to copy with the job')
-parser.add_argument('-r', '--reducers', dest='reducers_num', action='store', required=False,
+parser.add_argument('--reducers', dest='reducers_num', action='store', required=False,
                     default=20, type=int, help='number of reducers')
 parser.add_argument('-m', '--mapper', dest='mapper', action='store', default='mapper_prefilter.py',
                     help='path to the mapper script')
+parser.add_argument('-r', '--reducer', dest='reducer', action='store', default='reducer_generic.py',
+                    help='path to the reducer script')
 parser.add_argument('-n', dest='n', action='store', type=int, required=False, default=0,
                     help='size of n-gram to extract (when doing filter)')
 parser.add_argument('input', help='input path on HDFS')
@@ -28,6 +30,9 @@ args = parser.parse_args()
 
 MAPPER_PATH = args.mapper
 MAPPER = os.path.basename(MAPPER_PATH)
+
+REDUCER_PATH = args.reducer
+REDUCER = os.path.basename(REDUCER_PATH)
 
 # Remove output if exists
 subprocess.call(["hadoop fs -rm -r {0}".format(args.output)], shell=True)
@@ -51,13 +56,14 @@ hadoop_cmd = """hadoop jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop
   -Dmapreduce.framework.name=yarn \
   -Dmapreduce.job.contract=false \
   -Dmapreduce.job.reduces={reducers} \
-  -files {mapper_path},reducer_generic.py{extra_files} \
+  -files {mapper_path},{reducer_path}{extra_files} \
   -cmdenv NGRAM={n} \
   -cmdenv FILTER_FILE={filter_file} \
   -mapper {mapper} \
-  -reducer reducer_generic.py \
+  -reducer {reducer} \
   {0} -output {1}""".format(input_paths, args.output, mapper_path=MAPPER_PATH, mapper=MAPPER,
-                                   reducers=args.reducers_num, extra_files=extra_files, n=args.n,
-                                   filter_file=filter_file)
+                            reducer=REDUCER, reducer_path=REDUCER_PATH,
+                            reducers=args.reducers_num, extra_files=extra_files, n=args.n,
+                            filter_file=filter_file)
 
 subprocess.call(hadoop_cmd, shell=True)
