@@ -28,7 +28,10 @@ setup(
     license=module_base.__license__,
     packages=find_packages(),
 
-    install_requires=['lxml (>=3.0)', 'unicodecsv', 'pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
+    install_requires=['lxml>=3.0','unicodecsv', 'pymongo>=2.7', 'thrift>=0.9', 'nltk>=2.0'],
+    dependency_links=[
+        'https://github.com/dragoon/pyutils/tarball/master#egg=pyutils-dev',
+    ],
     scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py',
              'kilogram/dataset/stackexchange/se_parse_edit_history.py',
              'kilogram/dataset/wikipedia/wiki_parse_edit_history.py',

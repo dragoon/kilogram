@@ -3,5 +3,5 @@ thrift
 pymongo
 lxml>=3.0
 unicodecsv
-pyutils
+-e git+https://github.com/dragoon/pyutils#egg=pyutils-dev
 nltk
