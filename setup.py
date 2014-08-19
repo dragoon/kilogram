@@ -23,12 +23,12 @@ setup(
     download_url=module_base.__url__,
 
     description=module_base.__summary__,
-    long_description = read('README.md'),
+    long_description=read('README.md'),
 
     license=module_base.__license__,
     packages=find_packages(),
 
-    requires=['lxml (>=3.0)', 'unicodecsv', 'pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
+    install_requires=['lxml (>=3.0)', 'unicodecsv', 'pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
     scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py',
              'kilogram/dataset/stackexchange/se_parse_edit_history.py',
              'kilogram/dataset/wikipedia/wiki_parse_edit_history.py',
