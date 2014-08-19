@@ -1,4 +1,7 @@
 unicodecsv
 thrift
 pymongo
+lxml>=3.0
+unicodecsv
+pyutils
 nltk

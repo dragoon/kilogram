@@ -4,6 +4,7 @@ import os.path
 from setuptools import setup, find_packages
 import kilogram as module_base
 
+
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
@@ -27,8 +28,11 @@ setup(
     license=module_base.__license__,
     packages=find_packages(),
 
-    requires=['pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
-    scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py'],
+    requires=['lxml (>=3.0)', 'unicodecsv', 'pymongo (>=2.7)', 'thrift (>=0.9)', 'nltk (>=2.0)'],
+    scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py',
+             'kilogram/dataset/stackexchange/se_parse_edit_history.py',
+             'kilogram/dataset/wikipedia/wiki_parse_edit_history.py',
+             'kilogram/dataset/fce/fce_parse_edit_history.py'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
