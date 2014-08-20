@@ -2,7 +2,7 @@
 import os.path
 
 from setuptools import setup, find_packages
-import kilogram as module_base
+from kilogram import __meta__ as module_base
 
 
 # Utility function to read the README file.
@@ -29,7 +29,6 @@ setup(
     packages=find_packages(),
 
     install_requires=['lxml>=3.0', 'unicodecsv', 'pymongo>=2.7', 'thrift>=0.9', 'nltk>=2.0'],
-    setup_requires=['unicodecsv'],
     dependency_links=[
         'https://github.com/dragoon/pyutils/tarball/master#egg=pyutils-dev',
     ],
@@ -47,5 +46,5 @@ setup(
         'Topic :: Text Processing',
         'Topic :: Scientific/Engineering :: Information Analysis',
         ],
-    zip_safe = True
+    zip_safe=True
     )
