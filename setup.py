@@ -34,7 +34,7 @@ setup(
     license=__license__,
     packages=find_packages(),
 
-    install_requires=['lxml>=3.0', 'unicodecsv', 'pymongo>=2.7', 'thrift>=0.9', 'nltk<3.0'],
+    install_requires=['lxml>=3.0', 'unicodecsv', 'pymongo>=2.7', 'thrift>=0.9', 'nltk<3'],
     dependency_links=[
         'https://github.com/dragoon/pyutils/tarball/master#egg=pyutils-dev',
     ],
