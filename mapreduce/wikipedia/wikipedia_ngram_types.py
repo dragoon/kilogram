@@ -5,9 +5,6 @@ import sys
 import shelve
 import anydbm
 import nltk
-import re
-
-NUM_RE = re.compile(r'<[A-Z]+\d?>')
 
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
@@ -24,7 +21,7 @@ for line in sys.stdin:
         for n in (1, 2, 3):
             for ngram in nltk.ngrams(words, n):
                 ngram = ' '.join(ngram)
-                if '<dbpedia:' in ngram or NUM_RE.search(ngram):
+                if '<dbpedia:' in ngram:
                     print '%s\t%s' % (ngram, 1)
 
 dbpedia_redirects.close()
