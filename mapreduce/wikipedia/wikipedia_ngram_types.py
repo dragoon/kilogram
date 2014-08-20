@@ -20,7 +20,9 @@ for line in sys.stdin:
         words = sentence.split()
         for n in (1, 2, 3):
             for ngram in nltk.ngrams(words, n):
-                print '%s\t%s' % (' '.join(ngram),1)
+                ngram = ' '.join(ngram)
+                if '<dbpedia:' in ngram:
+                    print '%s\t%s' % (ngram, 1)
 
 dbpedia_redirects.close()
 dbpedia_types.close()
