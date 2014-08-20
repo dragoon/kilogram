@@ -1,9 +1,15 @@
 #!/usr/bin/env python
+"""N-gram processing utils"""
 import os.path
-
 from setuptools import setup, find_packages
-from kilogram import __meta__ as module_base
 
+__author__      = 'Roman Prokofyev'
+__license__     = 'Apache License 2.0'
+__version__     = '0.1'
+__maintainer__  = __author__
+__email__       = 'roman.prokofyev@gmail.com'
+__url__         = 'https://github.com/dragoon/kilogram/'
+__summary__     = __doc__
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -14,18 +20,18 @@ def read(fname):
 
 setup(
     name='kilogram',
-    version=module_base.__version__,
-    author=module_base.__author__,
-    author_email=module_base.__email__,
-    maintainer=module_base.__maintainer__,
-    maintainer_email=module_base.__email__,
-    url=module_base.__url__,
-    download_url=module_base.__url__,
+    version=__version__,
+    author=__author__,
+    author_email=__email__,
+    maintainer=__maintainer__,
+    maintainer_email=__email__,
+    url=__url__,
+    download_url=__url__,
 
-    description=module_base.__summary__,
+    description=__summary__,
     long_description=read('README.md'),
 
-    license=module_base.__license__,
+    license=__license__,
     packages=find_packages(),
 
     install_requires=['lxml>=3.0', 'unicodecsv', 'pymongo>=2.7', 'thrift>=0.9', 'nltk>=2.0'],
