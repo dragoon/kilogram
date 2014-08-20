@@ -27,7 +27,7 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types):
                     line[i] = match.expand('<dbpedia:' + dbpedia_types[dbpedia_redirects[uri]][0] + '>')
                     stop = True
                 else:
-                    line[i] = orig_text
+                    line[i] = number_replace(orig_text)
                 if stop:
                     break
         else:
