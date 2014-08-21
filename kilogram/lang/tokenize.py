@@ -1,5 +1,6 @@
 import re
 
+INITIAL_REGEX = re.compile(r'[A-Z]\.')
 MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?]){2,}')
 MULTIPLE_SPACE_REGEX = re.compile(r'([ ]){2,}')
 GARBAGE_REGEX = re.compile(r'[^\w\s]')
@@ -35,7 +36,7 @@ def default_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT):
                 all_tokens[-1] += token
                 return
 
-            if token in _DOT_TOKENS:
+            if token.lower() in _DOT_TOKENS or INITIAL_REGEX.match(token):
                 all_tokens.append(token)
                 return
 
