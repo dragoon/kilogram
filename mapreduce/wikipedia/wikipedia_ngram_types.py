@@ -18,11 +18,13 @@ for line in sys.stdin:
     line = parse_types_text(line, dbpedia_redirects, dbpedia_types)
     for sentence in line.split(' . '):
         words = sentence.split()
-        for n in (1, 2, 3):
-            for ngram in nltk.ngrams(words, n):
-                ngram = ' '.join(ngram)
-                if '<dbpedia:' in ngram:
-                    print '%s\t%s' % (ngram, 1)
+        for ngram in nltk.ngrams(words, 3):
+            ngram_joined = ' '.join(ngram)
+            if '<dbpedia:' in ngram_joined:
+                print '%s\t%s' % (ngram_joined, 1)
+                for n in (1, 2):
+                    for lower_ngram in nltk.ngrams(ngram, n):
+                        print '%s\t%s' % (' '.join(lower_ngram), 1)
 
 dbpedia_redirects.close()
 dbpedia_types.close()
