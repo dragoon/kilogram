@@ -17,6 +17,8 @@ for line in sys.stdin:
         continue
     line = parse_types_text(line, dbpedia_redirects, dbpedia_types)
     for sentence in line.split(' . '):
+        if not sentence.endswith('.'):
+            sentence += ' .'
         words = sentence.split()
         for ngram in nltk.ngrams(words, 3):
             ngram_joined = ' '.join(ngram)
