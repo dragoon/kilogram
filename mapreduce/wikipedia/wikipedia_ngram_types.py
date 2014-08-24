@@ -5,6 +5,7 @@ import sys
 import shelve
 import anydbm
 import nltk
+import os
 
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
