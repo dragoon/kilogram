@@ -12,7 +12,8 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
     :type dbpedia_redirects: dict
     """
     line = wiki_tokenize_func(text)
-    for i, word in enumerate(line):
+    new_line = []
+    for word in line:
         match = ENTITY_MATCH_RE.search(word)
         if match:
             uri = match.group(1)
@@ -21,17 +22,17 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
             for uri in (uri, uri.capitalize()):
                 stop = False
                 if uri in dbpedia_types:
-                    line[i] = match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>')
+                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
                     stop = True
                 elif uri in dbpedia_redirects and dbpedia_redirects[uri] in dbpedia_types:
-                    line[i] = match.expand('<dbpedia:' + dbpedia_types[dbpedia_redirects[uri]][0] + '>')
+                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[dbpedia_redirects[uri]][0] + '>'))
                     stop = True
                 elif numeric:
-                    line[i] = number_replace(orig_text)
+                    new_line.extend([number_replace(x) for x in wiki_tokenize_func(orig_text)])
                 else:
-                    line[i] = orig_text
+                    new_line.extend(wiki_tokenize_func(orig_text))
                 if stop:
                     break
         elif numeric:
-            line[i] = number_replace(line[i])
-    return ' '.join(line)
+            new_line.append(number_replace(word))
+    return ' '.join(new_line)
