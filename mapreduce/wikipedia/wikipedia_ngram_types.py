@@ -5,8 +5,14 @@ import sys
 import shelve
 import anydbm
 import nltk
+import os
 
 from kilogram.dataset.wikipedia.entities import parse_types_text
+
+N = int(os.environ['NGRAM'])
+if not N:
+    print 'N is not specified'
+    exit(0)
 
 dbpedia_redirects = anydbm.open('dbpedia_redirects.dbm', 'r')
 dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
@@ -28,13 +34,10 @@ for line in sys.stdin:
         if not sentence.endswith('.'):
             sentence += ' .'
         words = sentence.split()
-        for ngram in nltk.ngrams(words, 3):
-            ngram_joined = ' '.join(ngram)
-            if '<dbpedia:' in ngram_joined:
+        for n in range(1,N+1):
+            for ngram in nltk.ngrams(words, n):
+                ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
-                for n in (1, 2):
-                    for lower_ngram in nltk.ngrams(ngram, n):
-                        print '%s\t%s' % (' '.join(lower_ngram), 1)
 
 dbpedia_redirects.close()
 dbpedia_types.close()
