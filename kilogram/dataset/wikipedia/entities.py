@@ -35,4 +35,6 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
                     break
         elif numeric:
             new_line.append(number_replace(word))
+        else:
+            new_line.append(word)
     return ' '.join(new_line)
