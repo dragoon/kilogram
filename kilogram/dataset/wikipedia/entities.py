@@ -28,6 +28,8 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
                     stop = True
                 elif numeric:
                     line[i] = number_replace(orig_text)
+                else:
+                    line[i] = orig_text
                 if stop:
                     break
         elif numeric:
