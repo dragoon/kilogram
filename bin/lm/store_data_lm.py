@@ -62,4 +62,4 @@ subprocess.call(["gzip 1gms/vocab_cs"], shell=True)
 
 os.chdir(CUR_DIR)
 print 'Building the model'
-subprocess.call(["java -ea -mx25g -server -cp {0} edu.berkeley.nlp.lm.io.MakeLmBinaryFromGoogle {1} {2}".format([SRC_DIR, DATA_DIR, MODEL_NAME])], shell=True)
+subprocess.call(["java -ea -mx25g -server -cp {0} edu.berkeley.nlp.lm.io.MakeLmBinaryFromGoogle {1} {2}".format(SRC_DIR, DATA_DIR, MODEL_NAME)], shell=True)
