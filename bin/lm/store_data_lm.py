@@ -12,15 +12,14 @@ parser.add_argument('--hdfs-dir', dest='hdfs_dir', action='store', required=True
                     help='path to the HDFS data directory')
 parser.add_argument('--src-dir', dest='src_dir', action='store', required=True,
                     help='path to the BerkeleyLM src files (compiled)')
-parser.add_argument('-name', dest='model_name', action='store', required=True,
-                    help='model file name to store')
-parser.add_argument('data_dir', help='directory path to store n-gram data')
 
 args = parser.parse_args()
 
-DATA_DIR = os.path.normpath(args.data_dir)
 SRC_DIR = os.path.normpath(args.src_dir)
 HDFS_DIR = os.path.normpath(args.hdfs_dir)
+
+DATA_DIR = os.path.basename(HDFS_DIR)
+MODEL_NAME = DATA_DIR + '.bin'
 
 if os.path.exists(DATA_DIR):
     shutil.rmtree(DATA_DIR)
@@ -63,4 +62,4 @@ subprocess.call(["gzip 1gms/vocab_cs"], shell=True)
 
 os.chdir(CUR_DIR)
 print 'Building the model'
-subprocess.call(["java -ea -mx25g -server -cp {0} edu.berkeley.nlp.lm.io.MakeLmBinaryFromGoogle {1} {2}".format([SRC_DIR, DATA_DIR, args.model_name])], shell=True)
+subprocess.call(["java -ea -mx25g -server -cp {0} edu.berkeley.nlp.lm.io.MakeLmBinaryFromGoogle {1} {2}".format([SRC_DIR, DATA_DIR, MODEL_NAME])], shell=True)
