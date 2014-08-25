@@ -21,7 +21,7 @@ dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
 for line in sys.stdin:
     if not line:
         continue
-    line = parse_types_text(line, dbpedia_redirects, dbpedia_types)
+    line = parse_types_text(line, dbpedia_redirects, dbpedia_types, numeric=False)
     sentences = line.split(' . ')
     last = len(sentences) - 1
     for i, sentence in enumerate(sentences):
