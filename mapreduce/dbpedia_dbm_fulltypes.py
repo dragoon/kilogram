@@ -46,10 +46,13 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    for alt_name in redirects[uri]:
-        if alt_name not in dbpediadb:
-            dbpediadb[alt_name] = [type_uri]
-        else:
+    if uri in dbpediadb:
+        dbpediadb[uri].append(type_uri)
+        for alt_name in redirects[uri]:
             dbpediadb[alt_name].append(type_uri)
+    else:
+        dbpediadb[uri] = [type_uri]
+        for alt_name in redirects[uri]:
+            dbpediadb[alt_name] = [type_uri]
 
 dbpediadb.close()
