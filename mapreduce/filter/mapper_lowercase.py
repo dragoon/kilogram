@@ -3,7 +3,7 @@
 import sys
 
 # Open just for read
-dbpediadb_lower = set(x.lower() for x in open('dbpedia_labels.txt').read().splitlines())
+dbpediadb_lower = set(x.lower() for x in open('dbpedia_labels.txt').read())
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
