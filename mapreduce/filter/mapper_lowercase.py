@@ -3,15 +3,7 @@
 import sys
 
 # Open just for read
-dbpediadb = open('dbpedia_labels.txt')
-dbpediadb_lower = {}
-for line in dbpediadb:
-    label_lower = line.strip().lower()
-    if label_lower in dbpediadb_lower:
-        dbpediadb_lower[label_lower].add(line.strip())
-    else:
-        dbpediadb_lower[label_lower] = set(line.strip())
-dbpediadb.close()
+dbpediadb_lower = set(x.strip().lower() for x in open('dbpedia_labels.txt'))
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -19,9 +11,8 @@ for line in sys.stdin:
     # split the line into words
     ngram, num = line.split('\t')
 
-    label_set = dbpediadb_lower.get(ngram.lower(), set())
-    if ngram in label_set:
-        print '%s\t%s|--|%s' % (ngram.lower(), ngram.replace(' ', '_'), num)
-    if ngram in dbpediadb_lower:
-        print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
-
+    if ngram.lower() in dbpediadb_lower:
+        if ngram == ngram.lower():
+            print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
+        else:
+            print '%s\t%s|--|%s' % (ngram.lower(), ngram.replace(' ', '_'), num)
