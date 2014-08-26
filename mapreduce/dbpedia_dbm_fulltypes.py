@@ -48,9 +48,9 @@ for line in p.stdout:
         continue
     name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
     name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
+    dbpediadb_labels[name_canon] = name_canon
     if '(disambiguation)' in name_redirect:
         continue
     dbpediadb_labels[name_redirect] = name_canon
-    dbpediadb_labels[name_canon] = name_canon
 
 dbpediadb.close()
