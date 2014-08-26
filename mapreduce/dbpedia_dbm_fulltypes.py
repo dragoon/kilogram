@@ -1,37 +1,22 @@
 """
-Creates DBPedia type dict with **ALL** entity labels as keys and types as values.
+Creates DBPedia 2 dicts:
+* one with an entity label as a key and an entity main uri as a value.
+* second dict with **MAIN** entity labels as keys and types as values.
 We use shelve here since the dict is quite large in memory(~2G) and we need a set as value.
 It then shipped with the job.
-This can be inefficient since the types list is duplicated on serialization, but given the size
-we don't care much.
 
-Format: {'Tramore': ['Town', 'Settlement', 'PopulatedPlace', 'Place'], ...}
+Type edit format: {'Tramore': ['Town', 'Settlement', 'PopulatedPlace', 'Place'], ...}
 """
 
 import shelve
 import subprocess
 from collections import defaultdict
 
-REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
-redirects = defaultdict(list)
-# BZ2File module cannot process multi-stream files, so use subprocess
-p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
-for line in p.stdout:
-    try:
-        uri_redirect, predicate, uri_canon = line.split(' ', 2)
-    except:
-        continue
-    name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
-    name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
-    if '(disambiguation)' in name_redirect:
-        continue
-    redirects[name_canon].append(name_redirect)
-
-
 TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
 dbpediadb = shelve.open('dbpedia_types.dbm', writeback=True)
+dbpediadb_types = dbpediadb['types'] = {}
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + TYPES_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -48,11 +33,24 @@ for line in p.stdout:
 
     if uri in dbpediadb:
         dbpediadb[uri].append(type_uri)
-        for alt_name in redirects[uri]:
-            dbpediadb[alt_name].append(type_uri)
     else:
         dbpediadb[uri] = [type_uri]
-        for alt_name in redirects[uri]:
-            dbpediadb[alt_name] = [type_uri]
+
+
+REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
+dbpediadb_labels = dbpediadb['labels'] = {}
+# BZ2File module cannot process multi-stream files, so use subprocess
+p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
+for line in p.stdout:
+    try:
+        uri_redirect, predicate, uri_canon = line.split(' ', 2)
+    except:
+        continue
+    name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
+    name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
+    if '(disambiguation)' in name_redirect:
+        continue
+    dbpediadb_labels[name_redirect] = name_canon
+    dbpediadb_labels[name_canon] = name_canon
 
 dbpediadb.close()
