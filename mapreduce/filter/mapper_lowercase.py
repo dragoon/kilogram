@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
 import sys
+from collections import defaultdict
 
 # Open just for read
-dbpediadb_lower = dict((x.strip().lower(), set()) for x in open('dbpedia_labels.txt') if x.strip())
-for label in open('dbpedia_labels.txt'):
-    dbpediadb_lower[label.strip().lower()].add(label.strip())
+dbpediadb = open('dbpedia_labels.txt')
+dbpediadb_lower = defaultdict(lambda: set())
+for line in dbpediadb:
+    label_lower = line.strip().lower()
+    dbpediadb_lower[label_lower].add(line.strip())
+dbpediadb.close()
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
