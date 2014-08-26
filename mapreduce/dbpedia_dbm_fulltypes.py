@@ -31,10 +31,10 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    if uri in dbpediadb:
-        dbpediadb[uri].append(type_uri)
+    if uri in dbpediadb_types:
+        dbpediadb_types[uri].append(type_uri)
     else:
-        dbpediadb[uri] = [type_uri]
+        dbpediadb_types[uri] = [type_uri]
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -48,6 +48,9 @@ for line in p.stdout:
         continue
     name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
     name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
+    # do not build mapping for entities that have no types
+    if name_canon not in dbpediadb_types:
+        continue
     dbpediadb_labels[name_canon] = name_canon
     if '(disambiguation)' in name_redirect:
         continue
