@@ -3,9 +3,9 @@
 import sys
 
 # Open just for read
-dbpediadb_lower = dict((x.lower(), set()) for x in open('dbpedia_labels.txt').read().splitlines())
+dbpediadb_lower = dict((x.lower(), []) for x in open('dbpedia_labels.txt').read().splitlines())
 for label in open('dbpedia_labels.txt'):
-    dbpediadb_lower[label.lower()].add(label)
+    dbpediadb_lower[label.lower()].append(label)
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
