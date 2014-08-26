@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
 import sys
-from collections import defaultdict
 
 # Open just for read
 dbpediadb = open('dbpedia_labels.txt')
-dbpediadb_lower = defaultdict(lambda: set())
+dbpediadb_lower = {}
 for line in dbpediadb:
     label_lower = line.strip().lower()
-    dbpediadb_lower[label_lower].add(line.strip())
+    if label_lower in dbpediadb_lower:
+        dbpediadb_lower[label_lower].add(line.strip())
+    else:
+        dbpediadb_lower[label_lower] = set(line.strip())
 dbpediadb.close()
 
 for line in sys.stdin:
