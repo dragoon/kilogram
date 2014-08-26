@@ -25,7 +25,7 @@ for line in p.stdout:
     name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
     if '(disambiguation)' in name_redirect:
         continue
-    redirects[name_canon].add(name_redirect)
+    redirects[name_canon].append(name_redirect)
 
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
