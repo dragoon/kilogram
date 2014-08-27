@@ -5,7 +5,6 @@ import nltk
 import shelve
 
 # Open just for read
-dbpediadb = set(open('dbpedia_labels.txt').read().splitlines())
 dbpedia_typesdb = shelve.open('dbpedia_types.dbm', flag='r')
 URI_EXCLUDES = set(open('dbpedia_uri_excludes.txt').read().splitlines())
 
@@ -15,11 +14,15 @@ def resolve_entity(words):
     for i in range(len(words), 0, -1):
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
-            if ngram_joined in dbpediadb:
-                uri = ngram_joined.replace(' ', '_')
-                if uri in URI_EXCLUDES or uri not in dbpedia_typesdb:
+            uri = ngram_joined.replace(' ', '_')
+            if uri in dbpedia_typesdb:
+                # check canonical uri
+                entity = dbpedia_typesdb[uri]
+                if entity['uri'] in URI_EXCLUDES:
                     continue
-                uri = '<dbpedia:'+uri+'>'
+                # take only the first type for now!!
+                # TODO: to type or not to type. That is the question.
+                uri = '<dbpedia:'+entity['types'][0]+'>'
                 new_words = []
                 new_words.extend(resolve_entity(words[:j]))
                 new_words.append(uri)
