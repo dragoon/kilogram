@@ -10,6 +10,7 @@ Tramore,_Ireland    Tramore     Town;Settlement;PopulatedPlace;Place
 """
 
 import subprocess
+import urllib
 from collections import defaultdict
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
@@ -25,7 +26,7 @@ for line in p.stdout:
         continue
     if 'http://dbpedia.org/ontology/' not in type_uri:
         continue
-    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
+    uri = urllib.unquote(uri.replace('<http://dbpedia.org/resource/', '')[:-1])
     type_uri = type_uri.replace('<http://dbpedia.org/ontology/', '')[:-4]
     if type_uri in EXCLUDES:
         continue
@@ -48,8 +49,8 @@ for line in p.stdout:
         uri_redirect, predicate, uri_canon = line.split(' ', 2)
     except:
         continue
-    name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
-    name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
+    name_redirect = urllib.unquote(uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1])
+    name_canon = urllib.unquote(uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4])
     if '(disambiguation)' in name_redirect:
         continue
     # skip entities that have no types
