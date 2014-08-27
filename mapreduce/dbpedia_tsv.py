@@ -49,9 +49,9 @@ for line in p.stdout:
     if name_canon not in dbpediadb_types:
         continue
     if name_canon not in ADDED:
-        dbpedia_types_tsv.write('\t'.join([name_canon, name_canon, ';'.join(dbpediadb_types[name_canon])]))
+        dbpedia_types_tsv.write('\t'.join([name_canon, name_canon, ';'.join(dbpediadb_types[name_canon])])+'\n')
         ADDED.add(name_canon)
     if '(disambiguation)' in name_redirect:
         continue
-    dbpedia_types_tsv.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])]))
+    dbpedia_types_tsv.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])])+'\n')
 dbpedia_types_tsv.close()
