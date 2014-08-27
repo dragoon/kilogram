@@ -21,6 +21,8 @@ dbpediadb_types = defaultdict(list)
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + TYPES_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
+    if '<BAD URI: Illegal character' in line:
+        continue
     try:
         uri, predicate, type_uri = line.split(' ', 2)
     except:
@@ -34,8 +36,8 @@ for line in p.stdout:
 
     dbpediadb_types[uri].append(type_uri)
 
-with open('dbpedia_types.csv', 'w') as out:
-    csvwriter = csv.writer(out, delimiter='\t', encoding='utf-8')
+with open('dbpedia_types.tsv', 'w') as out:
+    csvwriter = csv.writer(out, delimiter='\t', encoding='utf-8', quoting=csv.QUOTE_NONE)
 
     # write types first
     for uri, types in dbpediadb_types.items():
