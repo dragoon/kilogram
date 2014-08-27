@@ -36,7 +36,7 @@ dbpedia_types_tsv = open('dbpedia_types.tsv', 'w')
 
 # write types first
 for uri, types in dbpediadb_types.items():
-    dbpedia_types_tsv.write('\t'.join([uri, uri, ';'.join(dbpediadb_types[types])])+'\n')
+    dbpedia_types_tsv.write('\t'.join([uri, uri, ';'.join(types)])+'\n')
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
