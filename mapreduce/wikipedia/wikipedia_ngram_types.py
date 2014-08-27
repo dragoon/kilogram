@@ -40,3 +40,6 @@ for line in sys.stdin:
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
+
+if dbpedia_types:
+    dbpedia_types.close()

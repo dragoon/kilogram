@@ -27,3 +27,6 @@ for line in sys.stdin:
             print sentence+' .'
         else:
             print sentence
+
+if dbpedia_types:
+    dbpedia_types.close()
