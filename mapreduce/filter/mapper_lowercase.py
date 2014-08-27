@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import sys
+import shelve
 
 # Open just for read
-dbpediadb_lower = set(x.strip().lower() for x in open('dbpedia_labels.txt'))
+dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
+dbpediadb_lower_set = set([x.lower() for x in dbpediadb.keys()])
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -11,8 +13,10 @@ for line in sys.stdin:
     # split the line into words
     ngram, num = line.split('\t')
 
-    if ngram.lower() in dbpediadb_lower:
-        if ngram == ngram.lower():
-            print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
-        else:
-            print '%s\t%s|--|%s' % (ngram.lower(), ngram.replace(' ', '_'), num)
+    if ngram in dbpediadb:
+        print '%s\t%s|--|%s' % (ngram.lower(), dbpediadb[ngram]['uri'], num)
+
+    if ngram in dbpediadb_lower_set:
+        print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
+
+dbpediadb.close()
