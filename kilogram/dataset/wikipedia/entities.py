@@ -22,7 +22,7 @@ def parse_types_text(text, dbpedia_types, numeric=True):
             stop = False
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
-                    new_line.append(match.expand('<dbpedia:' + dbpedia_types['types'][uri][0]+'>'))
+                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri]['types'][0]+'>'))
                     stop = True
                     break
             if not stop:

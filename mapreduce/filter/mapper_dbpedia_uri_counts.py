@@ -13,8 +13,8 @@ for line in sys.stdin:
     ngram, num = line.split('\t')
 
     uri_ngram = ngram.replace(' ', '_')
-    if uri_ngram in dbpediadb['labels']:
+    if uri_ngram in dbpediadb:
         # put canonical url
-        print '%s\t%s' % (dbpediadb['labels'][uri_ngram], num)
+        print '%s\t%s' % (dbpediadb[uri_ngram]['uri'], num)
 
 dbpediadb.close()
