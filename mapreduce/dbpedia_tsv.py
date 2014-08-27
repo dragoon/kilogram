@@ -35,7 +35,7 @@ for line in p.stdout:
 dbpedia_types_tsv = open('dbpedia_types.tsv', 'w')
 
 # write types first
-for uri, types in dbpedia_types_tsv.items():
+for uri, types in dbpediadb_types.items():
     dbpedia_types_tsv.write('\t'.join([uri, uri, ';'.join(dbpediadb_types[types])])+'\n')
 
 
