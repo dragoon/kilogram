@@ -12,11 +12,12 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     ngram, num = line.split('\t')
+    uri_ngram = ngram.replace(' ', '_')
 
-    if ngram in dbpediadb:
-        print '%s\t%s|--|%s' % (ngram.lower(), dbpediadb[ngram]['uri'], num)
+    if uri_ngram in dbpediadb:
+        print '%s\t%s|--|%s' % (uri_ngram.lower(), dbpediadb[uri_ngram]['uri'], num)
 
-    if ngram in dbpediadb_lower_set:
-        print '%s\t%s|--|%s' % (ngram.lower(), 'lower', num)
+    if uri_ngram in dbpediadb_lower_set:
+        print '%s\t%s|--|%s' % (uri_ngram.lower(), 'lower', num)
 
 dbpediadb.close()
