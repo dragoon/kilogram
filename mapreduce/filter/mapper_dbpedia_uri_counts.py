@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import sys
+import shelve
 
 # Open just for read
-dbpediadb = set(open('dbpedia_labels.txt').read().splitlines())
+dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -11,6 +12,9 @@ for line in sys.stdin:
     # split the line into words
     ngram, num = line.split('\t')
 
-    if ngram in dbpediadb:
-        print '%s\t%s' % (ngram.replace(' ', '_'), num)
+    uri_ngram = ngram.replace(' ', '_')
+    if uri_ngram in dbpediadb['labels']:
+        # put canonical url
+        print '%s\t%s' % (dbpediadb['labels'][uri_ngram], num)
 
+dbpediadb.close()

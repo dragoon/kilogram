@@ -6,7 +6,7 @@ from ...lang.tokenize import wiki_tokenize_func
 ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
 
 
-def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
+def parse_types_text(text, dbpedia_types, numeric=True):
     """
     :type dbpedia_types: dict
     :type dbpedia_redirects: dict
@@ -24,10 +24,6 @@ def parse_types_text(text, dbpedia_redirects, dbpedia_types, numeric=True):
                 if uri in dbpedia_types:
                     new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
                     stop = True
-                elif uri in dbpedia_redirects and dbpedia_redirects[uri] in dbpedia_types:
-                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[dbpedia_redirects[uri]][0] + '>'))
-                    stop = True
-                if stop:
                     break
             if not stop:
                 if numeric:

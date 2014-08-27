@@ -3,7 +3,6 @@
 
 import sys
 import shelve
-import anydbm
 import nltk
 import os
 
@@ -14,14 +13,13 @@ if not N:
     print 'N is not specified'
     exit(0)
 
-dbpedia_redirects = anydbm.open('dbpedia_redirects.dbm', 'r')
 dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
 
 
 for line in sys.stdin:
     if not line:
         continue
-    line = parse_types_text(line, dbpedia_redirects, dbpedia_types, numeric=False)
+    line = parse_types_text(line, dbpedia_types, numeric=False)
     sentences = line.split(' . ')
     last = len(sentences) - 1
     for i, sentence in enumerate(sentences):
@@ -39,5 +37,4 @@ for line in sys.stdin:
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
 
-dbpedia_redirects.close()
 dbpedia_types.close()
