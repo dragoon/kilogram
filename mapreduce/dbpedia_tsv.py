@@ -33,9 +33,14 @@ for line in p.stdout:
     dbpediadb_types[uri].append(type_uri)
 
 dbpedia_types_tsv = open('dbpedia_types.tsv', 'w')
+
+# write types first
+for uri, types in dbpedia_types_tsv.items():
+    dbpedia_types_tsv.write('\t'.join([uri, uri, ';'.join(dbpediadb_types[types])])+'\n')
+
+
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 dbpediadb_labels = {}
-ADDED = set()
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -45,13 +50,10 @@ for line in p.stdout:
         continue
     name_redirect = uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1]
     name_canon = uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4]
-    # do not build mapping for entities that have no types
-    if name_canon not in dbpediadb_types:
-        continue
-    if name_canon not in ADDED:
-        dbpedia_types_tsv.write('\t'.join([name_canon, name_canon, ';'.join(dbpediadb_types[name_canon])])+'\n')
-        ADDED.add(name_canon)
     if '(disambiguation)' in name_redirect:
+        continue
+    # skip entities that have no types
+    if name_canon not in dbpediadb_types:
         continue
     dbpedia_types_tsv.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])])+'\n')
 dbpedia_types_tsv.close()
