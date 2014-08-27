@@ -4,6 +4,7 @@
 import sys
 import nltk
 import os
+import shelve
 
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
@@ -12,11 +13,8 @@ if not N:
     print 'N is not specified'
     exit(0)
 
-dbpedia_types = {}
 try:
-    for line in open('dbpedia_types.tsv'):
-        label, uri, types = line.strip().split('\t')
-        dbpedia_types[label] = types.split(';')
+    dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
 except:
     # used to generate plain n-grams
     dbpedia_types = {}
@@ -38,7 +36,7 @@ for line in sys.stdin:
         if not sentence.endswith('.'):
             sentence += ' .'
         words = sentence.split()
-        for n in range(1,N+1):
+        for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)

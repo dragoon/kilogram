@@ -1,10 +1,14 @@
+#!/usr/bin/env python
+
 import sys
+import shelve
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
-dbpedia_types = {}
-for line in open('dbpedia_types.tsv'):
-    label, uri, types = line.strip().split('\t')
-    dbpedia_types[label] = types.split(';')
+try:
+    dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
+except:
+    # used to generate plain n-grams
+    dbpedia_types = {}
 
 for line in sys.stdin:
     if not line:
