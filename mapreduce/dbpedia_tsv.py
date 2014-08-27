@@ -38,7 +38,7 @@ for line in p.stdout:
 with open('dbpedia_types.tsv', 'w') as csvwriter:
     # write types first
     for uri, types in dbpediadb_types.items():
-        csvwriter.write('\t'.join([uri, uri, ';'.join(types)]))
+        csvwriter.write('\t'.join([uri, uri, ';'.join(types)])+'\n')
 
 
     REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -57,4 +57,4 @@ with open('dbpedia_types.tsv', 'w') as csvwriter:
         # skip entities that have no types
         if name_canon not in dbpediadb_types:
             continue
-        csvwriter.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])]))
+        csvwriter.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])])+'\n')
