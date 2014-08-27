@@ -11,7 +11,6 @@ Tramore,_Ireland    Tramore     Town;Settlement;PopulatedPlace;Place
 
 import subprocess
 import urllib
-import unicodecsv as csv
 from collections import defaultdict
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
@@ -36,12 +35,10 @@ for line in p.stdout:
 
     dbpediadb_types[uri].append(type_uri)
 
-with open('dbpedia_types.tsv', 'w') as out:
-    csvwriter = csv.writer(out, delimiter='\t', encoding='utf-8', quoting=csv.QUOTE_NONE)
-
+with open('dbpedia_types.tsv', 'w') as csvwriter:
     # write types first
     for uri, types in dbpediadb_types.items():
-        csvwriter.writerow([uri, uri, ';'.join(types)])
+        csvwriter.write('\t'.join([uri, uri, ';'.join(types)]))
 
 
     REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -60,4 +57,4 @@ with open('dbpedia_types.tsv', 'w') as out:
         # skip entities that have no types
         if name_canon not in dbpediadb_types:
             continue
-        csvwriter.writerow([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])])
+        csvwriter.write('\t'.join([name_redirect, name_canon, ';'.join(dbpediadb_types[name_canon])]))
