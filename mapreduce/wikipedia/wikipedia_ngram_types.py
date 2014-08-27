@@ -2,7 +2,6 @@
 """Filters determiners and forms new n-grams with skips"""
 
 import sys
-import shelve
 import nltk
 import os
 
@@ -13,7 +12,10 @@ if not N:
     print 'N is not specified'
     exit(0)
 
-dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
+dbpedia_types = {}
+for line in open('dbpedia_types.tsv'):
+    label, uri, types = line.strip().split('\t')
+    dbpedia_types[label] = types.split(';')
 
 
 for line in sys.stdin:
@@ -36,5 +38,3 @@ for line in sys.stdin:
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
-
-dbpedia_types.close()
