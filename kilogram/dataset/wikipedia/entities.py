@@ -22,7 +22,7 @@ def parse_types_text(text, dbpedia_types, numeric=True):
             stop = False
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
-                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
+                    new_line.append(match.expand('<dbpedia:' + dbpedia_types['types'][uri][0]+'>'))
                     stop = True
                     break
             if not stop:
@@ -30,7 +30,7 @@ def parse_types_text(text, dbpedia_types, numeric=True):
                     new_line.extend([number_replace(x) for x in wiki_tokenize_func(orig_text)])
                 else:
                     new_line.extend(wiki_tokenize_func(orig_text))
-                
+
         elif numeric:
             new_line.append(number_replace(word))
         else:
