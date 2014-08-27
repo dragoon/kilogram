@@ -13,9 +13,13 @@ if not N:
     exit(0)
 
 dbpedia_types = {}
-for line in open('dbpedia_types.tsv'):
-    label, uri, types = line.strip().split('\t')
-    dbpedia_types[label] = types.split(';')
+try:
+    for line in open('dbpedia_types.tsv'):
+        label, uri, types = line.strip().split('\t')
+        dbpedia_types[label] = types.split(';')
+except:
+    # used to generate plain n-grams
+    dbpedia_types = {}
 
 
 for line in sys.stdin:
