@@ -17,7 +17,7 @@ for line in sys.stdin:
     uri_ngram = ngram.replace(' ', '_')
 
     if uri_ngram in dbpediadb:
-        print '%s\t%s|--|%s' % (dbpediadb[uri_ngram].lower(), dbpediadb[uri_ngram], num)
+        print '%s\t%s|--|%s' % (dbpediadb[uri_ngram]['uri'].lower(), dbpediadb[uri_ngram], num)
 
     if uri_ngram in dbpediadb_lower:
         print '%s\t%s|--|%s' % (dbpediadb_lower[uri_ngram].lower(), 'lower', num)
