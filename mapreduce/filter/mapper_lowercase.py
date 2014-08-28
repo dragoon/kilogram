@@ -7,7 +7,7 @@ import shelve
 dbpedia_shelve = shelve.open('dbpedia_types.dbm', flag='r')
 dbpediadb_lower = {}
 dbpediadb = {}
-for key, value in dbpedia_shelve.items():
+for key, value in dbpedia_shelve.iteritems():
     dbpediadb_lower[key.lower()] = value['uri']
     dbpediadb[key] = value['uri']
 dbpedia_shelve.close()
@@ -24,4 +24,3 @@ for line in sys.stdin:
 
     if uri_ngram in dbpediadb_lower:
         print '%s\t%s|--|%s' % (dbpediadb_lower[uri_ngram].lower(), 'lower', num)
-
