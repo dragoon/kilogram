@@ -25,5 +25,5 @@ for line in sys.stdin:
         print '%s\t%s|--|%s' % (dbpediadb_lower[uri_ngram]['uri'].lower(), 'lower', num)
     elif uri_ngram.lower() in dbpediadb_lower:
         entity = dbpediadb_lower[uri_ngram.lower()]
-        if ngram in entity['labels']:
+        if uri_ngram in entity['labels']:
             print '%s\t%s|--|%s' % (entity['uri'].lower(), entity['uri'], num)
