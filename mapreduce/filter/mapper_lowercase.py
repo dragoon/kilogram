@@ -4,13 +4,15 @@ import sys
 import shelve
 
 # Open just for read
-dbpedia_shelve = shelve.open('dbpedia_types.dbm', flag='r')
+dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
 dbpediadb_lower = {}
-dbpediadb = {}
-for key, value in dbpedia_shelve.iteritems():
-    dbpediadb_lower[key.lower()] = value['uri']
-    dbpediadb[key] = value['uri']
-dbpedia_shelve.close()
+for key, value in dbpediadb.iteritems():
+    if key.lower() in dbpediadb_lower:
+        dbpediadb_lower[key.lower()] = {'uri': value['uri'], 'labels': {key}}
+    else:
+        dbpediadb_lower[key.lower()]['labels'].add(key)
+
+dbpediadb.close()
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
@@ -19,8 +21,9 @@ for line in sys.stdin:
     ngram, num = line.split('\t')
     uri_ngram = ngram.replace(' ', '_')
 
-    if uri_ngram in dbpediadb:
-        print '%s\t%s|--|%s' % (dbpediadb[uri_ngram].lower(), dbpediadb[uri_ngram], num)
-
     if uri_ngram in dbpediadb_lower:
-        print '%s\t%s|--|%s' % (dbpediadb_lower[uri_ngram].lower(), 'lower', num)
+        print '%s\t%s|--|%s' % (dbpediadb_lower[uri_ngram]['uri'].lower(), 'lower', num)
+    elif uri_ngram.lower() in dbpediadb_lower:
+        entity = dbpediadb_lower[uri_ngram.lower()]
+        if ngram in entity['labels']:
+            print '%s\t%s|--|%s' % (entity['uri'].lower(), entity['uri'], num)
