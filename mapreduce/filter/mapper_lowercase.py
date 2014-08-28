@@ -5,8 +5,11 @@ import shelve
 
 # Open just for read
 dbpedia_shelve = shelve.open('dbpedia_types.dbm', flag='r')
-dbpediadb_lower = dict([(key.lower(), value['uri']) for key, value in dbpedia_shelve.items()])
-dbpediadb = dict([(key, value['uri']) for key, value in dbpedia_shelve.items()])
+dbpediadb_lower = {}
+dbpediadb = {}
+for key, value in dbpedia_shelve.items():
+    dbpediadb_lower[key.lower()] = value['uri']
+    dbpediadb[key] = value['uri']
 dbpedia_shelve.close()
 
 for line in sys.stdin:
