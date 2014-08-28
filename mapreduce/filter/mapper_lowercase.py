@@ -8,9 +8,9 @@ dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
 dbpediadb_lower = {}
 for key, value in dbpediadb.iteritems():
     if key.lower() not in dbpediadb_lower:
-        dbpediadb_lower[key.lower()] = {'uri': value['uri'], 'labels': {key}}
+        dbpediadb_lower[key.lower()] = {'uri': value['uri'], 'labels': [key]}
     else:
-        dbpediadb_lower[key.lower()]['labels'].add(key)
+        dbpediadb_lower[key.lower()]['labels'].append(key)
 
 dbpediadb.close()
 
