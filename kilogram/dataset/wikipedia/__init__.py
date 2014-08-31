@@ -10,4 +10,4 @@ def line_filter(line):
             continue
         if not sentence.endswith('.'):
             sentence += ' .'
-        yield i, sentence
+        yield sentence
