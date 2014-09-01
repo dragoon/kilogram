@@ -21,4 +21,8 @@ for line in sys.stdin:
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
+                try:
+                    unicode(ngram_joined)
+                except:
+                    continue
                 print '%s\t%s' % (ngram_joined, 1)
