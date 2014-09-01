@@ -21,25 +21,13 @@ for line in sys.stdin:
 
     line_types = parse_types_text(line, dbpedia_types, numeric=False)
     line_plain = parse_types_text(line, {}, numeric=False)
-    all_plain = line_plain.split(' . ')
-    all_typed = line_types.split(' . ')
-    included = set()
-    i = 0
     for sentence in line_filter(line_plain):
-        while not sentence.startswith(all_plain[i]):
-            i += 1
-        included.add(i)
         words = sentence.split()
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
-    i = 0
     for sentence in line_filter(line_types):
-        while not sentence.startswith(all_typed[i]):
-            i += 1
-        if i not in included:
-            continue
         words = sentence.split()
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
