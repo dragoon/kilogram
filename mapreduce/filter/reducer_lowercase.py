@@ -21,7 +21,7 @@ def process_values(values):
             entity_counts.append(int(num))
     if orig_ngram:
         if not non_entity_counts:
-            non_entity_counts = [1]
+            non_entity_counts = [0.01]
         print '%s\t%s' % (orig_ngram, sum(entity_counts)/sum(non_entity_counts))
 
 
