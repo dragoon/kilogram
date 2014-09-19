@@ -38,7 +38,7 @@ for line in p.stdout:
 
 dbpediadb = shelve.open('dbpedia_types.dbm')
 
-# write types first
+# write canonical labels first
 for uri, types in dbpediadb_types.items():
     dbpediadb[uri] = {'uri': uri, 'types': types}
 
