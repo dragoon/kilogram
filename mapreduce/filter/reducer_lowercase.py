@@ -7,8 +7,7 @@ current_ngram = None
 cur_values = []
 
 
-def process_values(values):
-    orig_ngram = None
+def process_values(current_ngram, values):
     entity_counts = []
     # prevent zero division
     non_entity_counts = []
@@ -17,12 +16,9 @@ def process_values(values):
         if ngram_type == 'lower':
             non_entity_counts.append(int(num))
         else:
-            orig_ngram = ngram_type
             entity_counts.append(int(num))
-    if orig_ngram:
-        if not non_entity_counts:
-            non_entity_counts = [0.01]
-        print '%s\t%s' % (orig_ngram, sum(entity_counts)/sum(non_entity_counts))
+
+    print '%s\t%d,%d' % (current_ngram, sum(entity_counts), sum(non_entity_counts))
 
 
 # input comes from STDIN
@@ -41,8 +37,8 @@ for line in sys.stdin:
     if ngram == current_ngram:
         cur_values.append(value)
     else:
-        process_values(cur_values)
+        process_values(current_ngram, cur_values)
         cur_values = [value]
         current_ngram = ngram
 
-process_values(cur_values)
+process_values(current_ngram, cur_values)
