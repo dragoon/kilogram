@@ -26,5 +26,5 @@ for line in sys.stdin:
         current_ngram = ngram
 
 # do not forget to output the last word if needed!
-if current_ngram == ngram:
+if ngram and current_ngram == ngram:
     print '%s\t%s' % (ngram, cur_count)
