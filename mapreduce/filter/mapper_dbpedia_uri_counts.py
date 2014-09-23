@@ -15,6 +15,6 @@ for line in sys.stdin:
     uri_ngram = ngram.replace(' ', '_')
     if uri_ngram in dbpediadb:
         # put canonical url
-        print '%s\t%s' % (dbpediadb[uri_ngram]['uri'], num)
+        print '%s\t%s' % (uri_ngram, num)
 
 dbpediadb.close()
