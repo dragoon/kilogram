@@ -14,12 +14,10 @@ def resolve_entity(words):
     for i in range(len(words), 0, -1):
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
-            uri = ngram_joined.replace(' ', '_')
-            if uri in dbpedia_typesdb:
+            label = ngram_joined.replace(' ', '_')
+            if label not in URI_EXCLUDES and label in dbpedia_typesdb:
                 # check canonical uri
-                entity = dbpedia_typesdb[uri]
-                if entity['uri'] in URI_EXCLUDES:
-                    continue
+                entity = dbpedia_typesdb[label]
                 # take only the first type for now!!
                 # TODO: to type or not to type. That is the question.
                 uri = '<dbpedia:'+entity['types'][0]+'>'
