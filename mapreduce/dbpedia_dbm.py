@@ -1,12 +1,12 @@
 """
 Creates DBPedia labels-types Shelve file of the following format:
 
-{ LABEL: {'uri': CANONICAL_LABEL, 'types': [Type1, Type2, ...]}, ...}
+{ LABEL: {'types': [Type1, Type2, ...]}, ...}
 
 For example:
 
-Tramore:             Tramore     Town, Settlement, PopulatedPlace, Place
-Tramore,_Ireland:    Tramore     Town, Settlement, PopulatedPlace, Place
+Tramore:             Town, Settlement, PopulatedPlace, Place
+Tramore,_Ireland:    Town, Settlement, PopulatedPlace, Place
 """
 
 import subprocess
@@ -40,7 +40,7 @@ dbpediadb = shelve.open('dbpedia_types.dbm')
 
 # write canonical labels first
 for uri, types in dbpediadb_types.items():
-    dbpediadb[uri] = {'uri': uri, 'types': types}
+    dbpediadb[uri] = {'types': types}
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -59,6 +59,6 @@ for line in p.stdout:
     # skip entities that have no types
     if name_canon not in dbpediadb_types:
         continue
-    dbpediadb[name_redirect] = {'uri': name_canon, 'types': dbpediadb_types[name_canon]}
+    dbpediadb[name_redirect] = {'types': dbpediadb_types[name_canon]}
 
 dbpediadb.close()
