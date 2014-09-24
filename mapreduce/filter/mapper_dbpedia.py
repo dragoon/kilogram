@@ -7,6 +7,7 @@ import shelve
 # Open just for read
 dbpedia_typesdb = shelve.open('dbpedia_types.dbm', flag='r')
 URI_EXCLUDES = set(open('dbpedia_uri_excludes.txt').read().splitlines())
+LOWER_INCLUDES = dict([line.strip().split('\t') for line in open('dbpediadb_lower.txt')])
 
 
 def resolve_entity(words):
@@ -15,6 +16,8 @@ def resolve_entity(words):
         for j, ngram in enumerate(nltk.ngrams(words, i)):
             ngram_joined = ' '.join(ngram)
             label = ngram_joined.replace(' ', '_')
+            if label in LOWER_INCLUDES:
+                label = LOWER_INCLUDES[label]
             if label not in URI_EXCLUDES and label in dbpedia_typesdb:
                 # check canonical uri
                 entity = dbpedia_typesdb[label]
