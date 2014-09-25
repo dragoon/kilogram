@@ -40,7 +40,7 @@ dbpediadb = shelve.open('dbpedia_types.dbm')
 
 # write canonical labels first
 for uri, types in dbpediadb_types.items():
-    dbpediadb[uri] = {'types': types}
+    dbpediadb[uri] = types
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -59,6 +59,6 @@ for line in p.stdout:
     # skip entities that have no types
     if name_canon not in dbpediadb_types:
         continue
-    dbpediadb[name_redirect] = {'types': dbpediadb_types[name_canon]}
+    dbpediadb[name_redirect] = dbpediadb_types[name_canon]
 
 dbpediadb.close()
