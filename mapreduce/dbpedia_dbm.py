@@ -1,7 +1,7 @@
 """
 Creates DBPedia labels-types Shelve file of the following format:
 
-{ LABEL: {'types': [Type1, Type2, ...]}, ...}
+{ LABEL: [Type1, Type2, ...], ...}
 
 For example:
 
