@@ -62,7 +62,7 @@ for line in p.stdout:
         continue
     dbpediadb[name_redirect] = dbpediadb_types[name_canon]
     if name_redirect.lower() in dbpediadb_lower:
-        dbpediadb_lower.append(name_redirect)
+        dbpediadb_lower[name_redirect.lower()].append(name_redirect)
     else:
         dbpediadb_lower[name_redirect.lower()] = [name_redirect]
 
