@@ -6,9 +6,9 @@ import shelve
 
 # Open just for read
 dbpediadb = shelve.open('dbpedia_types.dbm', flag='r')
-dbpediadb_lower = defaultdict(set)
+dbpediadb_lower = defaultdict(list)
 for key in dbpediadb.iterkeys():
-    dbpediadb_lower[key.lower()].add(key)
+    dbpediadb_lower[key.lower()].append(key)
 
 for line in sys.stdin:
     # remove leading and trailing whitespace
