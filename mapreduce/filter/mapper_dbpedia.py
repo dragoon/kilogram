@@ -20,10 +20,10 @@ def resolve_entity(words):
                 label = LOWER_INCLUDES[label]
             if label not in URI_EXCLUDES and label in dbpedia_typesdb:
                 # check canonical uri
-                entity = dbpedia_typesdb[label]
+                types = dbpedia_typesdb[label]
                 # take only the first type for now!!
                 # TODO: to type or not to type. That is the question.
-                uri = '<dbpedia:'+entity['types'][0]+'>'
+                uri = '<dbpedia:'+types[0]+'>'
                 new_words = []
                 new_words.extend(resolve_entity(words[:j]))
                 new_words.append(uri)
