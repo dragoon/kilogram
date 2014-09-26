@@ -37,14 +37,15 @@ for line in p.stdout:
     dbpediadb_types[uri].append(type_uri)
 
 dbpediadb = shelve.open('dbpedia_types.dbm')
+dbpediadb_lower = shelve.open('dbpedia_lowercase2labels.dbm', writeback=True)
 
 # write canonical labels first
 for uri, types in dbpediadb_types.items():
     dbpediadb[uri] = types
+    dbpediadb_lower[uri.lower()] = [uri]
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
-dbpediadb_labels = {}
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -60,5 +61,9 @@ for line in p.stdout:
     if name_canon not in dbpediadb_types:
         continue
     dbpediadb[name_redirect] = dbpediadb_types[name_canon]
+    if name_redirect.lower() in dbpediadb_lower:
+        dbpediadb_lower.append(name_redirect)
+    else:
+        dbpediadb_lower[name_redirect.lower()] = [name_redirect]
 
 dbpediadb.close()
