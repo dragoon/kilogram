@@ -36,17 +36,10 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     orig_ngram, num = line.split('\t')
-    # consider only 5-grams, then generate low-level
-    if len(orig_ngram.split()) < 5:
-        continue
     new_words = resolve_entity(orig_ngram.split())
     new_ngram = ' '.join(new_words)
 
     if new_ngram != orig_ngram:
-        for i in range(1,6):
-            for ngram in nltk.ngrams(new_words, i):
-                ngram = ' '.join(ngram)
-                if '<dbpedia:' in ngram:
-                    print '%s\t%s' % (ngram.strip(), num)
+        print '%s\t%s' % (new_ngram.strip(), num)
 
 dbpedia_typesdb.close()
