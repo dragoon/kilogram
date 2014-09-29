@@ -19,8 +19,6 @@ def parse_types_text(text, dbpedia_types, numeric=True):
             orig_text = match.group(2)
             orig_text = orig_text.replace('_', ' ')
             stop = False
-            if re.match('\d{4}_', uri):
-                continue
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
                     new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
