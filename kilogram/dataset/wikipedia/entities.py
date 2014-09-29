@@ -9,7 +9,6 @@ ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
 def parse_types_text(text, dbpedia_types, numeric=True):
     """
     :type dbpedia_types: dict
-    :type dbpedia_redirects: dict
     """
     line = wiki_tokenize_func(text)
     new_line = []
@@ -20,9 +19,11 @@ def parse_types_text(text, dbpedia_types, numeric=True):
             orig_text = match.group(2)
             orig_text = orig_text.replace('_', ' ')
             stop = False
+            if re.match('\d{4}_', uri):
+                continue
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
-                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri]['types'][0]+'>'))
+                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
                     stop = True
                     break
             if not stop:
