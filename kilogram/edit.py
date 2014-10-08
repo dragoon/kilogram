@@ -1,9 +1,98 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict, Counter
+
 import nltk
 import re
 from .ngram import EditNgram
 
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
+
+
+class EditCollection(object):
+    TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
+    FEATURE_NAMES = [
+        'avg_rank_1gram',        # 1
+        'avg_rank_2gram',        # 2
+        'avg_rank_3gram',        # 3
+        'avg_pmi_1gram',         # 4
+        'avg_pmi_2gram',         # 5
+        'avg_pmi_3gram',         # 6
+        'has_zero_ngram_2_or_3', # 7
+        'zero_ngram_rank',       # 8
+        'conf_matrix_score',      # 9
+        'top_prep_count_1gram',  # 10
+        'top_prep_count_2gram',  # 11
+        'top_prep_count_3gram',  # 12
+        'avg_rank_position_-1',      # 13
+        'avg_rank_position_0',       # 14
+        'avg_rank_position_1',       # 15
+    ]
+    collection = None
+
+    def __init__(self):
+        """collections - array of Edit objects"""
+        self.collection = []
+        self.labels = [int(edit.is_error) for edit in self.collection]
+
+    def reverse_confusion_matrix(self):
+        confusion_dict = defaultdict(Counter)
+        for e in self.collection:
+            confusion_dict[e.edit1][e.edit2] += 1
+        return confusion_dict
+
+    def _balance(self, class0_k, class1_k):
+        """Balances collection with their respective coefficients for classes
+        Collection should be sorted with 1 labels go before 0s.
+        """
+        import numpy as np
+        from sklearn.utils import resample
+        class1_count = len([1 for x in self.labels if x])
+        class0_count = len(self.labels) - class1_count
+        class1_col = self.collection[:class1_count]
+        class0_col = self.collection[class1_count:]
+
+        num_class0 = int(class0_count*class0_k)
+        num_class1 = int(class1_count*class1_k)
+
+        class0_col = resample(class0_col, replace=False, n_samples=num_class0)
+        class1_col = resample(class1_col, replace=False, n_samples=num_class1)
+        col = np.concatenate([class1_col, class0_col])
+        labels = np.concatenate((np.ones(num_class1), np.zeros(num_class0)))
+        return col, labels
+
+    def balance_features(self, substitutions, class0_k=1., class1_k=1.):
+        print('Balancing errors')
+        data, _ = self._balance(class0_k, class1_k)
+        data, labels = self.get_feature_array(data, substitutions)
+        import numpy as np
+        print('Converting to numpy arrays')
+        data = np.array(data)
+        labels = np.array(labels)
+        print(data.shape)
+        print(labels.shape)
+        print('1st class', len([1 for x in labels if x]))
+        print('2nd class', len([1 for x in labels if not x]))
+        return data, labels
+
+    def get_feature_array(self, balanced_collection, substitutions):
+        feature_names = self.FEATURE_NAMES[:]
+        feature_names.extend(substitutions)
+        feature_names.extend([x+'prev' for x in self.TOP_POS_TAGS])
+        feature_names.extend([x+'next' for x in self.TOP_POS_TAGS])
+
+        confusion_matrix = self.reverse_confusion_matrix()
+        feature_collection = []
+        feature_labels = []
+        print('Generating features from raw data')
+        for edit in balanced_collection:
+            try:
+                feature_vecs, labels = edit.get_single_feature(substitutions, self.TOP_POS_TAGS,
+                                                               confusion_matrix)
+            except AssertionError:
+                continue
+            feature_collection.extend(feature_vecs)
+            feature_labels.extend(labels)
+        return feature_collection, feature_labels
 
 
 class Edit(object):
@@ -17,7 +106,7 @@ class Edit(object):
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
         self.tokens = self.text2.split()
-        # TODO: May be we want to POS tag here as well, cause we will need it to thow away useless 1grams
+        # TODO: May be we want to POS tag here as well, cause we will need it to throw away useless 1grams
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
@@ -65,3 +154,87 @@ class Edit(object):
                 else:
                     result_ngrams[n_size+1].append(EditNgram(ngram, edit_pos))
         return result_ngrams
+
+    def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
+        import pandas as pd
+        context_ngrams = self.ngram_context(size)
+        df_list_substs = []
+        # RANK, PMI_SCORE
+        DEFAULT_SCORE = (50, -10)
+        # TODO: filter on ALLOWED_TYPES and ALLOWED_POSITIONS
+        for ngram_type, ngrams in reversed(context_ngrams.items()):
+            for ngram in ngrams:
+                score_dict = dict((x[0][ngram.edit_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                for subst in SUBST_LIST:
+                    new_pos = 0
+                    if ngram.edit_pos == 0:
+                        new_pos = -1
+                    elif ngram.edit_pos == (ngram_type - 1):
+                        new_pos = 1
+                    df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
+                                           score_dict.get(subst, DEFAULT_SCORE)[0], ngram_type,
+                                           ngram.edit_pos, new_pos])
+        df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'position', 'norm_position'])
+        assert len(df_substs) > 0
+
+        # TODO: takes longest zero prob, may be also add zero-prob length as a feature
+        zero_prob = df_substs[(df_substs.position != 0) & (df_substs.position != (df_substs.type-1))][:len(SUBST_LIST)].set_index('substitution')
+        """type: DataFrame"""
+
+        # START: POS_TAG features -----------------------
+        pos_tag_feature = []
+        pos_tag_dict = dict([(ngram.edit_pos, [int(ngram.pos_tag == x) for x in TOP_POS_TAGS]) for ngram in context_ngrams[2]])
+        # append 1 or 0 whether POS tag is catch-all OTHER
+        for key in pos_tag_dict.keys():
+            if not any(pos_tag_dict[key]):
+                pos_tag_dict[key][-1] = 1
+        for position in (0, 1):
+            if position not in pos_tag_feature:
+                pos_tag_feature.extend([0 for _ in TOP_POS_TAGS])
+            else:
+                pos_tag_feature.extend(pos_tag_dict[position])
+        # END: POS_TAG ------------------------------------
+
+        matrix = confusion_matrix[self.edit1]
+        matrix_sum = sum(matrix.values())
+        assert matrix_sum > 0
+
+        feature_vectors = []
+        labels = []
+
+        # TODO: maintain fixed number of types across collection
+        type_group = df_substs.groupby(['substitution', 'type'])
+        avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
+        avg_by_type = type_group.mean()
+        top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['position'].count())
+
+        for subst in SUBST_LIST:
+
+            feature_vector = []
+            # TODO: take only longest n-gram for position
+            feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
+            feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
+            # START: zero prob indicator feature -----
+            feature_vector.append(int(zero_prob.empty))
+            if not zero_prob.empty:
+                feature_vector.append(zero_prob.loc[subst])
+            else:
+                feature_vector.append(50)
+            # END zero prob
+            feature_vector.append(matrix.get(subst, 0)/matrix_sum)
+
+            # counts of a preposition on top of a ranking
+            feature_vector.extend(list(top_type_counts.loc[subst].values))
+
+            # average rank by normalized position
+            feature_vector.extend(list(avg_by_position.loc[subst]['rank'].values))
+
+            # substitutions themselves
+            feature_vector.extend([int(x == subst) for x in SUBST_LIST])
+
+            # POS TAG enumeration
+            feature_vector.extend(pos_tag_feature)
+
+            labels.append(int(self.edit2 == subst))
+            feature_vectors.append(feature_vector)
+        return feature_vectors, labels
