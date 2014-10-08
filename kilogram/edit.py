@@ -114,6 +114,10 @@ class Edit(object):
     def __str__(self):
         return unicode(self).encode('utf-8')
 
+    @property
+    def is_error(self):
+        return self.edit1 == self.edit2
+
     @staticmethod
     def _reduce_punct(tokens, fill):
         # remove anything after/before punctuation
