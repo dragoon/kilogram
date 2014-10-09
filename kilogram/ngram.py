@@ -26,6 +26,7 @@ class EditNgram(Ngram):
         assert hasattr(ngram, '__iter__')
         self.ngram = ngram
         self.edit_pos = edit_pos
+        self._association_dict = {}
 
     def __unicode__(self):
         return u' '.join(self.ngram)
@@ -43,6 +44,8 @@ class EditNgram(Ngram):
         return ngram
 
     def association(self, measure='pmi'):
+        if measure in self._association_dict:
+            return self._association_dict[measure]
         dist = self._get_freq_distributions()
 
         if len(self.ngram) == 2:
@@ -60,6 +63,7 @@ class EditNgram(Ngram):
             print self
             print dist
             collocs = []
+        self._association_dict[measure] = collocs
         return collocs
 
     def _get_freq_distributions(self):
