@@ -29,9 +29,9 @@ class EditCollection(object):
     ]
     collection = None
 
-    def __init__(self):
-        """collections - array of Edit objects"""
-        self.collection = []
+    def __init__(self, collection):
+        """collection - array of Edit objects"""
+        self.collection = collection
         self.labels = [int(edit.is_error) for edit in self.collection]
 
     def reverse_confusion_matrix(self):
