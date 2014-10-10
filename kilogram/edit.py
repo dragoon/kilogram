@@ -106,7 +106,9 @@ class Edit(object):
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
         self.tokens = self.text2.split()
-        # TODO: May be we want to POS tag here as well, cause we will need it to throw away useless 1grams
+
+    def init_pos_tags(self):
+        self.pos_tokens = nltk.pos_tag(self.tokens)
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
@@ -161,6 +163,22 @@ class Edit(object):
 
     def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
         import pandas as pd
+
+        def get_pos_tag_features(bigrams):
+            pos_tag_feature = []
+            pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag == x) for x in TOP_POS_TAGS])
+                                 for bigram in bigrams])
+            # append 1 or 0 whether POS tag is catch-all OTHER
+            for key in pos_tag_dict.keys():
+                if not any(pos_tag_dict[key]):
+                    pos_tag_dict[key][-1] = 1
+            for position in (0, 1):
+                if position not in pos_tag_feature:
+                    pos_tag_feature.extend([0 for _ in TOP_POS_TAGS])
+                else:
+                    pos_tag_feature.extend(pos_tag_dict[position])
+            return pos_tag_feature
+
         context_ngrams = self.ngram_context(size)
         df_list_substs = []
         # RANK, PMI_SCORE
@@ -184,20 +202,6 @@ class Edit(object):
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
         zero_prob = df_substs[(df_substs.position != 0) & (df_substs.position != (df_substs.type-1))][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
-
-        # START: POS_TAG features -----------------------
-        pos_tag_feature = []
-        pos_tag_dict = dict([(ngram.edit_pos, [int(ngram.pos_tag == x) for x in TOP_POS_TAGS]) for ngram in context_ngrams[2]])
-        # append 1 or 0 whether POS tag is catch-all OTHER
-        for key in pos_tag_dict.keys():
-            if not any(pos_tag_dict[key]):
-                pos_tag_dict[key][-1] = 1
-        for position in (0, 1):
-            if position not in pos_tag_feature:
-                pos_tag_feature.extend([0 for _ in TOP_POS_TAGS])
-            else:
-                pos_tag_feature.extend(pos_tag_dict[position])
-        # END: POS_TAG ------------------------------------
 
         matrix = confusion_matrix[self.edit1]
         matrix_sum = sum(matrix.values())
@@ -237,7 +241,7 @@ class Edit(object):
             feature_vector.extend([int(x == subst) for x in SUBST_LIST])
 
             # POS TAG enumeration
-            feature_vector.extend(pos_tag_feature)
+            feature_vector.extend(get_pos_tag_features(context_ngrams[2]))
 
             labels.append(int(self.edit2 == subst))
             feature_vectors.append(feature_vector)
