@@ -234,7 +234,7 @@ class Edit(object):
             # START: zero prob indicator feature -----
             feature_vector.append(int(central_prob.empty))
             if not central_prob.empty:
-                feature_vector.append(central_prob.loc[subst])
+                feature_vector.append(central_prob.loc[subst]['rank'])
             else:
                 feature_vector.append(50)
             # END zero prob
