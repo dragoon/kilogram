@@ -109,7 +109,7 @@ class Edit(object):
         self.pos_tokens = None
 
     def init_pos_tags(self):
-        self.pos_tokens = nltk.pos_tag(self.tokens)
+        self.pos_tokens = zip(*nltk.pos_tag(self.tokens))[1]
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
