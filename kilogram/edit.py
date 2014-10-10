@@ -174,7 +174,7 @@ class Edit(object):
 
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
-            pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag == x) for x in TOP_POS_TAGS])
+            pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
                                  for bigram in bigrams])
             # append 1 or 0 whether POS tag is catch-all OTHER
             for key in pos_tag_dict.keys():
