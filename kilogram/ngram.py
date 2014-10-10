@@ -22,9 +22,15 @@ class Ngram(object):
 
 class EditNgram(Ngram):
     def __init__(self, ngram, edit_pos):
-        """:type ngram: list"""
+        """
+        :param edit_pos: position of substitution in an n-gram
+        :type ngram: list
+        :type edit_pos: int
+        :type pos_tag: list
+        """
         assert hasattr(ngram, '__iter__')
         self.ngram = ngram
+        self.pos_tag = None
         self.edit_pos = edit_pos
         self._association_dict = {}
 

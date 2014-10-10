@@ -106,6 +106,7 @@ class Edit(object):
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
         self.tokens = self.text2.split()
+        self.pos_tokens = None
 
     def init_pos_tags(self):
         self.pos_tokens = nltk.pos_tag(self.tokens)
@@ -149,16 +150,23 @@ class Edit(object):
     def ngram_context(self, size=3, fill=''):
         """N-gram context"""
         result_ngrams = {}
+        pos_tag = bool(self.pos_tokens)
         for n_size in range(1, size):
             local_tokens = self.context(n_size, fill)
+            local_indices = range(self.positions2[0]-n_size, self.positions2[1]+n_size)
             result_ngrams[n_size+1] = []
             local_tokens = Edit._reduce_punct(local_tokens, fill)
 
-            for edit_pos, ngram in zip(range(n_size, -1, -1), nltk.ngrams(local_tokens, n_size+1)):
+            for edit_pos, ngram, indices in zip(range(n_size, -1, -1),
+                                                nltk.ngrams(local_tokens, n_size+1),
+                                                nltk.ngrams(local_indices, n_size+1)):
                 if fill in ngram:
-                    result_ngrams[n_size+1].append(fill)
+                    if fill is not None:
+                        result_ngrams[n_size+1].append(fill)
                 else:
                     result_ngrams[n_size+1].append(EditNgram(ngram, edit_pos))
+                    if pos_tag:
+                        result_ngrams[n_size+1][-1].pos_tag = self.pos_tokens[indices[0]:indices[-1]+1]
         return result_ngrams
 
     def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
@@ -179,7 +187,7 @@ class Edit(object):
                     pos_tag_feature.extend(pos_tag_dict[position])
             return pos_tag_feature
 
-        context_ngrams = self.ngram_context(size)
+        context_ngrams = self.ngram_context(size, fill=None)
         df_list_substs = []
         # RANK, PMI_SCORE
         DEFAULT_SCORE = (50, -10)
@@ -200,7 +208,8 @@ class Edit(object):
         assert len(df_substs) > 0
 
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
-        zero_prob = df_substs[(df_substs.position != 0) & (df_substs.position != (df_substs.type-1))][:len(SUBST_LIST)].set_index('substitution')
+        central_prob = df_substs[(df_substs.position != 0) &
+                                 (df_substs.position != (df_substs.type-1))][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
 
         matrix = confusion_matrix[self.edit1]
@@ -223,9 +232,9 @@ class Edit(object):
             feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
             feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
             # START: zero prob indicator feature -----
-            feature_vector.append(int(zero_prob.empty))
-            if not zero_prob.empty:
-                feature_vector.append(zero_prob.loc[subst])
+            feature_vector.append(int(central_prob.empty))
+            if not central_prob.empty:
+                feature_vector.append(central_prob.loc[subst])
             else:
                 feature_vector.append(50)
             # END zero prob
