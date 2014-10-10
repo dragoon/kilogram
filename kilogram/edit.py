@@ -119,7 +119,7 @@ class Edit(object):
 
     @property
     def is_error(self):
-        return self.edit1 == self.edit2
+        return self.edit1 != self.edit2
 
     @staticmethod
     def _reduce_punct(tokens, fill):
