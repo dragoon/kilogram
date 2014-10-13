@@ -32,7 +32,7 @@ class EditCollection(object):
 
     def __init__(self, collection):
         """collection - array of Edit objects"""
-        self.collection = collection
+        self.collection = sorted(collection, key=lambda x: x.is_error, reverse=True)
         self.labels = [int(edit.is_error) for edit in self.collection]
 
     def reverse_confusion_matrix(self):
@@ -62,6 +62,11 @@ class EditCollection(object):
         return col, labels
 
     def balance_features(self, substitutions, class0_k=1., class1_k=1.):
+        feature_names = self.FEATURE_NAMES[:]
+        feature_names.extend(substitutions)
+        feature_names.extend([x+'prev' for x in self.TOP_POS_TAGS])
+        feature_names.extend([x+'next' for x in self.TOP_POS_TAGS])
+
         print('Balancing errors')
         data, _ = self._balance(class0_k, class1_k)
         data, labels = self.get_feature_array(data, substitutions)
@@ -73,14 +78,9 @@ class EditCollection(object):
         print(labels.shape)
         print('1st class', len([1 for x in labels if x]))
         print('2nd class', len([1 for x in labels if not x]))
-        return data, labels
+        return data, labels, feature_names
 
     def get_feature_array(self, balanced_collection, substitutions):
-        feature_names = self.FEATURE_NAMES[:]
-        feature_names.extend(substitutions)
-        feature_names.extend([x+'prev' for x in self.TOP_POS_TAGS])
-        feature_names.extend([x+'next' for x in self.TOP_POS_TAGS])
-
         confusion_matrix = self.reverse_confusion_matrix()
         feature_collection = []
         feature_labels = []
@@ -93,7 +93,7 @@ class EditCollection(object):
                 continue
             feature_collection.extend(feature_vecs)
             feature_labels.extend(labels)
-        return feature_collection, feature_labels, feature_names
+        return feature_collection, feature_labels
 
     def test_validation(self, substitutions, classifier, test_col):
         """
