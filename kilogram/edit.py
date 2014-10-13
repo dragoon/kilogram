@@ -245,6 +245,8 @@ class Edit(object):
 
     def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
         import pandas as pd
+        if not self.pos_tokens:
+            self.init_pos_tags()
 
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
