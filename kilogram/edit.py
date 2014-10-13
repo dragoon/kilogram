@@ -9,6 +9,7 @@ PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
 
 
 class EditCollection(object):
+    """Collections of edit objects for Machine Learning and evaluation routines"""
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_1gram',        # 1
@@ -92,7 +93,80 @@ class EditCollection(object):
                 continue
             feature_collection.extend(feature_vecs)
             feature_labels.extend(labels)
-        return feature_collection, feature_labels
+        return feature_collection, feature_labels, feature_names
+
+    def test_validation(self, substitutions, classifier, test_col):
+        """
+        :param classifier: any valid scikit-learn classifier
+        """
+        conf_matrix = self.reverse_confusion_matrix()
+
+        def predict_substitution(edit, clf):
+            top_suggestions = []
+            try:
+                features, labels = edit.get_single_feature(substitutions, self.TOP_POS_TAGS,
+                                                           conf_matrix)
+            except AssertionError:
+                return None
+            if not features:
+                return None
+
+            predictions = clf.predict_proba(features)
+            for klasses, prep in zip(predictions, substitutions):
+                klass0, klass1 = klasses
+                if klass1 >= 0.5:
+                    top_suggestions.append((klass1, prep))
+
+            if top_suggestions:
+                top_suggestions.sort(reverse=True, key=lambda x: x[0])
+                prep = top_suggestions[0][1]
+                return prep
+            return None
+
+        true_pos = 0
+        false_pos = 0
+        true_pos_err = 0
+        false_pos_err = 0
+        classifier.n_jobs = 1
+        skips = 0
+        skip_err = 0
+
+        total_errors = len([1 for edit, _ in test_col if edit.is_error])
+        print('Total errors: %s' % total_errors)
+        for edit in test_col:
+            predicted_subst = predict_substitution(edit, classifier)
+            if predicted_subst is None:
+                skips += 1
+                if edit.is_error:
+                    skip_err += 1
+                continue
+            is_valid = False
+            if edit.edit2 == predicted_subst:
+                is_valid = True
+            if is_valid:
+                if edit.is_error:
+                    true_pos_err += 1
+                true_pos += 1
+            else:
+                if edit.is_error:
+                    false_pos_err += 1
+                false_pos += 1
+        data = {'true': true_pos, 'false': false_pos, 'true_err': true_pos_err,
+                'min_split': classifier.min_samples_split, 'depth': classifier.max_depth,
+                'false_err': false_pos_err, 'skips': skips, 'skips_err': skip_err}
+        try:
+            precision = float(true_pos_err) / (true_pos_err + false_pos)
+        except ZeroDivisionError:
+            precision = 0.
+        accuracy = float(true_pos) / (true_pos + false_pos)
+        data['precision'] = precision
+        data['accuracy'] = accuracy
+        data['recall'] = float(true_pos_err)/total_errors
+        if (data['recall'] + precision) > 0:
+            data['f1'] = 2*precision*data['recall']/(data['recall'] + precision)
+        else:
+            data['f1'] = 0
+        return data
 
 
 class Edit(object):
