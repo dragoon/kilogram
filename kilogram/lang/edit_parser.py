@@ -49,10 +49,14 @@ def _is_garbage(ngram1, ngram2):
     return False
 
 
-def extract_edits(edit_file, tokenize_func=default_tokenize_func):
+def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_func):
     """
-    Extracts contexts for all words/phrases that were changed between two text versions.
+    Extracts contexts for all n-grams that were changed between two text versions.
     Uses most sequence matcher from difflib, which takes most longest subsequence.
+
+    If ``substitutions'' argument is supplied, extract all n-gram matching substitutions,
+    even if they were not changed.
+
     :returns: list of Edit objects
     """
     edit_n = 0
@@ -79,8 +83,17 @@ def extract_edits(edit_file, tokenize_func=default_tokenize_func):
                     ngram1, ngram2 = ' '.join(edit1[i1:i2]), ' '.join(edit2[j1:j2])
                     if _is_garbage(ngram1, ngram2):
                         continue
+                    if substitutions and (ngram1 not in substitutions or ngram2 not in substitutions):
+                        continue
                     edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
                     edit_n += 1
+
+            # Add all other substitution if supplied
+            # TODO: works only for unigrams
+            if substitutions:
+                for i, unigram in enumerate(edit2):
+                    edits.append(Edit(unigram, unigram, context1, context2, (i, i+1), (i, i+1)))
+
         del csvreader.__class__.__len__
     print 'Total edits extracted:', edit_n
     return edits
