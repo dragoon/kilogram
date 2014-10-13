@@ -92,7 +92,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             # TODO: works only for unigrams
             if substitutions:
                 for i, unigram in enumerate(edit2):
-                    if unicode in substitutions:
+                    if unigram in substitutions:
                         edits.append(Edit(unigram, unigram, context1, context2, (i, i+1), (i, i+1)))
                         edit_n += 1
 
