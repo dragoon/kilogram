@@ -81,8 +81,8 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                     if tag == 'equal':
                         continue
                     ngram1, ngram2 = ' '.join(edit1[i1:i2]), ' '.join(edit2[j1:j2])
-                    if _is_garbage(ngram1, ngram2):
-                        continue
+                    #if _is_garbage(ngram1, ngram2):
+                    #    continue
                     # TODO: works only for unigrams
                     # extract merged edits into unigrams is match substitutions
                     if substitutions:
