@@ -29,7 +29,7 @@ def _replace_tags(text, remove_tag, keep_tag):
         c_end = text.find(remove_tag_e)
         c_start = text.rfind(remove_tag_s, 0, c_end)
         text = text[:c_start] + text[c_end+4:]
-    text = text.replace(keep_tag_s, '').replace(keep_tag_e, '')
+    text = text.replace(keep_tag_s, '').replace(keep_tag_e, ' <SEP> ')
     return text
 
 
@@ -52,7 +52,7 @@ def filter_grammar_edits(in_files, out_file):
                             temp_text = tostring(paragraph).strip()
                             if '<unknown/>' in temp_text:
                                 continue
-                            temp_text = temp_text.replace('</NS>', '<SEP>').replace('<p>', '').replace('</p>', '')
+                            temp_text = temp_text.replace('</NS>', '').replace('<p>', '').replace('</p>', '')
                             temp_text = STRIP_NS_RE.sub('', temp_text)
 
                             # get initial text
