@@ -29,7 +29,7 @@ def _replace_tags(text, remove_tag, keep_tag):
         c_end = text.find(remove_tag_e)
         c_start = text.rfind(remove_tag_s, 0, c_end)
         text = text[:c_start] + text[c_end+4:]
-    text = text.replace(keep_tag_s, '').replace(keep_tag_e, ' <SEP> ')
+    text = text.replace(keep_tag_s, '').replace(keep_tag_e, '')
     return text
 
 
