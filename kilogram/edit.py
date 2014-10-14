@@ -131,7 +131,7 @@ class EditCollection(object):
         skips = 0
         skip_err = 0
 
-        total_errors = len([1 for edit, _ in test_col if edit.is_error])
+        total_errors = len([1 for edit in test_col if edit.is_error])
         print('Total errors: %s' % total_errors)
         for edit in test_col:
             predicted_subst = predict_substitution(edit, classifier)
