@@ -52,7 +52,7 @@ def filter_grammar_edits(in_files, out_file):
                             temp_text = tostring(paragraph).strip()
                             if '<unknown/>' in temp_text:
                                 continue
-                            temp_text = temp_text.replace('</NS>', '').replace('<p>', '').replace('</p>', '')
+                            temp_text = temp_text.replace('</NS>', '<SEP>').replace('<p>', '').replace('</p>', '')
                             temp_text = STRIP_NS_RE.sub('', temp_text)
 
                             # get initial text
