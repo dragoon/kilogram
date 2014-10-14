@@ -235,8 +235,7 @@ class Edit(object):
                                                 nltk.ngrams(local_tokens, n_size+1),
                                                 nltk.ngrams(local_indices, n_size+1)):
                 if fill in ngram:
-                    if fill is not None:
-                        result_ngrams[n_size+1].append(fill)
+                    result_ngrams[n_size+1].append(fill)
                 else:
                     result_ngrams[n_size+1].append(EditNgram(ngram, edit_pos))
                     if pos_tag:
@@ -263,23 +262,26 @@ class Edit(object):
                     pos_tag_feature.extend(pos_tag_dict[position])
             return pos_tag_feature
 
-        context_ngrams = self.ngram_context(size, fill=None)
+        context_ngrams = self.ngram_context(size)
         df_list_substs = []
         # RANK, PMI_SCORE
         DEFAULT_SCORE = (50, -10)
-        # TODO: filter on ALLOWED_TYPES and ALLOWED_POSITIONS
+        # TODO: filter on ALLOWED_TYPES
         for ngram_type, ngrams in reversed(context_ngrams.items()):
-            for ngram in ngrams:
-                score_dict = dict((x[0][ngram.edit_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+            for ngram_pos, ngram in enumerate(ngrams):
+                if ngram:
+                    score_dict = dict((x[0][ngram_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                else:
+                    score_dict = {}
                 for subst in SUBST_LIST:
                     new_pos = 0
-                    if ngram.edit_pos == 0:
+                    if ngram_pos == 0:
                         new_pos = -1
-                    elif ngram.edit_pos == (ngram_type - 1):
+                    elif ngram_pos == (ngram_type - 1):
                         new_pos = 1
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0], ngram_type,
-                                           ngram.edit_pos, new_pos])
+                                           ngram_pos, new_pos])
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'position', 'norm_position'])
         assert len(df_substs) > 0
 
@@ -295,7 +297,7 @@ class Edit(object):
         feature_vectors = []
         labels = []
 
-        # TODO: maintain fixed number of types across collection
+        # TODO: add indicator feature if rank/position is missing?
         type_group = df_substs.groupby(['substitution', 'type'])
         avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
         avg_by_type = type_group.mean()
