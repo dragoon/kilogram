@@ -250,13 +250,13 @@ class Edit(object):
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
             pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
-                                 for bigram in bigrams])
+                                 for bigram in bigrams if bigram])
             # append 1 or 0 whether POS tag is catch-all OTHER
             for key in pos_tag_dict.keys():
                 if not any(pos_tag_dict[key]):
                     pos_tag_dict[key][-1] = 1
             for position in (0, 1):
-                if position not in pos_tag_feature:
+                if position not in pos_tag_dict:
                     pos_tag_feature.extend([0 for _ in TOP_POS_TAGS])
                 else:
                     pos_tag_feature.extend(pos_tag_dict[position])
