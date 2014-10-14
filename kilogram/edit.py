@@ -181,6 +181,7 @@ class Edit(object):
         # TODO: when edit is bigger than 1 word, need not to split it
         self.tokens = self.text2.split()
         self.pos_tokens = None
+        self._ngram_context = {}
 
     def init_pos_tags(self):
         self.pos_tokens = zip(*nltk.pos_tag(self.tokens))[1]
@@ -223,6 +224,8 @@ class Edit(object):
 
     def ngram_context(self, size=3, fill=''):
         """N-gram context"""
+        if size in self._ngram_context:
+            return self._ngram_context[size]
         result_ngrams = {}
         pos_tag = bool(self.pos_tokens)
         for n_size in range(1, size):
@@ -240,6 +243,7 @@ class Edit(object):
                     result_ngrams[n_size+1].append(EditNgram(ngram, edit_pos))
                     if pos_tag:
                         result_ngrams[n_size+1][-1].pos_tag = self.pos_tokens[indices[0]:indices[-1]+1]
+        self._ngram_context[size] = result_ngrams
         return result_ngrams
 
     def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
