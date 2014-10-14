@@ -88,7 +88,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                     if substitutions:
                         index1 = [i for i in range(i1, i2) if edit1[i] in substitutions]
                         index2 = [i for i in range(j1, j2) if edit2[i] in substitutions]
-                        if len(index1) + len(index2) != 2 or index1[0] != index2[0]:
+                        if len(index1) !=1 or len(index2) != 1 or index1[0] != index2[0]:
                             continue
                         ngram1, ngram2 = edit1[index1[0]], edit2[index2[0]]
                         i1, i2 = index1[0], index1[0]+1
