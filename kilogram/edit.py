@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict, Counter
+import functools
+import multiprocessing
+from datetime import datetime
 
 import nltk
 import re
@@ -12,18 +15,18 @@ class EditCollection(object):
     """Collections of edit objects for Machine Learning and evaluation routines"""
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
-        'avg_rank_1gram',        # 1
-        'avg_rank_2gram',        # 2
-        'avg_rank_3gram',        # 3
-        'avg_pmi_1gram',         # 4
-        'avg_pmi_2gram',         # 5
-        'avg_pmi_3gram',         # 6
+        'avg_rank_2gram',        # 1
+        'avg_rank_3gram',        # 2
+        #'avg_rank_4gram',        # 3
+        'avg_pmi_2gram',         # 4
+        'avg_pmi_3gram',         # 5
+        #'avg_pmi_4gram',         # 6
         'has_zero_ngram_2_or_3', # 7
         'zero_ngram_rank',       # 8
         'conf_matrix_score',      # 9
-        'top_prep_count_1gram',  # 10
-        'top_prep_count_2gram',  # 11
-        'top_prep_count_3gram',  # 12
+        'top_prep_count_2gram',  # 10
+        'top_prep_count_3gram',  # 11
+        #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',      # 13
         'avg_rank_position_0',       # 14
         'avg_rank_position_1',       # 15
@@ -70,6 +73,7 @@ class EditCollection(object):
         print('Balancing errors')
         data, _ = self._balance(class0_k, class1_k)
         data, labels = self.get_feature_array(data, substitutions)
+
         import numpy as np
         print('Converting to numpy arrays')
         data = np.array(data)
@@ -85,12 +89,21 @@ class EditCollection(object):
         feature_collection = []
         feature_labels = []
         print('Generating features from raw data')
-        for edit in balanced_collection:
+
+        # multiprocessing association measures population
+
+        pool = multiprocessing.Pool(12)
+        print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
+
+        def get_single_feature_local(edit):
             try:
-                feature_vecs, labels = edit.get_single_feature(substitutions, self.TOP_POS_TAGS,
-                                                               confusion_matrix)
+                return edit.get_single_feature(substitutions, self.TOP_POS_TAGS, confusion_matrix)
             except AssertionError:
-                continue
+                return None
+        collection = pool.map(get_single_feature_local, balanced_collection)
+        print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
+
+        for feature_vecs, labels in collection:
             feature_collection.extend(feature_vecs)
             feature_labels.extend(labels)
         return feature_collection, feature_labels
