@@ -11,7 +11,7 @@ from .ngram import EditNgram
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
 
 
-def get_single_feature_local(edit, substitutions, top_pos_tags, confusion_matrix):
+def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit):
     try:
         return edit.get_single_feature(substitutions, top_pos_tags, confusion_matrix)
     except AssertionError:
