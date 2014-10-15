@@ -11,6 +11,13 @@ from .ngram import EditNgram
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
 
 
+def get_single_feature_local(edit, substitutions, top_pos_tags, confusion_matrix):
+    try:
+        return edit.get_single_feature(substitutions, top_pos_tags, confusion_matrix)
+    except AssertionError:
+        return None
+
+
 class EditCollection(object):
     """Collections of edit objects for Machine Learning and evaluation routines"""
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
@@ -95,12 +102,9 @@ class EditCollection(object):
         pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        def get_single_feature_local(edit):
-            try:
-                return edit.get_single_feature(substitutions, self.TOP_POS_TAGS, confusion_matrix)
-            except AssertionError:
-                return None
-        collection = pool.map(get_single_feature_local, balanced_collection)
+        get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
+                                                self.TOP_POS_TAGS, confusion_matrix)
+        collection = pool.map(get_single_feature1, balanced_collection)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         for feature_vecs, labels in collection:
