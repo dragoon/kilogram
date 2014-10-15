@@ -7,7 +7,6 @@ from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 from .hbase import Hbase
-from . import DEBUG
 import pymongo
 
 SUBSTITUTION_TOKEN = 'SUB'
@@ -46,6 +45,7 @@ class NgramService(object):
         """
         :rtype: int
         """
+        from . import DEBUG
         cls.h_rate += 1
         time_diff = time.time() - cls.h_start
         if time_diff > 30 and DEBUG:
