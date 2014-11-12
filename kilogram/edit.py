@@ -291,8 +291,9 @@ class Edit(object):
         # TODO: filter on ALLOWED_TYPES
         for ngram_type, ngrams in reversed(context_ngrams.items()):
             for ngram_pos, ngram in enumerate(ngrams):
+                subst_pos = ngram_type - 1 - ngram_pos
                 if ngram:
-                    score_dict = dict((x[0][ngram_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                    score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 else:
                     score_dict = {}
                 for subst in SUBST_LIST:
@@ -302,14 +303,13 @@ class Edit(object):
                     elif ngram_pos == (ngram_type - 1):
                         new_pos = 1
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
-                                           score_dict.get(subst, DEFAULT_SCORE)[0], ngram_type,
-                                           ngram_pos, new_pos])
-        df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'position', 'norm_position'])
+                                           score_dict.get(subst, DEFAULT_SCORE)[0],
+                                           ngram_type, new_pos])
+        df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
         assert len(df_substs) > 0
 
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
-        central_prob = df_substs[(df_substs.position != 0) &
-                                 (df_substs.position != (df_substs.type-1))][:len(SUBST_LIST)].set_index('substitution')
+        central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
 
         matrix = confusion_matrix[self.edit1]
@@ -323,7 +323,7 @@ class Edit(object):
         type_group = df_substs.groupby(['substitution', 'type'])
         avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
         avg_by_type = type_group.mean()
-        top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['position'].count())
+        top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['rank'].count())
 
         for subst in SUBST_LIST:
 
