@@ -286,6 +286,8 @@ class Edit(object):
 
         context_ngrams = self.ngram_context(size)
         df_list_substs = []
+        df_list_substs_enhanced = []
+        positions_set = set()
         # RANK, PMI_SCORE
         DEFAULT_SCORE = (50, -10)
         # TODO: filter on ALLOWED_TYPES
@@ -296,16 +298,24 @@ class Edit(object):
                     score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 else:
                     score_dict = {}
+                new_pos = 0
+                if ngram_pos == 0:
+                    new_pos = -1
+                elif ngram_pos == (ngram_type - 1):
+                    new_pos = 1
                 for subst in SUBST_LIST:
-                    new_pos = 0
-                    if ngram_pos == 0:
-                        new_pos = -1
-                    elif ngram_pos == (ngram_type - 1):
-                        new_pos = 1
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
                                            ngram_type, new_pos])
+                    if new_pos in positions_set:
+                        df_list_substs_enhanced.append([subst, DEFAULT_SCORE[1], DEFAULT_SCORE[0],
+                                                        ngram_type, new_pos])
+                    else:
+                        df_list_substs_enhanced.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
+                           score_dict.get(subst, DEFAULT_SCORE)[0], ngram_type, new_pos])
+                positions_set.add(new_pos)
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
+        df_substs_enhanced = pd.DataFrame(df_list_substs_enhanced, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
         assert len(df_substs) > 0
 
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
@@ -320,7 +330,7 @@ class Edit(object):
         labels = []
 
         # TODO: add indicator feature if rank/position is missing?
-        type_group = df_substs.groupby(['substitution', 'type'])
+        type_group = df_substs_enhanced.groupby(['substitution', 'type'])
         avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
         avg_by_type = type_group.mean()
         top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['rank'].count())
@@ -332,7 +342,7 @@ class Edit(object):
             feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
             feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
             # START: zero prob indicator feature -----
-            feature_vector.append(int(central_prob.empty))
+            feature_vector.append(int(not central_prob.empty))
             if not central_prob.empty:
                 feature_vector.append(central_prob.loc[subst]['rank'])
             else:
