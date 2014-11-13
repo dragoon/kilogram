@@ -155,6 +155,8 @@ class EditCollection(object):
         total_errors = len([1 for edit in test_col if edit.is_error])
         print('Total errors: %s' % total_errors)
         for edit, labels_features in zip(test_col, test_collection):
+            if labels_features is None:
+                continue
             features = labels_features[0]
             predicted_subst = predict_substitution(features, classifier)
             if predicted_subst is None:
