@@ -119,13 +119,16 @@ class EditCollection(object):
         """
         conf_matrix = self.reverse_confusion_matrix()
 
-        def predict_substitution(edit, clf):
+        pool = multiprocessing.Pool(12)
+        print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
+
+        get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
+                                                self.TOP_POS_TAGS, conf_matrix)
+        test_collection = pool.map(get_single_feature1, test_col)
+        print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
+
+        def predict_substitution(features, clf):
             top_suggestions = []
-            try:
-                features, labels = edit.get_single_feature(substitutions, self.TOP_POS_TAGS,
-                                                           conf_matrix)
-            except AssertionError:
-                return None
             if not features:
                 return None
 
@@ -151,8 +154,9 @@ class EditCollection(object):
 
         total_errors = len([1 for edit in test_col if edit.is_error])
         print('Total errors: %s' % total_errors)
-        for edit in test_col:
-            predicted_subst = predict_substitution(edit, classifier)
+        for edit, labels_features in zip(test_col, test_collection):
+            features = labels_features[0]
+            predicted_subst = predict_substitution(features, classifier)
             if predicted_subst is None:
                 skips += 1
                 if edit.is_error:
@@ -286,8 +290,6 @@ class Edit(object):
 
         context_ngrams = self.ngram_context(size)
         df_list_substs = []
-        df_list_substs_enhanced = []
-        positions_set = set()
         # RANK, PMI_SCORE
         DEFAULT_SCORE = (50, -10)
         # TODO: filter on ALLOWED_TYPES
@@ -307,15 +309,7 @@ class Edit(object):
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
                                            ngram_type, new_pos])
-                    if new_pos in positions_set:
-                        df_list_substs_enhanced.append([subst, DEFAULT_SCORE[1], DEFAULT_SCORE[0],
-                                                        ngram_type, new_pos])
-                    else:
-                        df_list_substs_enhanced.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
-                           score_dict.get(subst, DEFAULT_SCORE)[0], ngram_type, new_pos])
-                positions_set.add(new_pos)
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
-        df_substs_enhanced = pd.DataFrame(df_list_substs_enhanced, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
         assert len(df_substs) > 0
 
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
@@ -330,7 +324,7 @@ class Edit(object):
         labels = []
 
         # TODO: add indicator feature if rank/position is missing?
-        type_group = df_substs_enhanced.groupby(['substitution', 'type'])
+        type_group = df_substs.groupby(['substitution', 'type'])
         avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
         avg_by_type = type_group.mean()
         top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['rank'].count())
