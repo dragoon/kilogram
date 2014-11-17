@@ -20,6 +20,11 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
         return None
 
 
+# Define host and port for Stanford POS tagger service
+ST_HOSTNAME = 'localhost'
+ST_PORT = 2020
+
+
 class EditCollection(object):
     """Collections of edit objects for Machine Learning and evaluation routines"""
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
@@ -223,8 +228,8 @@ class Edit(object):
         s.close()
         return repr(data)
 
-    def init_pos_tags(self, hostname, port):
-        pos_tokens = self._pos_tag_socket(hostname, port, self.text2).strip()
+    def init_pos_tags(self):
+        pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
         self.pos_tokens = [x.split('_')[1] for x in pos_tokens.split()]
 
     def __unicode__(self):
