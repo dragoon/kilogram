@@ -221,12 +221,12 @@ class Edit(object):
         s.shutdown(socket.SHUT_WR)
         data = ""
         while 1:
-            data = s.recv(1024)
-            if data == "":
+            l_data = s.recv(8192)
+            if l_data == "":
                 break
-            data += repr(data)
+            data += l_data
         s.close()
-        return repr(data)
+        return data
 
     def init_pos_tags(self):
         pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
