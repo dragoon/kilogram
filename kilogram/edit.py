@@ -202,6 +202,12 @@ class EditCollection(object):
 class Edit(object):
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
+
+        def lowercase_token(token):
+            if token != 'I':
+                token = token.lower()
+            return token
+
         self.edit1 = edit1
         self.edit2 = edit2
         self.text1 = text1
@@ -209,7 +215,7 @@ class Edit(object):
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
-        self.tokens = self.text2.split()
+        self.tokens = [lowercase_token(x) for x in self.text2.split()]
         self.pos_tokens = None
         self._ngram_context = {}
 
@@ -228,7 +234,7 @@ class Edit(object):
         s.close()
         return data
 
-    def init_pos_tags(self):
+    def _init_pos_tags(self):
         def compress_pos(pos_tag):
             if pos_tag.startswith('VB'):
                 pos_tag = 'VB'
@@ -301,7 +307,7 @@ class Edit(object):
     def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
         import pandas as pd
         if not self.pos_tokens:
-            self.init_pos_tags()
+            self._init_pos_tags()
 
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
