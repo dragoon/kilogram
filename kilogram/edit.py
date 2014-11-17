@@ -229,8 +229,14 @@ class Edit(object):
         return data
 
     def init_pos_tags(self):
+        def compress_pos(pos_tag):
+            if pos_tag.startswith('VB'):
+                pos_tag = 'VB'
+            elif pos_tag == 'NNS':
+                pos_tag = 'NN'
+            return pos_tag
         pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
-        self.pos_tokens = [x.split('_')[1] for x in pos_tokens.split()]
+        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
