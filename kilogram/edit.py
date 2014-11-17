@@ -4,6 +4,7 @@ from collections import defaultdict, Counter
 import functools
 import multiprocessing
 from datetime import datetime
+import socket
 
 import nltk
 import re
@@ -207,8 +208,24 @@ class Edit(object):
         self.pos_tokens = None
         self._ngram_context = {}
 
-    def init_pos_tags(self):
-        self.pos_tokens = zip(*nltk.pos_tag(self.tokens))[1]
+    @staticmethod
+    def _pos_tag_socket(hostname, port, content):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((hostname, port))
+        s.sendall(content)
+        s.shutdown(socket.SHUT_WR)
+        data = ""
+        while 1:
+            data = s.recv(1024)
+            if data == "":
+                break
+            data += repr(data)
+        s.close()
+        return repr(data)
+
+    def init_pos_tags(self, hostname, port):
+        pos_tokens = self._pos_tag_socket(hostname, port, self.text2).strip()
+        self.pos_tokens = [x.split('_')[1] for x in pos_tokens.split()]
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
