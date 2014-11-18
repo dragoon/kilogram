@@ -208,8 +208,8 @@ class Edit(object):
                 token = token.lower()
             return token
 
-        self.edit1 = edit1
-        self.edit2 = edit2
+        self.edit1 = edit1.lower()
+        self.edit2 = edit2.lower()
         self.text1 = text1
         self.text2 = text2
         self.positions1 = positions1
