@@ -8,7 +8,7 @@ FILTER_FILE = os.environ['FILTER_FILE']
 try:
     FILTER = set(open(FILTER_FILE).read().splitlines())
 except:
-    FILTER = set()
+    FILTER = None
 N = int(os.environ['NGRAM'])
 if not N:
     print 'N is not specified'
@@ -23,7 +23,7 @@ for line in sys.stdin:
     words = ngram.split()
     if len(words) != N:
         continue
-    if not FILTER.intersection(words):
+    if FILTER and not FILTER.intersection(words):
         continue
 
     print '%s\t%s' % (ngram, num)
