@@ -8,6 +8,7 @@ import socket
 
 import nltk
 import re
+from .lang import number_replace
 from .ngram import EditNgram
 
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
@@ -205,7 +206,7 @@ class Edit(object):
 
         def lowercase_token(token):
             if token != 'I':
-                token = token.lower()
+                token = number_replace(token.lower())
             return token
 
         self.edit1 = edit1.lower()
