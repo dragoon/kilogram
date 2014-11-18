@@ -5,7 +5,10 @@ import os
 
 FILTER_FILE = os.environ['FILTER_FILE']
 
-FILTER = set(open(FILTER_FILE).read().splitlines())
+try:
+    FILTER = set(open(FILTER_FILE).read().splitlines())
+except:
+    FILTER = set()
 N = int(os.environ['NGRAM'])
 if not N:
     print 'N is not specified'
