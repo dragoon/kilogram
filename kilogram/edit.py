@@ -47,6 +47,7 @@ class EditCollection(object):
         'avg_rank_position_1',       # 15
     ]
     collection = None
+    recent_errors = None
 
     def __init__(self, collection):
         """collection - array of Edit objects"""
@@ -124,6 +125,7 @@ class EditCollection(object):
         """
         :param classifier: any valid scikit-learn classifier
         """
+        self.recent_errors = []
         conf_matrix = self.reverse_confusion_matrix()
 
         pool = multiprocessing.Pool(12)
@@ -180,6 +182,7 @@ class EditCollection(object):
                 true_pos += 1
             else:
                 if edit.is_error:
+                    self.recent_errors.append(edit)
                     false_pos_err += 1
                 false_pos += 1
         data = {'true': true_pos, 'false': false_pos, 'true_err': true_pos_err,
