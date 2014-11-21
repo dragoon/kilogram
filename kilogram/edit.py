@@ -206,7 +206,7 @@ class Edit(object):
 
         def lowercase_token(token):
             if token != 'I':
-                token = number_replace(token.lower())
+                token = token.lower()
             return token
 
         self.edit1 = edit1.lower()
