@@ -205,9 +205,7 @@ class Edit(object):
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
         def lowercase_token(token):
-            if token != 'I':
-                token = token.lower()
-            return token
+            return number_replace(token.lower())
 
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
