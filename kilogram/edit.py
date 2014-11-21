@@ -211,6 +211,8 @@ class Edit(object):
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
         def lowercase_token(token):
+            if token == '.':
+                return ','
             return number_replace(token.lower())
 
         self.edit1 = edit1.lower()
