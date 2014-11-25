@@ -2,6 +2,8 @@
 
 import sys
 from kilogram.lang import number_replace
+import re
+MULTI_PUNCT_RE = re.compile(r'[^a-zA-Z0-9_\s]{2,}')
 
 
 # input comes from STDIN (standard input)
@@ -34,4 +36,5 @@ for line in sys.stdin:
         ngrams.add(ngram)
 
     for ngram in ngrams:
-        print '%s\t%s' % (ngram, num)
+        if not MULTI_PUNCT_RE.search(ngram):
+            print '%s\t%s' % (ngram, num)
