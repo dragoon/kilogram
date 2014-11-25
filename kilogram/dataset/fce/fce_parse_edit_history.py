@@ -66,8 +66,8 @@ def filter_grammar_edits(in_files, out_file):
                                 orig_text = orig_text.lower()
                                 new_text = new_text.lower()
                             # Decode entities
-                            orig_text = HTML_PARSER.unescape(orig_text).replace(u'£', u'$')
-                            new_text = HTML_PARSER.unescape(new_text).replace(u'£', u'$')
+                            orig_text = HTML_PARSER.unescape(orig_text)
+                            new_text = HTML_PARSER.unescape(new_text)
 
                             csvwriter.writerow([orig_text, new_text])
 filter_grammar_edits(args.files, args.out_file)
