@@ -220,8 +220,8 @@ class Edit(object):
 
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
-        self.text1 = strip_dash(text1).decode('utf-8')
-        self.text2 = strip_dash(text2).decode('utf-8')
+        self.text1 = strip_dash(text1).encode('utf-8')
+        self.text2 = strip_dash(text2).encode('utf-8')
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
