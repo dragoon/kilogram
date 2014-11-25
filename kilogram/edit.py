@@ -234,7 +234,7 @@ class Edit(object):
     def _pos_tag_socket(hostname, port, content):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((hostname, port))
-        s.sendall(content)
+        s.sendall(content.encode('utf-8'))
         s.shutdown(socket.SHUT_WR)
         data = ""
         while 1:
