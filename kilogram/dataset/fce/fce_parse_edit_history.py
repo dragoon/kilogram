@@ -10,6 +10,9 @@ from zipfile import ZipFile
 from lxml import etree
 from lxml.etree import tostring
 
+import HTMLParser
+HTML_PARSER = HTMLParser.HTMLParser()
+
 STRIP_NS_RE = re.compile(r'<NS type="{1,2}[A-Z]{1,3}"{1,2}/?>')
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -61,5 +64,9 @@ def filter_grammar_edits(in_files, out_file):
                             if orig_text.isupper():
                                 orig_text = orig_text.lower()
                                 new_text = new_text.lower()
+                            # Decode entities
+                            orig_text = HTML_PARSER.unescape(orig_text)
+                            new_text = HTML_PARSER.unescape(new_text)
+
                             csvwriter.writerow([orig_text, new_text])
 filter_grammar_edits(args.files, args.out_file)
