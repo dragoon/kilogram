@@ -210,6 +210,9 @@ class Edit(object):
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
+        def strip_dash(text):
+            return re.sub(r'\-{2,}', '-', text)
+
         def lowercase_token(token):
             if token == '.':
                 return ','
@@ -217,8 +220,8 @@ class Edit(object):
 
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
-        self.text1 = text1
-        self.text2 = text2
+        self.text1 = strip_dash(text1)
+        self.text2 = strip_dash(text2)
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
