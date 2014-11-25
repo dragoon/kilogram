@@ -18,7 +18,7 @@ for line in sys.stdin:
         else:
             # numeric replace
             # TODO: to lower or not to lower? That is the question.
-            new_word = number_replace(word.lower())
+            new_words.append(number_replace(word.lower()))
 
     orig_ngram = ' '.join(new_words)
     # replace apostrophes without duplicating
