@@ -3,7 +3,7 @@ from __future__ import division
 from collections import defaultdict, Counter
 import functools
 import multiprocessing
-from multiprocessing.pool import ThreadPool
+
 from datetime import datetime
 import socket
 
@@ -110,7 +110,7 @@ class EditCollection(object):
 
         # multiprocessing association measures population
 
-        pool = ThreadPool(12)
+        pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
