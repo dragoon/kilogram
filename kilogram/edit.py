@@ -105,8 +105,8 @@ class EditCollection(object):
 
     def get_feature_array(self, balanced_collection, substitutions):
         confusion_matrix = self.reverse_confusion_matrix()
-        feature_collection = []
-        feature_labels = []
+        features = []
+        labels = []
         print('Generating features from raw data')
 
         # multiprocessing association measures population
@@ -119,13 +119,13 @@ class EditCollection(object):
         collection = pool.map(get_single_feature1, balanced_collection)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        for feature_labels in collection:
+        for features_labels in collection:
             # avoid assertion errors
-            if feature_labels is not None:
-                feature_vecs, labels = feature_labels
-                feature_collection.extend(feature_vecs)
-                feature_labels.extend(labels)
-        return feature_collection, feature_labels
+            if features_labels is not None:
+                local_features, local_labels = features_labels
+                features.extend(local_features)
+                labels.extend(local_labels)
+        return features, labels
 
     def test_validation(self, substitutions, classifier, test_col):
         """
