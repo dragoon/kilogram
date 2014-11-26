@@ -53,7 +53,9 @@ for line in sys.stdin:
     #-----END-------------
 
     #---GEO ENTITIES-------
-    for ngram1 in ngrams:
+    cur_ngrams = list(ngrams)
+    cur_ngrams.append(orig_ngram)
+    for ngram1 in cur_ngrams:
         words = ngram1.split()
         for i in range(len(words), 0, -1):
             stop = 0
