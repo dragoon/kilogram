@@ -351,13 +351,12 @@ class Edit(object):
         # TODO: filter on ALLOWED_TYPES
         for ngram_type, ngrams in reversed(context_ngrams.items()):
             for ngram_pos, ngram in enumerate(ngrams):
-                if ngram and not is_useful(ngram.pos_tag):
+                if not ngram:
+                    continue
+                if not is_useful(ngram.pos_tag):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
-                if ngram:
-                    score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
-                else:
-                    score_dict = {}
+                score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 new_pos = 0
                 if ngram_pos == 0:
                     new_pos = -1
