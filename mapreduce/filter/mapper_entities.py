@@ -53,20 +53,21 @@ for line in sys.stdin:
     #-----END-------------
 
     #---GEO ENTITIES-------
-    words = orig_ngram.split()
-    for i in range(len(words), 0, -1):
-        stop = 0
-        for j, ngram in enumerate(nltk.ngrams(words, i)):
-            if ngram in CITIES:
-                stop = 1
-                new_words = []
-                new_words.extend(words[:j])
-                new_words.append('<CITY>')
-                new_words.extend(words[j+len(ngram):])
-                new_ngram = ' '.join(new_words)
-                ngrams.add(new_ngram.strip())
-        if stop:
-            break
+    for ngram1 in ngrams:
+        words = ngram1.split()
+        for i in range(len(words), 0, -1):
+            stop = 0
+            for j, ngram in enumerate(nltk.ngrams(words, i)):
+                if ngram in CITIES:
+                    stop = 1
+                    new_words = []
+                    new_words.extend(words[:j])
+                    new_words.append('<CITY>')
+                    new_words.extend(words[j+len(ngram):])
+                    new_ngram = ' '.join(new_words)
+                    ngrams.add(new_ngram.strip())
+            if stop:
+                break
     #-----END-------------
 
     for ngram in ngrams:
