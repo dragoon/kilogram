@@ -54,10 +54,11 @@ for line in sys.stdin:
 
     #---GEO ENTITIES-------
     words = orig_ngram.split()
-    for i in range(len(words), 0, -1):
+    for i in range(0, len(words)):
         stop = 0
-        for j, ngram in enumerate(nltk.ngrams(words, i)):
-            if ngram in CITIES:
+        for j in range(i, len(words)):
+            ngram = words[i:j+1]
+            if tuple(ngram) in CITIES:
                 stop = 1
                 new_words = []
                 new_words.extend(words[:j])
