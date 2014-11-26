@@ -12,6 +12,8 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     orig_ngram, num = line.split('\t')
+    if not MULTI_PUNCT_RE.search(ngram):
+        continue
 
     new_words = []
     for word in orig_ngram.split():
@@ -36,5 +38,4 @@ for line in sys.stdin:
         ngrams.add(ngram)
 
     for ngram in ngrams:
-        if not MULTI_PUNCT_RE.search(ngram):
-            print '%s\t%s' % (ngram, num)
+        print '%s\t%s' % (ngram, num)
