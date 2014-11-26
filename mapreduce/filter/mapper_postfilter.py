@@ -12,7 +12,7 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     orig_ngram, num = line.split('\t')
-    if not MULTI_PUNCT_RE.search(ngram):
+    if MULTI_PUNCT_RE.search(orig_ngram):
         continue
 
     new_words = []
