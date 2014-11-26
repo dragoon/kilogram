@@ -351,7 +351,7 @@ class Edit(object):
         # TODO: filter on ALLOWED_TYPES
         for ngram_type, ngrams in reversed(context_ngrams.items()):
             for ngram_pos, ngram in enumerate(ngrams):
-                if not is_useful(ngram.pos_tag):
+                if ngram and not is_useful(ngram.pos_tag):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 if ngram:
