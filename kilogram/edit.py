@@ -329,7 +329,8 @@ class Edit(object):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
             pos_set = [x[:2] for x in pos_seq]
-            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW'}
+            # TODO: ignore when prep is CC?
+            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', 'CC'}
             if len(pos_seq) == 2 and not useful.issuperset(pos_set):
                 result = False
             return result
