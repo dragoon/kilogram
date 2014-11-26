@@ -33,7 +33,9 @@ class EditCollection(object):
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PR', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_2gram',        # 1
+        'has_avg_2gram',         # 1
         'avg_rank_3gram',        # 2
+        'has_avg_3gram',         # 2
         #'avg_rank_4gram',        # 3
         'avg_pmi_2gram',         # 4
         'avg_pmi_3gram',         # 5
@@ -45,8 +47,11 @@ class EditCollection(object):
         'top_prep_count_3gram',  # 11
         #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',  # 13
+        'has_avg_position_-1',   # 13
         'avg_rank_position_0',   # 14
+        'has_avg_position_0',    # 14
         'avg_rank_position_1',   # 15
+        'has_avg_position_1',    # 15
     ]
     collection = None
     test_errors = None
@@ -400,6 +405,7 @@ class Edit(object):
             # TODO: take only longest n-gram for position
             for ngram_size in range(2, size+1):
                 feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
+                feature_vector.append(int(feature_vector[-1] != 50))
             for ngram_size in range(2, size+1):
                 feature_vector.append(avg_by_type.loc[subst]['score'].get(ngram_size, -10))
 
@@ -420,6 +426,7 @@ class Edit(object):
             # average rank by normalized position
             for position in (-1,0,1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
+                feature_vector.append(int(feature_vector[-1] != 50))
 
             # substitutions themselves
             feature_vector.extend([int(x == subst) for x in SUBST_LIST])
