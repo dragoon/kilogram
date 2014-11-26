@@ -383,11 +383,9 @@ class Edit(object):
             feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
             feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
             # START: zero prob indicator feature -----
-            feature_vector.append(int(not central_prob.empty))
-            if not central_prob.empty:
-                feature_vector.append(central_prob.loc[subst]['rank'])
-            else:
-                feature_vector.append(50)
+            feature_vector.append(len(set(central_prob['rank'].values)) > 1)
+            # 50 if filled by default
+            feature_vector.append(central_prob.loc[subst]['rank'])
             # END zero prob
             feature_vector.append(matrix.get(subst, 0)/matrix_sum)
 
