@@ -320,6 +320,15 @@ class Edit(object):
         if not self.pos_tokens:
             self._init_pos_tags()
 
+        def is_useful(pos_seq):
+            """Manually marked useless pos sequences, such a DT, PRP$, etc."""
+            result = True
+            pos_set = [x[:2] for x in pos_seq]
+            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW'}
+            if len(pos_seq) == 2 and not useful.issuperset(pos_set):
+                result = False
+            return result
+
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
             pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
@@ -342,6 +351,8 @@ class Edit(object):
         # TODO: filter on ALLOWED_TYPES
         for ngram_type, ngrams in reversed(context_ngrams.items()):
             for ngram_pos, ngram in enumerate(ngrams):
+                if not is_useful(ngram.pos_tag):
+                    continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 if ngram:
                     score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
@@ -382,13 +393,15 @@ class Edit(object):
             # TODO: take only longest n-gram for position
             feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
             feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
+
             # START: zero prob indicator feature -----
             feature_vector.append(len(set(central_prob['rank'].values)) > 1)
             # 50 if filled by default
             feature_vector.append(central_prob.loc[subst]['rank'])
             # END zero prob
-            feature_vector.append(matrix.get(subst, 0)/matrix_sum)
 
+            # reverse confusion matrix
+            feature_vector.append(matrix.get(subst, 0)/matrix_sum)
             # counts of a preposition on top of a ranking
             feature_vector.extend(list(top_type_counts.loc[subst].values))
 
