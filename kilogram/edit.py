@@ -366,8 +366,8 @@ class Edit(object):
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
                                            ngram_type, new_pos])
+        assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
-        assert len(df_substs) > 0
 
         # TODO: takes longest zero prob, may be also add zero-prob length as a feature
         central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
