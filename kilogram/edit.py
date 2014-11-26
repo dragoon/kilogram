@@ -19,6 +19,7 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
     try:
         return edit.get_single_feature(substitutions, top_pos_tags, confusion_matrix)
     except AssertionError:
+        print 'IGNORED EDIT:', edit
         return None
 
 
@@ -118,9 +119,12 @@ class EditCollection(object):
         collection = pool.map(get_single_feature1, balanced_collection)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        for feature_vecs, labels in collection:
-            feature_collection.extend(feature_vecs)
-            feature_labels.extend(labels)
+        for feature_labels in collection:
+            # avoid assertion errors
+            if feature_labels is not None:
+                feature_vecs, labels = feature_labels
+                feature_collection.extend(feature_vecs)
+                feature_labels.extend(labels)
         return feature_collection, feature_labels
 
     def test_validation(self, substitutions, classifier, test_col):
@@ -167,6 +171,7 @@ class EditCollection(object):
         total_errors = len([1 for edit in test_col if edit.is_error])
         print('Total errors: %s' % total_errors)
         for edit, labels_features in zip(test_col, test_collection):
+            # avoid assertion errors
             if labels_features is None:
                 continue
             features = labels_features[0]
