@@ -395,8 +395,10 @@ class Edit(object):
 
             # START: zero prob indicator feature -----
             feature_vector.append(len(set(central_prob['rank'].values)) > 1)
-            # 50 if filled by default
-            feature_vector.append(central_prob.loc[subst]['rank'])
+            if feature_vector[-1]:
+                feature_vector.append(central_prob.loc[subst]['rank'])
+            else:
+                feature_vector.append(50)
             # END zero prob
 
             # reverse confusion matrix
