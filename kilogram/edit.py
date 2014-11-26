@@ -38,15 +38,15 @@ class EditCollection(object):
         'avg_pmi_2gram',         # 4
         'avg_pmi_3gram',         # 5
         #'avg_pmi_4gram',         # 6
-        'has_zero_ngram_2_or_3', # 7
+        'has_zero_ngram',        # 7
         'zero_ngram_rank',       # 8
-        'conf_matrix_score',      # 9
+        'conf_matrix_score',     # 9
         'top_prep_count_2gram',  # 10
         'top_prep_count_3gram',  # 11
         #'top_prep_count_4gram',  # 12
-        'avg_rank_position_-1',      # 13
-        'avg_rank_position_0',       # 14
-        'avg_rank_position_1',       # 15
+        'avg_rank_position_-1',  # 13
+        'avg_rank_position_0',   # 14
+        'avg_rank_position_1',   # 15
     ]
     collection = None
     test_errors = None
@@ -359,10 +359,12 @@ class Edit(object):
             for ngram_pos, ngram in enumerate(ngrams):
                 if not ngram:
                     continue
-                if not is_useful(ngram.pos_tag):
-                    continue
+                #if not is_useful(ngram.pos_tag):
+                #    continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                if not score_dict:
+                    continue
                 new_pos = 0
                 if ngram_pos == 0:
                     new_pos = -1
@@ -396,8 +398,10 @@ class Edit(object):
 
             feature_vector = []
             # TODO: take only longest n-gram for position
-            feature_vector.extend(list(avg_by_type.loc[subst]['rank'].values))
-            feature_vector.extend(list(avg_by_type.loc[subst]['score'].values))
+            for ngram_size in range(2, size+1):
+                feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
+            for ngram_size in range(2, size+1):
+                feature_vector.append(avg_by_type.loc[subst]['score'].get(ngram_size, -10))
 
             # START: zero prob indicator feature -----
             feature_vector.append(len(set(central_prob['rank'].values)) > 1)
@@ -410,10 +414,12 @@ class Edit(object):
             # reverse confusion matrix
             feature_vector.append(matrix.get(subst, 0)/matrix_sum)
             # counts of a preposition on top of a ranking
-            feature_vector.extend(list(top_type_counts.loc[subst].values))
+            for ngram_size in range(2, size+1):
+                feature_vector.append(top_type_counts.loc[subst].get(ngram_size, 0))
 
             # average rank by normalized position
-            feature_vector.extend(list(avg_by_position.loc[subst]['rank'].values))
+            for position in (-1,0,1):
+                feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
 
             # substitutions themselves
             feature_vector.extend([int(x == subst) for x in SUBST_LIST])
