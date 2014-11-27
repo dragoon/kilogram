@@ -218,6 +218,7 @@ class EditCollection(object):
 
 
 class Edit(object):
+    USEFUL_TAGS = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', ':', 'CC', 'TO'}
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
@@ -335,8 +336,7 @@ class Edit(object):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
             pos_set = [x[:2] for x in pos_seq]
-            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', ':', 'CC', 'TO'}
-            if len(pos_seq) == 2 and not useful.issuperset(pos_set):
+            if len(pos_seq) == 2 and not Edit.USEFUL_TAGS.issuperset(pos_set):
                 result = False
             return result
 
@@ -364,8 +364,8 @@ class Edit(object):
             for ngram_pos, ngram in enumerate(ngrams):
                 if not ngram:
                     continue
-                if not is_useful(ngram.pos_tag):
-                    continue
+                #if not is_useful(ngram.pos_tag):
+                #    continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 if not score_dict:
