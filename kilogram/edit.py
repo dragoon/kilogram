@@ -26,7 +26,7 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
     except TApplicationException:
         print 'EXCEPTION EDIT', edit
         print
-        return None
+        raise
 
 
 # Define host and port for Stanford POS tagger service
