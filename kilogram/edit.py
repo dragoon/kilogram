@@ -9,6 +9,7 @@ import socket
 
 import nltk
 import re
+from thrift.Thrift import TApplicationException
 from .lang import number_replace
 from .ngram import EditNgram
 
@@ -20,6 +21,11 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
         return edit.get_single_feature(substitutions, top_pos_tags, confusion_matrix)
     except AssertionError:
         print 'IGNORED EDIT:', edit
+        print
+        return None
+    except TApplicationException:
+        print 'EXCEPTION EDIT', edit
+        print
         return None
 
 
@@ -335,7 +341,6 @@ class Edit(object):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
             pos_set = [x[:2] for x in pos_seq]
-            # TODO: ignore when prep is CC?
             useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', ':', 'CC', 'TO'}
             if len(pos_seq) == 2 and not useful.issuperset(pos_set):
                 result = False
