@@ -82,8 +82,8 @@ class EditCollection(object):
         num_class0 = int(class0_count*class0_k)
         num_class1 = int(class1_count*class1_k)
 
-        class0_col = resample(class0_col, replace=False, n_samples=num_class0)
-        class1_col = resample(class1_col, replace=False, n_samples=num_class1)
+        class0_col = resample(class0_col, replace=False, n_samples=num_class0, random_state=1)
+        class1_col = resample(class1_col, replace=False, n_samples=num_class1, random_state=1)
         col = np.concatenate([class1_col, class0_col])
         labels = np.concatenate((np.ones(num_class1), np.zeros(num_class0)))
         return col, labels
