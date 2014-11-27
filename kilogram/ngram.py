@@ -20,7 +20,7 @@ class Ngram(object):
             try:
                 result.update(NgramService.get_freq(ngram))
             except TApplicationException:
-                print 'EXCEPTION EDIT', ngram
+                print 'EXCEPTION NGRAM', ngram
                 print
                 raise
         return FreqDist(result)
