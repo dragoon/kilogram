@@ -122,7 +122,7 @@ class EditCollection(object):
         #get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
         #                                        self.TOP_POS_TAGS, confusion_matrix)
         #collection = pool.map(get_single_feature1, balanced_collection)
-        collection = [x.get_single_feature(substitutions, self.TOP_POS_TAGS, confusion_matrix) for x in balanced_collection]
+        collection = [get_single_feature_local(substitutions, self.TOP_POS_TAGS, confusion_matrix, x) for x in balanced_collection]
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         for features_labels in collection:
