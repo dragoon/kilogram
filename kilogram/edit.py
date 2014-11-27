@@ -263,7 +263,8 @@ class Edit(object):
                 pos_tag = 'NN'
             return pos_tag
         pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
-        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
+        # get rid of possessive endings
+        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split() if x[-3:] != 'POS']
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
@@ -335,7 +336,7 @@ class Edit(object):
             result = True
             pos_set = [x[:2] for x in pos_seq]
             # TODO: ignore when prep is CC?
-            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', 'CC'}
+            useful = {'VB', 'NN', 'IN', 'JJ', 'RB', 'FW', '.', ',', ':', 'CC', 'TO'}
             if len(pos_seq) == 2 and not useful.issuperset(pos_set):
                 result = False
             return result
