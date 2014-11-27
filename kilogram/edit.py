@@ -122,7 +122,7 @@ class EditCollection(object):
 
         # multiprocessing association measures population
 
-        pool = multiprocessing.Pool(12)
+        pool = multiprocessing.Pool(10)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
@@ -146,7 +146,7 @@ class EditCollection(object):
         self.test_error_skips = []
         conf_matrix = self.reverse_confusion_matrix()
 
-        pool = multiprocessing.Pool(12)
+        pool = multiprocessing.Pool(10)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
