@@ -17,12 +17,7 @@ class Ngram(object):
         """
         result = {}
         for ngram in ngrams:
-            try:
-                result.update(NgramService.get_freq(ngram))
-            except TApplicationException:
-                print 'EXCEPTION NGRAM', ngram
-                print
-                raise
+            result.update(NgramService.get_freq(ngram))
         return FreqDist(result)
 
 
