@@ -53,7 +53,7 @@ class NgramService(object):
             cls.h_start = time.time()
             cls.h_rate = 0
         try:
-            res = cls.h_client.get(table, ngram.encode('utf-8'), "ngram:cnt", None)
+            res = cls.h_client.get(table, ngram.encode('utf-8'), "ngram:value", None)
             return long(res[0].value)
         except (ValueError, IndexError):
             return 0
