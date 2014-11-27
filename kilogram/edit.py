@@ -57,6 +57,7 @@ class EditCollection(object):
     collection = None
     test_errors = None
     test_error_skips = None
+    test_false_errors = None
 
     def __init__(self, collection):
         """collection - array of Edit objects"""
@@ -138,6 +139,7 @@ class EditCollection(object):
         """
         self.test_errors = []
         self.test_error_skips = []
+        self.test_false_errors = [] 
         conf_matrix = self.reverse_confusion_matrix()
 
         pool = multiprocessing.Pool(12)
@@ -198,6 +200,8 @@ class EditCollection(object):
                 if edit.is_error:
                     self.test_errors.append(edit)
                     false_pos_err += 1
+                else:
+                    self.test_false_errors.append(edit)
                 false_pos += 1
         data = {'true': true_pos, 'false': false_pos, 'true_err': true_pos_err,
                 'min_split': classifier.min_samples_split, 'depth': classifier.max_depth,
