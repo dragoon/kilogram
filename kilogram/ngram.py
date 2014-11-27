@@ -17,7 +17,12 @@ class Ngram(object):
         """
         result = {}
         for ngram in ngrams:
-            result.update(NgramService.get_freq(ngram))
+            try:
+                result.update(NgramService.get_freq(ngram))
+            except TApplicationException:
+                print 'EXCEPTION EDIT', ngram
+                print
+                raise
         return FreqDist(result)
 
 
@@ -53,12 +58,7 @@ class EditNgram(Ngram):
     def association(self, measure='pmi'):
         if measure in self._association_dict:
             return self._association_dict[measure]
-        try:
-            dist = self._get_freq_distributions()
-        except TApplicationException:
-            print 'EXCEPTION EDIT', self.ngram
-            print
-            raise
+        dist = self._get_freq_distributions()
 
         if len(self.ngram) == 2:
             finder = BigramCollocationFinder(*dist)
