@@ -364,8 +364,8 @@ class Edit(object):
             for ngram_pos, ngram in enumerate(ngrams):
                 if not ngram:
                     continue
-                #if not is_useful(ngram.pos_tag):
-                #    continue
+                if not is_useful(ngram.pos_tag):
+                    continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 if not score_dict:
