@@ -1,6 +1,7 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
+from thrift.Thrift import TApplicationException
 from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
 
@@ -52,7 +53,12 @@ class EditNgram(Ngram):
     def association(self, measure='pmi'):
         if measure in self._association_dict:
             return self._association_dict[measure]
-        dist = self._get_freq_distributions()
+        try:
+            dist = self._get_freq_distributions()
+        except TApplicationException:
+            print 'EXCEPTION EDIT', self.ngram
+            print
+            raise
 
         if len(self.ngram) == 2:
             finder = BigramCollocationFinder(*dist)

@@ -9,7 +9,6 @@ import socket
 
 import nltk
 import re
-from thrift.Thrift import TApplicationException
 from .lang import number_replace
 from .ngram import EditNgram
 
@@ -23,10 +22,6 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
         print 'IGNORED EDIT:', edit
         print
         return None
-    except TApplicationException:
-        print 'EXCEPTION EDIT', edit
-        print
-        raise
 
 
 # Define host and port for Stanford POS tagger service
@@ -122,7 +117,7 @@ class EditCollection(object):
 
         # multiprocessing association measures population
 
-        pool = multiprocessing.Pool(10)
+        pool = multiprocessing.Pool(2)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
@@ -146,7 +141,7 @@ class EditCollection(object):
         self.test_error_skips = []
         conf_matrix = self.reverse_confusion_matrix()
 
-        pool = multiprocessing.Pool(10)
+        pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
         get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
