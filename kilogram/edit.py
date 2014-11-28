@@ -31,7 +31,7 @@ ST_PORT = 2020
 
 class EditCollection(object):
     """Collections of edit objects for Machine Learning and evaluation routines"""
-    TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PRP', 'RB', 'DT', 'OTHER']
+    TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_2gram',        # 1
         'has_avg_2gram',         # 1
@@ -48,11 +48,11 @@ class EditCollection(object):
         'top_prep_count_3gram',  # 11
         #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',  # 13
-        'has_avg_position_-1',   # 13
+        #'has_avg_position_-1',   # 13
         'avg_rank_position_0',   # 14
-        'has_avg_position_0',    # 14
+        #'has_avg_position_0',    # 14
         'avg_rank_position_1',   # 15
-        'has_avg_position_1',    # 15
+        #'has_avg_position_1',    # 15
     ]
     collection = None
     test_errors = None
@@ -431,7 +431,7 @@ class Edit(object):
             # average rank by normalized position
             for position in (-1,0,1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
-                feature_vector.append(int(feature_vector[-1] != 50))
+                #feature_vector.append(int(feature_vector[-1] != 50))
 
             # substitutions themselves
             feature_vector.extend([int(x == subst) for x in SUBST_LIST])
