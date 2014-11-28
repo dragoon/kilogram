@@ -34,9 +34,9 @@ class EditCollection(object):
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_2gram',        # 1
-        'has_avg_2gram',         # 1
+        #'has_avg_2gram',         # 1
         'avg_rank_3gram',        # 2
-        'has_avg_3gram',         # 2
+        #'has_avg_3gram',         # 2
         #'avg_rank_4gram',        # 3
         'avg_pmi_2gram',         # 4
         'avg_pmi_3gram',         # 5
@@ -410,7 +410,7 @@ class Edit(object):
             # TODO: take only longest n-gram for position
             for ngram_size in range(2, size+1):
                 feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
-                feature_vector.append(int(feature_vector[-1] != 50))
+                #feature_vector.append(int(feature_vector[-1] != 50))
             for ngram_size in range(2, size+1):
                 feature_vector.append(avg_by_type.loc[subst]['score'].get(ngram_size, -10))
 
