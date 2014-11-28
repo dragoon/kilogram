@@ -31,7 +31,7 @@ ST_PORT = 2020
 
 class EditCollection(object):
     """Collections of edit objects for Machine Learning and evaluation routines"""
-    TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PRP', 'PRP$', 'RB', 'DT', 'OTHER']
+    TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'PRP', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_2gram',        # 1
         'has_avg_2gram',         # 1
