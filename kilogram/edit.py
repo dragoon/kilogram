@@ -163,8 +163,7 @@ class EditCollection(object):
 
             if top_suggestions:
                 top_suggestions.sort(reverse=True, key=lambda x: x[0])
-                prep = top_suggestions[0][1]
-                return prep
+                return zip(*top_suggestions)[1]
             return None
 
         true_pos = 0
@@ -182,15 +181,15 @@ class EditCollection(object):
             if labels_features is None:
                 continue
             features = labels_features[0]
-            predicted_subst = predict_substitution(features, classifier)
-            if predicted_subst is None:
+            predicted_substs = predict_substitution(features, classifier)
+            if predicted_substs is None or edit.edit2 in predicted_substs:
                 skips += 1
                 if edit.is_error:
-                    self.test_error_skips.append(edit)
+                    self.test_error_skips.append((edit, predicted_substs))
                     skip_err += 1
                 continue
             is_valid = False
-            if edit.edit2 == predicted_subst:
+            if edit.edit2 == predicted_substs[0]:
                 is_valid = True
             if is_valid:
                 if edit.is_error:
@@ -198,10 +197,10 @@ class EditCollection(object):
                 true_pos += 1
             else:
                 if edit.is_error:
-                    self.test_errors.append((edit, predicted_subst))
+                    self.test_errors.append((edit, predicted_substs))
                     false_pos_err += 1
                 else:
-                    self.test_false_errors.append((edit, predicted_subst))
+                    self.test_false_errors.append((edit, predicted_substs))
                 false_pos += 1
         data = {'true': true_pos, 'false': false_pos, 'true_err': true_pos_err,
                 'min_split': classifier.min_samples_split, 'depth': classifier.max_depth,
