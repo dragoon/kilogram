@@ -182,7 +182,7 @@ class EditCollection(object):
                 continue
             features = labels_features[0]
             predicted_substs = predict_substitution(features, classifier)
-            if predicted_substs is None or edit.edit1 in predicted_substs:
+            if predicted_substs is None: # or edit.edit1 in predicted_substs: -- improves F1 by ~ 0.6%: evaluate more
                 skips += 1
                 if edit.is_error:
                     self.test_error_skips.append((edit, predicted_substs))
