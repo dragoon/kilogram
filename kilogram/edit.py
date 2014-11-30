@@ -222,7 +222,7 @@ class EditCollection(object):
 
 class Edit(object):
     # increases F1 by ~4-5%
-    USEFUL_TAGS = {',', '.', ':', 'FW', 'IN', 'JJ', 'NN', 'VB', 'RB', 'CD', "''"}
+    USEFUL_TAGS = {',', '.', ':', 'FW', 'IN', 'JJ', 'NN', 'VB', 'RB', "''"}
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
