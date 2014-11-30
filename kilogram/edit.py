@@ -198,10 +198,10 @@ class EditCollection(object):
                 true_pos += 1
             else:
                 if edit.is_error:
-                    self.test_errors.append(edit)
+                    self.test_errors.append((edit, predicted_subst))
                     false_pos_err += 1
                 else:
-                    self.test_false_errors.append(edit)
+                    self.test_false_errors.append((edit, predicted_subst))
                 false_pos += 1
         data = {'true': true_pos, 'false': false_pos, 'true_err': true_pos_err,
                 'min_split': classifier.min_samples_split, 'depth': classifier.max_depth,
