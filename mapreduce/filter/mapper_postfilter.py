@@ -3,7 +3,6 @@
 import sys
 from kilogram.lang import number_replace
 import re
-MULTI_PUNCT_RE = re.compile(r'[^a-zA-Z0-9_\s\-]{2,}')
 
 
 # input comes from STDIN (standard input)
@@ -12,8 +11,6 @@ for line in sys.stdin:
     line = line.strip()
     # split the line into words
     orig_ngram, num = line.split('\t')
-    if MULTI_PUNCT_RE.search(orig_ngram):
-        continue
 
     new_words = []
     for word in orig_ngram.split():
