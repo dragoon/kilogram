@@ -26,7 +26,6 @@ class EditNgram(Ngram):
         :param edit_pos: position of substitution in an n-gram
         :type ngram: list
         :type edit_pos: int
-        :type pos_tag: list
         """
         assert hasattr(ngram, '__iter__')
         self.ngram = ngram
