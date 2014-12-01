@@ -20,8 +20,8 @@ parser.add_argument('files', nargs='+', help='ngram/count tab-separated files')
 args = parser.parse_args()
 MONGO_CLIENT = pymongo.MongoClient(host=args.host)
 DB = MONGO_CLIENT[args.db]
-if 'default' in DB.collection_names():
-    DB.drop_collection('default')
+#if 'default' in DB.collection_names():
+#    DB.drop_collection('default')
 COLLECTION = DB['default']
 
 
