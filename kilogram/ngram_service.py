@@ -10,6 +10,7 @@ from .hbase import Hbase
 import pymongo
 
 SUBSTITUTION_TOKEN = 'SUB'
+SKIP_START = '<SKIP:'
 
 
 class NgramService(object):
@@ -58,6 +59,14 @@ class NgramService(object):
         except (ValueError, IndexError):
             return 0
 
+    @staticmethod
+    def _tuple(ngram):
+        """
+        :type ngram: list
+        :returns: tuple with replacement if necessary
+        """
+        return tuple([x for x in ngram if not x.startswith(SKIP_START)])
+
     @classmethod
     def get_freq(cls, ngram):
         """Get ngram frequency from Google Ngram corpus"""
@@ -81,18 +90,18 @@ class NgramService(object):
             for subst in cls.substitutions:
                 cur_ngram = split_ngram[:]
                 cur_ngram[sub_index] = subst
-                res[tuple(cur_ngram)] = long(counts.get(subst, 0))
+                res[cls._tuple(cur_ngram)] = long(counts.get(subst, 0))
         else:
             if split_len == 1:
                 try:
                     count = cls.m_1grams.find_one({'ngram': ngram})['count']
                 except:
                     count = 0
-                # Stupid NLTK needs a word when 1gram, and tuple if n>1
+                # Stupid NLTK needs a word when n==1, and tuple if n>1
                 res = {ngram: count}
             elif split_len == 2:
                 count = cls.hbase_count('ngrams2', ngram)
-                res = {tuple(split_ngram): count}
+                res = {cls._tuple(split_ngram): count}
             else:
                 raise Exception('%d-grams are not supported' % split_len)
         return res

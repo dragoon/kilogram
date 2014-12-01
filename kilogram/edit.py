@@ -48,11 +48,8 @@ class EditCollection(object):
         'top_prep_count_3gram',  # 11
         #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',  # 13
-        #'has_avg_position_-1',   # 13
         'avg_rank_position_0',   # 14
-        #'has_avg_position_0',    # 14
         'avg_rank_position_1',   # 15
-        #'has_avg_position_1',    # 15
     ]
     collection = None
     test_errors = None
@@ -182,7 +179,7 @@ class EditCollection(object):
                 continue
             features = labels_features[0]
             predicted_substs = predict_substitution(features, classifier)
-            if predicted_substs is None: # or edit.edit1 in predicted_substs: -- improves F1 by ~ 0.6%: evaluate more
+            if predicted_substs is None: # or edit.edit1 in predicted_substs: -- improves F1 by ~ 1%: evaluate more
                 skips += 1
                 if edit.is_error:
                     self.test_error_skips.append((edit, predicted_substs))
@@ -430,7 +427,6 @@ class Edit(object):
             # average rank by normalized position
             for position in (-1,0,1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
-                #feature_vector.append(int(feature_vector[-1] != 50))
 
             # substitutions themselves
             feature_vector.extend([int(x == subst) for x in SUBST_LIST])
