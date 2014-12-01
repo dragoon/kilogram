@@ -20,16 +20,25 @@ for line in sys.stdin:
     dt_index = [i for i, word in enumerate(words) if word in DT_STRIPS]
 
     # Only one DT and not on the last position
-    if not dt_index or len(dt_index) > 1 or dt_index[0] == len(words)-1:
+    if not dt_index or len(dt_index) > 1:
         continue
     words[dt_index[0]] = 'DT'
+
+    allowed_indexes = [0, 1]
 
     if FILTER is not None:
         if len(words) not in {3, 4}:
             continue
-        if not FILTER.intersection(words):
+        if dt_index[0] not in [x+1 for x in allowed_indexes]:
+            continue
+        sub_index = [i for i, word in enumerate(words) if word in FILTER]
+        if not sub_index or len(sub_index) > 1:
+            continue
+        if sub_index[0] not in allowed_indexes:
             continue
     else:
+        if dt_index[0] not in allowed_indexes:
+            continue
         if len(words) not in {2, 3}:
             continue
 
