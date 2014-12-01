@@ -3,7 +3,7 @@
 import sys
 from kilogram.lang import number_replace
 import re
-MULTI_PUNCT_RE = re.compile(r'[^a-zA-Z0-9_\s]{2,}')
+MULTI_PUNCT_RE = re.compile(r'[^a-zA-Z0-9_\s\-]{2,}')
 
 
 # input comes from STDIN (standard input)
