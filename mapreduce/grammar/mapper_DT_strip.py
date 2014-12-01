@@ -22,7 +22,7 @@ for line in sys.stdin:
     # Only one DT and not on the last position
     if not dt_index or len(dt_index) > 1:
         continue
-    words[dt_index[0]] = 'DT'
+    words[dt_index[0]] = '<SKIP:DT>'
 
     allowed_indexes = [0, 1]
 
