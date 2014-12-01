@@ -28,8 +28,7 @@ class NgramService(object):
 
         cls.m_client = pymongo.MongoClient(host=mongo_host[0], port=int(mongo_host[1]))
         cls.m_1grams = cls.m_client['1grams']['default']
-        cls.m_2grams = cls.m_client['2grams']['default']
-        cls.m_3grams = cls.m_client['3grams']['default']
+        cls.m_ngrams = cls.m_client['ngrams']['default']
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -76,10 +75,8 @@ class NgramService(object):
             sub_index = split_ngram.index(SUBSTITUTION_TOKEN)
             if split_len == 1:
                 return cls.substitution_counts
-            if split_len == 2:
-                res = cls.m_2grams.find_one({'ngram': ngram})
-            elif split_len == 3:
-                res = cls.m_3grams.find_one({'ngram': ngram})
+            if 1 < split_len < 5:
+                res = cls.m_ngrams.find_one({'ngram': ngram})
             else:
                 raise Exception('%d-grams are not supported yet' % split_len)
             try:
@@ -99,7 +96,7 @@ class NgramService(object):
                     count = 0
                 # Stupid NLTK needs a word when n==1, and tuple if n>1
                 res = {ngram: count}
-            elif split_len == 2:
+            elif 2 <= split_len <= 3:
                 count = cls.hbase_count('ngrams2', ngram)
                 res = {cls._tuple(split_ngram): count}
             else:
