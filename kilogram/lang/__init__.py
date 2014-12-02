@@ -1,5 +1,6 @@
 import re
 
+DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its'}
 
 FLOAT_REGEX = r'(?:[1-9]\d*|0)(?:[\.,]\d+)?'
 

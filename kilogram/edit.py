@@ -9,7 +9,7 @@ import socket
 
 import nltk
 import re
-from .lang import number_replace
+from .lang import number_replace, DT_STRIPS
 from .ngram import EditNgram
 
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
@@ -328,7 +328,7 @@ class Edit(object):
         self._ngram_context[size] = result_ngrams
         return result_ngrams
 
-    def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=3):
+    def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=4):
         import pandas as pd
         if not self.pos_tokens:
             self._init_pos_tags()
@@ -368,6 +368,14 @@ class Edit(object):
                 if not is_useful(ngram.pos_tag):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
+                if ngram_type == 4:
+                    if subst_pos == 1 and ngram.ngram[2] in DT_STRIPS:
+                        ngram_temp = list(ngram.ngram)
+                        ngram_temp[2] = '<SKIP:DT>'
+                        ngram.ngram = ngram_temp
+                    else:
+                        continue
+
                 score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                 if not score_dict:
                     continue
@@ -383,7 +391,6 @@ class Edit(object):
         assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
 
-        # TODO: takes longest zero prob, may be also add zero-prob length as a feature
         central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
 
@@ -403,16 +410,19 @@ class Edit(object):
         for subst in SUBST_LIST:
 
             feature_vector = []
-            # TODO: take only longest n-gram for position
-            for ngram_size in range(2, size+1):
+            # TODO: take only longest n-gram for position?
+            for ngram_size in range(2, 4):
                 feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
                 feature_vector.append(int(feature_vector[-1] != 50))
-            for ngram_size in range(2, size+1):
+            for ngram_size in range(2, 4):
                 feature_vector.append(avg_by_type.loc[subst]['score'].get(ngram_size, -10))
 
             # START: zero prob indicator feature -----
-            feature_vector.append(len(set(central_prob['rank'].values)) > 1)
-            if feature_vector[-1]:
+            central_prob_len = 0
+            if len(central_prob) > 0:
+                central_prob_len = central_prob['type'].values[0]
+            feature_vector.append(central_prob_len)
+            if central_prob_len > 0:
                 feature_vector.append(central_prob.loc[subst]['rank'])
             else:
                 feature_vector.append(50)
@@ -421,11 +431,11 @@ class Edit(object):
             # reverse confusion matrix
             feature_vector.append(matrix.get(subst, 0)/matrix_sum)
             # counts of a preposition on top of a ranking
-            for ngram_size in range(2, size+1):
+            for ngram_size in range(2, 4):
                 feature_vector.append(top_type_counts.loc[subst].get(ngram_size, 0))
 
             # average rank by normalized position
-            for position in (-1,0,1):
+            for position in (-1, 0, 1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
 
             # substitutions themselves

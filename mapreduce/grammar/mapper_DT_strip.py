@@ -3,8 +3,7 @@
 
 import os
 import sys
-
-DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its'}
+from kilogram.lang import DT_STRIPS
 
 FILTER = None
 FILTER_FILE = os.environ.get('FILTER_FILE')
