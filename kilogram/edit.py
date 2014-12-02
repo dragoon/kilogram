@@ -368,7 +368,7 @@ class Edit(object):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 if ngram_type == 4:
-                    if subst_pos == 1 and (ngram.ngram[2] in DT_STRIPS or (ngram.pos_tag[2] == 'DT' and ngram.pos_tag[3][:2] == 'NN')):
+                    if subst_pos == 1 and ngram.ngram[2] in DT_STRIPS:# or (ngram.pos_tag[2] == 'DT' and ngram.pos_tag[3][:2] == 'NN')):
                         ngram_temp = list(ngram.ngram)
                         ngram_temp[2] = '<SKIP:DT>'
                         ngram.ngram = ngram_temp
