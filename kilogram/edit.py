@@ -265,8 +265,7 @@ class Edit(object):
                 pos_tag = 'NN'
             return pos_tag
         pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
-        # get rid of possessive endings
-        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split() if x[-3:] != 'POS']
+        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
