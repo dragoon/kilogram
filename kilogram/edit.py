@@ -219,7 +219,8 @@ class EditCollection(object):
 
 class Edit(object):
     # increases F1 by ~4-5%
-    USEFUL_TAGS = {',', '.', ':', 'FW', 'IN', 'JJ', 'NN', 'VB', 'RB'} # CD doesn't improve - why?
+    #USEFUL_TAGS = {',', '.', ':', 'FW', 'IN', 'JJ', 'NN', 'VB', 'RB'} # CD doesn't improve - why?
+    IGNORE_TAGS = {'DT'}
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
@@ -336,7 +337,7 @@ class Edit(object):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
             pos_set = [x[:2] for x in pos_seq]
-            if len(pos_seq) == 2 and not Edit.USEFUL_TAGS.issuperset(pos_set):
+            if len(pos_seq) == 2 and not Edit.IGNORE_TAGS.intersection(pos_set):
                 result = False
             return result
 
