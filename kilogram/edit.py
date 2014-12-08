@@ -218,9 +218,8 @@ class EditCollection(object):
 
 
 class Edit(object):
-    # increases F1 by ~4-5%
-    #USEFUL_TAGS = {',', '.', ':', 'FW', 'IN', 'JJ', 'NN', 'VB', 'RB'} # CD doesn't improve - why?
-    IGNORE_TAGS = {'DT'}
+    # increases F1 by ~6-7%
+    IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
