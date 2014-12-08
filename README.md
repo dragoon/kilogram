@@ -1,5 +1,5 @@
 # Kilogram
-### a collection of utils for large n-gram corpora
+### Collection of utils for large n-gram corpora
 
 ### Available dataset parsers:
 
