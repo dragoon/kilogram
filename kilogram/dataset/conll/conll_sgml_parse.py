@@ -25,9 +25,9 @@ def extract_grammar_edits(in_files, out_file):
         for in_file in in_files:
             with open(in_file, 'r') as input_f:
                 values = {}
+                corrections = []
                 for line in input_f:
                     # need to stack the corrections to replace from the end
-                    corrections = []
                     if not line.startswith("<"):
                         # paragraph
                         paragraphs[-1]['orig'] += line.strip()
