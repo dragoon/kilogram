@@ -26,15 +26,22 @@ def extract_grammar_edits(in_files, out_file):
             with open(in_file, 'r') as input_f:
                 values = {}
                 for line in input_f:
+                    # need to stack the corrections to replace from the end
+                    corrections = []
                     if not line.startswith("<"):
                         # paragraph
                         paragraphs[-1]['orig'] += line.strip()
                         paragraphs[-1]['new'] += line.strip()
                     elif line.startswith('<TEXT>'):
                         paragraphs = []
-                    elif line.startswith('<P>'):
+                        corrections = []
+                    elif line.startswith('<P>') or line.startswith('<TITLE>'):
                         paragraphs.append({'orig': '', 'new': ''})
                     elif line.startswith('</DOC>'):
+                        # make corrections
+                        for values in reversed(corrections):
+                            new_par = paragraphs[int(values['start_par'])]['new']
+                            paragraphs[int(values['start_par'])]['new'] = new_par[:int(values['start_off'])] + values['correction'] + new_par[int(values['end_off']):]
                         # write paragraphs to output
                         for p in paragraphs:
                             csvwriter.writerow([p['orig'], p['new']])
@@ -43,9 +50,9 @@ def extract_grammar_edits(in_files, out_file):
                         values = dict([x.split('=') for x in line.strip()[9:-1].replace('"', '').split()])
                         if values['start_par'] != values['end_par']:
                             continue
+                        corrections.append(values)
                     elif line.startswith('<CORRECTION>'):
-                        new_par = paragraphs[int(values['start_par'])]['new']
-                        paragraphs[int(values['start_par'])]['new'] = new_par[:int(values['start_off'])] + line.strip()[12:-13] + new_par[int(values['end_off']):]
+                        values['correction'] = line.strip()[12:-13]
 
 
 extract_grammar_edits(args.files, args.out_file)
