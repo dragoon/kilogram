@@ -83,18 +83,22 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                     ngram1, ngram2 = ' '.join(edit1[i1:i2]), ' '.join(edit2[j1:j2])
                     #if _is_garbage(ngram1, ngram2):
                     #    continue
-                    # TODO: works only for unigrams
-                    # extract merged edits into unigrams is match substitutions
+                    # TODO: works only for unigram substitutions
+                    # extract merged edits into unigrams that match substitutions
                     if substitutions:
                         index1 = [(ix, i) for ix, i in enumerate(range(i1, i2)) if edit1[i] in substitutions]
                         index2 = [(ix, i) for ix, i in enumerate(range(j1, j2)) if edit2[i] in substitutions]
-                        if len(index1) != 1 or len(index2) != 1 or index1[0][0] != index2[0][0]:
+                        if len(index1) != len(index2) or zip(*index1)[0] != zip(*index2)[0]:
                             continue
-                        ngram1, ngram2 = edit1[index1[0][1]], edit2[index2[0][1]]
-                        i1, i2 = index1[0][1], index1[0][1]+1
-                        j1, j2 = index2[0][1], index2[0][1]+1
-                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
-                    edit_n += 1
+                        for i1, i2 in zip(zip(*index1)[1], zip(*index2)[1]):
+                            ngram1, ngram2 = edit1[i1], edit2[i2]
+                            i1, i2 = i1, i1+1
+                            j1, j2 = i2, i2+1
+                            edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
+                            edit_n += 1
+                    else:
+                        edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
+                        edit_n += 1
 
             # Add all other substitution if supplied
             # TODO: works only for unigrams
