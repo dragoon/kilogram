@@ -45,11 +45,16 @@ def extract_grammar_edits(in_files, out_file):
                             if len(nonoverlap_corrs) > 0 and int(values['start_off']) >= nonoverlap_corrs[-1]['start_off'] and \
                                     int(values['end_off']) <= nonoverlap_corrs[-1]['end_off']:
                                 continue
-                            else:
-                                values['start_off'] = int(values['start_off'])
-                                values['end_off'] = int(values['end_off'])
-                                values['start_par'] = int(values['start_par'])
-                                nonoverlap_corrs.append(values)
+                            if len(nonoverlap_corrs) > 0 and int(values['start_off']) == nonoverlap_corrs[-1]['start_off'] and \
+                                    int(values['end_off']) >= nonoverlap_corrs[-1]['end_off']:
+                                # change offsets if overlapping replacement
+                                nonoverlap_corrs[-1]['end_off'] = nonoverlap_corrs[-1]['start_off']
+                                continue
+
+                            values['start_off'] = int(values['start_off'])
+                            values['end_off'] = int(values['end_off'])
+                            values['start_par'] = int(values['start_par'])
+                            nonoverlap_corrs.append(values)
                         # make corrections
                         for values in reversed(nonoverlap_corrs):
                             new_par = paragraphs[values['start_par']]['new']
