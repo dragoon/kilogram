@@ -49,7 +49,6 @@ def extract_grammar_edits(in_files, out_file):
                                     int(values['end_off']) >= nonoverlap_corrs[-1]['end_off']:
                                 # change offsets if overlapping replacement
                                 nonoverlap_corrs[-1]['end_off'] = nonoverlap_corrs[-1]['start_off']
-                                continue
 
                             values['start_off'] = int(values['start_off'])
                             values['end_off'] = int(values['end_off'])
