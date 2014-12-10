@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 def extract_grammar_edits(in_files, out_file):
     """
-    Extracts grammar edits from CoNLL SGML files.
+    Extracts grammar edits from CoNLL SGML files
     :type out_file: str
     """
     with open(out_file, 'w') as out:
@@ -42,7 +42,7 @@ def extract_grammar_edits(in_files, out_file):
                     elif line.startswith('</DOC>'):
                         nonoverlap_corrs = []
                         for values in corrections:
-                            if values['unclear']:
+                            if values['type'] != 'Prep':
                                 continue
                             if len(nonoverlap_corrs) > 0 and int(values['start_off']) >= nonoverlap_corrs[-1]['start_off'] and \
                                     int(values['end_off']) <= nonoverlap_corrs[-1]['end_off']:
@@ -70,14 +70,11 @@ def extract_grammar_edits(in_files, out_file):
                         values = dict([x.split('=') for x in line.strip()[9:-1].replace('"', '').split()])
                         if values['start_par'] != values['end_par']:
                             continue
-                        values['unclear'] = False
                         corrections.append(values)
                     elif line.startswith('<CORRECTION>'):
                         values['correction'] = line.strip()[12:-13]
                     elif line.startswith("<TYPE>"):
-                        if line.strip()[6:-7] == 'Um':
-                            # skip unclear
-                            values['unclear'] = True
+                        values['type'] = line.strip()[6:-7]
 
 
 
