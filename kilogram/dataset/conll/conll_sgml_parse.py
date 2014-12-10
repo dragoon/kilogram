@@ -2,6 +2,7 @@
 """
 Extract grammatical error edits from CoNLL dataset SGML files into kilogram format.
 Not using XML or SGML parse since the file is not XML/SGML-compliant.
+wget http://www.comp.nus.edu.sg/~nlp/conll13st/release2.3.1.tar.gz
 """
 
 import re
