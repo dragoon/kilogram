@@ -57,7 +57,7 @@ def extract_grammar_edits(in_files, out_file):
                         # make corrections
                         for values in reversed(nonoverlap_corrs):
                             new_par = paragraphs[values['start_par']]['new']
-                            paragraphs[int(values['start_par'])]['new'] = new_par[:values['start_off']] + values['correction'] + new_par[values['end_off']:]
+                            paragraphs[int(values['start_par'])]['new'] = ' '.join((new_par[:values['start_off']], values['correction'], new_par[values['end_off']:]))
                         # write paragraphs to output
                         for p in paragraphs:
                             csvwriter.writerow([p['orig'], p['new']])
