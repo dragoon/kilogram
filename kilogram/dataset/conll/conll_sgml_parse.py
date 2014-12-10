@@ -4,9 +4,11 @@ Extract grammatical error edits from CoNLL dataset SGML files into kilogram form
 Not using XML or SGML parse since the file is not XML/SGML-compliant.
 """
 
+import re
 import argparse
 import unicodecsv as csv
 
+SPACE = re.compile(r'\s+')
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-o', '--output', dest='out_file', action='store', required=True,
@@ -60,6 +62,8 @@ def extract_grammar_edits(in_files, out_file):
                             paragraphs[int(values['start_par'])]['new'] = ' '.join((new_par[:values['start_off']], values['correction'], new_par[values['end_off']:]))
                         # write paragraphs to output
                         for p in paragraphs:
+                            # stip multiple spaces
+                            p['new'] = SPACE.sub(' ', p['new'])
                             csvwriter.writerow([p['orig'], p['new']])
                     elif line.startswith('<MISTAKE'):
                         # update paragraph
