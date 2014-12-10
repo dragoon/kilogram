@@ -40,6 +40,8 @@ def extract_grammar_edits(in_files, out_file):
                     elif line.startswith('</DOC>'):
                         nonoverlap_corrs = []
                         for values in corrections:
+                            if values['unclear']:
+                                continue
                             if len(nonoverlap_corrs) > 0 and int(values['start_off']) >= nonoverlap_corrs[-1]['start_off'] and \
                                     int(values['end_off']) <= nonoverlap_corrs[-1]['end_off']:
                                 continue
@@ -60,9 +62,15 @@ def extract_grammar_edits(in_files, out_file):
                         values = dict([x.split('=') for x in line.strip()[9:-1].replace('"', '').split()])
                         if values['start_par'] != values['end_par']:
                             continue
+                        values['unclear'] = False
                         corrections.append(values)
                     elif line.startswith('<CORRECTION>'):
                         values['correction'] = line.strip()[12:-13]
+                    elif line.startswith("<TYPE>"):
+                        if line.strip()[6:-7] == 'Um':
+                            # skip unclear
+                            values['unclear'] = True
+
 
 
 extract_grammar_edits(args.files, args.out_file)
