@@ -55,10 +55,6 @@ class EditNgram(Ngram):
 
         ngrams = [self.ngram]
         collocs = []
-        if len(self.ngram) == 3 and self.edit_pos == 1 and self.pos_tag[-1][:2] == 'NN':
-            # try to add synonyms
-            for synonym in WordNetNgram.get_synonyms(self.ngram[-1], self.pos_tag[-1]):
-                ngrams.append(tuple(list(self.ngram[:-1]) + [synonym]))
 
         for ngram in ngrams:
             self.ngram = ngram
