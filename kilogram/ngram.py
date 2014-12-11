@@ -50,6 +50,9 @@ class EditNgram(Ngram):
         return ngram
 
     def association(self, measure='pmi'):
+        if measure in self._association_dict:
+                return self._association_dict[measure]
+
         ngrams = [self.ngram]
         collocs = []
         if len(self.ngram) >= 3 and self.edit_pos == 1:
@@ -59,8 +62,6 @@ class EditNgram(Ngram):
 
         for ngram in ngrams:
             self.ngram = ngram
-            if measure in self._association_dict:
-                return self._association_dict[measure]
             dist = self._get_freq_distributions()
 
             if len(self.ngram) == 2:
