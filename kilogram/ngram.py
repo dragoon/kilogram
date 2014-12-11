@@ -1,6 +1,7 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
+from kilogram.lang.wordnet import WordNetNgram
 from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
 
@@ -49,26 +50,37 @@ class EditNgram(Ngram):
         return ngram
 
     def association(self, measure='pmi'):
-        if measure in self._association_dict:
-            return self._association_dict[measure]
-        dist = self._get_freq_distributions()
+        ngrams = [self.ngram]
+        collocs = []
+        if len(self.ngram) >= 3 and self.edit_pos == 1:
+            # try to add synonyms
+            for synonym in WordNetNgram.get_synonyms(self.ngram[-1], self.pos_tag[-1]):
+                ngrams.append(tuple(list(self.ngram[:-1]) + [synonym]))
 
-        if len(self.ngram) == 2:
-            finder = BigramCollocationFinder(*dist)
-            measures = getattr(bigram_measures, measure)
-        else:
-            finder = TrigramCollocationFinder(*dist)
-            measures = getattr(trigram_measures, measure)
+        for ngram in ngrams:
+            self.ngram = ngram
+            if measure in self._association_dict:
+                return self._association_dict[measure]
+            dist = self._get_freq_distributions()
 
-        try:
-            collocs = finder.score_ngrams(measures)
-        except Exception, e:
-            print 'Exception in pmi_preps'
-            print e
-            print self
-            print dist
-            collocs = []
-        self._association_dict[measure] = collocs
+            if len(self.ngram) == 2:
+                finder = BigramCollocationFinder(*dist)
+                measures = getattr(bigram_measures, measure)
+            else:
+                finder = TrigramCollocationFinder(*dist)
+                measures = getattr(trigram_measures, measure)
+
+            try:
+                collocs = finder.score_ngrams(measures)
+            except Exception, e:
+                print 'Exception in pmi_preps'
+                print e
+                print self
+                print dist
+                collocs = []
+            self._association_dict[measure] = collocs
+            if collocs:
+                return collocs
         return collocs
 
     def _get_freq_distributions(self):
