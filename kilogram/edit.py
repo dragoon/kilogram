@@ -39,13 +39,12 @@ class EditCollection(object):
         'has_avg_3gram',         # 2
         'avg_pmi_2gram',         # 4
         'avg_pmi_3gram',         # 5
-        'has_zero_ngram',        # 7
+        'len_zero_ngram',        # 7
         'zero_ngram_rank',       # 8
         'conf_matrix_score',     # 9
         'top_prep_count_2gram',  # 10
         'top_prep_count_3gram',  # 11
         'avg_rank_position_-1',  # 13
-        'avg_rank_position_0',   # 14
         'avg_rank_position_1',   # 15
     ]
     collection = None
@@ -337,6 +336,14 @@ class Edit(object):
                 result = False
             return result
 
+        def get_normal_position(position, ngram_size):
+            new_pos = 0
+            if position == 0:
+                new_pos = -1
+            elif position == (ngram_size - 1):
+                new_pos = 1
+            return new_pos
+
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
             pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
@@ -357,6 +364,7 @@ class Edit(object):
         # RANK, PMI_SCORE
         DEFAULT_SCORE = (50, -10)
         # TODO: filter on ALLOWED_TYPES
+        added_normal_positions = set()
         for ngram_type, ngrams in reversed(context_ngrams.items()):
             for ngram_pos, ngram in enumerate(ngrams):
                 if not ngram:
@@ -372,18 +380,19 @@ class Edit(object):
                     else:
                         continue
 
-                score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
-                if not score_dict:
+                norm_pos = get_normal_position(ngram_pos, ngram_type)
+                if norm_pos in added_normal_positions:
                     continue
-                new_pos = 0
-                if ngram_pos == 0:
-                    new_pos = -1
-                elif ngram_pos == (ngram_type - 1):
-                    new_pos = 1
+                else:
+                    score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                    if not score_dict:
+                        continue
+                    #added_normal_positions.add(norm_pos)
+
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
-                                           ngram_type, new_pos])
+                                           ngram_type, norm_pos])
         assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
 
@@ -406,7 +415,6 @@ class Edit(object):
         for subst in SUBST_LIST:
 
             feature_vector = []
-            # TODO: take only longest n-gram for position?
             for ngram_size in range(2, 4):
                 feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
                 feature_vector.append(int(feature_vector[-1] != 50))
@@ -419,6 +427,8 @@ class Edit(object):
                 central_prob_len = central_prob['type'].values[0]
             feature_vector.append(central_prob_len)
             if central_prob_len > 0:
+                if central_prob['rank'].get(subst) != central_prob.loc[subst]['rank']:
+                    print self
                 feature_vector.append(central_prob.loc[subst]['rank'])
             else:
                 feature_vector.append(50)
