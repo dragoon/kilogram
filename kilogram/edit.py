@@ -426,12 +426,7 @@ class Edit(object):
             if len(central_prob) > 0:
                 central_prob_len = central_prob['type'].values[0]
             feature_vector.append(central_prob_len)
-            if central_prob_len > 0:
-                if central_prob['rank'].get(subst) != central_prob.loc[subst]['rank']:
-                    print self
-                feature_vector.append(central_prob.loc[subst]['rank'])
-            else:
-                feature_vector.append(50)
+            feature_vector.append(central_prob['rank'].get(subst, 50))
             # END zero prob
 
             # reverse confusion matrix
