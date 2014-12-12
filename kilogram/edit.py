@@ -387,7 +387,7 @@ class Edit(object):
                     score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                     if not score_dict:
                         continue
-                    #added_normal_positions.add(norm_pos)
+                    added_normal_positions.add(norm_pos)
 
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
