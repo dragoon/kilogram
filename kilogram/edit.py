@@ -365,7 +365,7 @@ class Edit(object):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 if ngram_type == 4:
-                    if subst_pos == 1 and ngram.pos_tag[2] in ('DT', 'PRP'):
+                    if subst_pos == 1 and ngram.pos_tag[2] in ('DT', 'PRP$'):
                         ngram_temp = list(ngram.ngram)
                         ngram_temp[2] = '<SKIP:DT>'
                         ngram.ngram = ngram_temp
