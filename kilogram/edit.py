@@ -37,18 +37,15 @@ class EditCollection(object):
         'has_avg_2gram',         # 1
         'avg_rank_3gram',        # 2
         'has_avg_3gram',         # 2
-        #'avg_rank_4gram',        # 3
         'avg_pmi_2gram',         # 4
         'avg_pmi_3gram',         # 5
-        #'avg_pmi_4gram',         # 6
         'has_zero_ngram',        # 7
         'zero_ngram_rank',       # 8
         'conf_matrix_score',     # 9
         'top_prep_count_2gram',  # 10
         'top_prep_count_3gram',  # 11
-        #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',  # 13
-        #'avg_rank_position_0',   # 14
+        'avg_rank_position_0',   # 14
         'avg_rank_position_1',   # 15
     ]
     collection = None
@@ -368,7 +365,7 @@ class Edit(object):
                     continue
                 subst_pos = ngram_type - 1 - ngram_pos
                 if ngram_type == 4:
-                    if subst_pos == 1 and ngram.ngram[2] in DT_STRIPS:# or (ngram.pos_tag[2] == 'DT' and ngram.pos_tag[3][:2] == 'NN')):
+                    if subst_pos == 1 and ngram.pos_tag[2] == 'DT':
                         ngram_temp = list(ngram.ngram)
                         ngram_temp[2] = '<SKIP:DT>'
                         ngram.ngram = ngram_temp
@@ -434,7 +431,7 @@ class Edit(object):
                 feature_vector.append(top_type_counts.loc[subst].get(ngram_size, 0))
 
             # average rank by normalized position
-            for position in (-1, 1):
+            for position in (-1, 0, 1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
 
             # substitutions themselves
