@@ -48,7 +48,7 @@ class EditCollection(object):
         'top_prep_count_3gram',  # 11
         #'top_prep_count_4gram',  # 12
         'avg_rank_position_-1',  # 13
-        'avg_rank_position_0',   # 14
+        #'avg_rank_position_0',   # 14
         'avg_rank_position_1',   # 15
     ]
     collection = None
@@ -434,7 +434,7 @@ class Edit(object):
                 feature_vector.append(top_type_counts.loc[subst].get(ngram_size, 0))
 
             # average rank by normalized position
-            for position in (-1, 0, 1):
+            for position in (-1, 1):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
 
             # substitutions themselves
