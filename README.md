@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/7837/dragoon/kilogram.svg)](http://dx.doi.org/10.5281/zenodo.13261)
 # Kilogram
 ### Collection of utils for large n-gram corpora
 
