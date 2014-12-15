@@ -45,6 +45,7 @@ class EditCollection(object):
         'top_prep_count_2gram',  # 10
         'top_prep_count_3gram',  # 11
         'avg_rank_position_-1',  # 13
+        'avg_rank_position_0',   # 14
         'avg_rank_position_1',   # 15
     ]
     collection = None
@@ -387,7 +388,7 @@ class Edit(object):
                     score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
                     if not score_dict:
                         continue
-                    added_normal_positions.add(norm_pos)
+                    #added_normal_positions.add(norm_pos)
 
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
