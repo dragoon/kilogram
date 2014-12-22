@@ -9,7 +9,7 @@ import socket
 
 import nltk
 import re
-from .lang import number_replace, DT_STRIPS
+from .lang import number_replace
 from .ngram import EditNgram
 
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
