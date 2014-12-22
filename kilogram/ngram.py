@@ -64,7 +64,7 @@ class EditNgram(Ngram):
                 return self._association_dict[measure]
 
         ngrams = [self.ngram]
-        collocs = []
+        collocs = {}
 
         for ngram in ngrams:
             self.ngram = ngram
@@ -79,12 +79,13 @@ class EditNgram(Ngram):
 
             try:
                 collocs = finder.score_ngrams(measures)
+                collocs = dict((x[0][self.edit_pos], (i, x[1])) for i, x in enumerate(collocs))
             except Exception, e:
                 print 'Exception in pmi_preps'
                 print e
                 print self
                 print dist
-                collocs = []
+                collocs = {}
             self._association_dict[measure] = collocs
             if collocs:
                 return collocs
@@ -111,4 +112,9 @@ class EditNgram(Ngram):
         """
         Returns a feature vector for a particular n-gram. Used to predict n-gram importance.
         """
+        collocs = self.association()
+        pos_tag_feature = [int(x in self.pos_tag) for x in ('NN', 'VB', 'JJ', 'DT', 'RB')]
+        feature = [self.normal_position, self._ngram_size, len(collocs)]
+        feature.extend(pos_tag_feature)
+        return feature, collocs.get(correction, 50)
 

@@ -364,9 +364,8 @@ class Edit(object):
                     continue
                 if not is_useful(ngram.pos_tag):
                     continue
-                subst_pos = ngram_type - 1 - ngram_pos
                 if ngram_type == 4:
-                    if subst_pos == 1 and ngram.pos_tag[2] in ('DT', 'PRP$'):
+                    if ngram.edit_pos == 1 and ngram.pos_tag[2] in ('DT', 'PRP$'):
                         ngram_temp = list(ngram.ngram)
                         ngram_temp[2] = '<SKIP:DT>'
                         ngram.ngram = ngram_temp
@@ -377,7 +376,7 @@ class Edit(object):
                 if norm_pos in added_normal_positions:
                     continue
                 else:
-                    score_dict = dict((x[0][subst_pos], (i, x[1])) for i, x in enumerate(ngram.association()))
+                    score_dict = ngram.association()
                     if not score_dict:
                         continue
                     #added_normal_positions.add(norm_pos)
