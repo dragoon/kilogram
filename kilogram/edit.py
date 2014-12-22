@@ -337,14 +337,6 @@ class Edit(object):
                 result = False
             return result
 
-        def get_normal_position(position, ngram_size):
-            new_pos = 0
-            if position == 0:
-                new_pos = -1
-            elif position == (ngram_size - 1):
-                new_pos = 1
-            return new_pos
-
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
             pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
@@ -381,7 +373,7 @@ class Edit(object):
                     else:
                         continue
 
-                norm_pos = get_normal_position(ngram_pos, ngram_type)
+                norm_pos = ngram.normal_position
                 if norm_pos in added_normal_positions:
                     continue
                 else:

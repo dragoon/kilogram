@@ -33,6 +33,7 @@ class EditNgram(Ngram):
         self.pos_tag = None
         self.edit_pos = edit_pos
         self._association_dict = {}
+        self._ngram_size = len(ngram)
 
     def __unicode__(self):
         return u' '.join(self.ngram)
@@ -42,6 +43,15 @@ class EditNgram(Ngram):
 
     def __str__(self):
         return unicode(self).encode('utf-8')
+
+    @property
+    def normal_position(self):
+        new_pos = 0
+        if self.edit_pos == (self._ngram_size - 1):
+            new_pos = -1
+        elif self.edit_pos == 0:
+            new_pos = 1
+        return new_pos
 
     @property
     def subst_ngram(self):
@@ -95,3 +105,10 @@ class EditNgram(Ngram):
         else:
             raise NotImplementedError
         return dist
+
+
+    def get_single_feature(self, correction):
+        """
+        Returns a feature vector for a particular n-gram. Used to predict n-gram importance.
+        """
+
