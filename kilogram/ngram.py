@@ -116,5 +116,5 @@ class EditNgram(Ngram):
         pos_tag_feature = [int(x in self.pos_tag) for x in ('NN', 'VB', 'JJ', 'DT', 'RB')]
         feature = [self.normal_position, self._ngram_size, len(collocs)]
         feature.extend(pos_tag_feature)
-        return feature, collocs.get(correction, 50)
+        return feature, collocs.get(correction, (50, 0))[0]
 
