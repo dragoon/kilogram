@@ -217,6 +217,8 @@ class EditCollection(object):
 class Edit(object):
     # increases F1 by ~6-7%
     IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
+    # ngram improtance regressor
+    ngram_reg = None
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
@@ -381,12 +383,15 @@ class Edit(object):
                         continue
                     #added_normal_positions.add(norm_pos)
 
+                ngram_weight = 0
+                if self.ngram_reg:
+                    ngram_weight = self.ngram_reg.predict(ngram.get_single_feature(self.edit2)[0])
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
-                                           ngram_type, norm_pos])
+                                           ngram_type, norm_pos, 1/ngram_weight])
         assert len(df_list_substs) > 0
-        df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position'])
+        df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position', 'weight'])
 
         central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
