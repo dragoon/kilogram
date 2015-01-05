@@ -385,7 +385,7 @@ class Edit(object):
 
                 ngram_weight = 0
                 if NGRAM_REGRESSOR:
-                    ngram_weight = NGRAM_REGRESSOR.predict(ngram.get_single_feature(self.edit2)[0])
+                    ngram_weight = NGRAM_REGRESSOR.predict(ngram.get_single_feature(self.edit2)[0])[0]
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
