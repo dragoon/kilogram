@@ -389,7 +389,7 @@ class Edit(object):
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
-                                           ngram_type, norm_pos, 1/ngram_weight])
+                                           ngram_type, norm_pos, 1/(ngram_weight+1)])
         assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position', 'weight'])
 
