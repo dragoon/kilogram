@@ -27,6 +27,8 @@ def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit
 # Define host and port for Stanford POS tagger service
 ST_HOSTNAME = 'localhost'
 ST_PORT = 2020
+# ngram importance regressor
+NGRAM_REGRESSOR = None
 
 
 class EditCollection(object):
@@ -217,8 +219,6 @@ class EditCollection(object):
 class Edit(object):
     # increases F1 by ~6-7%
     IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
-    # ngram improtance regressor
-    ngram_reg = None
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
@@ -384,7 +384,7 @@ class Edit(object):
                     #added_normal_positions.add(norm_pos)
 
                 ngram_weight = 0
-                if self.ngram_reg:
+                if NGRAM_REGRESSOR:
                     ngram_weight = self.ngram_reg.predict(ngram.get_single_feature(self.edit2)[0])
                 for subst in SUBST_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
