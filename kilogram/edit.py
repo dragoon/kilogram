@@ -393,7 +393,8 @@ class Edit(object):
         assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position', 'weight'])
 
-        central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
+        max_weight = df_substs.max()['weight']
+        central_prob = df_substs[(df_substs.weight==max_weight)][:len(SUBST_LIST)].set_index('substitution')#df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
         """type: DataFrame"""
 
         matrix = confusion_matrix[self.edit1]
