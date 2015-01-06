@@ -15,9 +15,18 @@ from .ngram import EditNgram
 PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
 
 
-def get_single_feature_local(substitutions, top_pos_tags, confusion_matrix, edit):
+def get_single_feature_classify(edit):
     try:
-        return edit.get_single_feature(substitutions, top_pos_tags, confusion_matrix)
+        return edit.get_single_feature(EditCollection.SUBSTITUTIONS)
+    except AssertionError:
+        print 'IGNORED EDIT:', edit
+        print
+        return None
+
+
+def get_single_feature_detect(edit):
+    try:
+        return edit.get_single_feature([edit.edit1])
     except AssertionError:
         print 'IGNORED EDIT:', edit
         print
@@ -50,17 +59,21 @@ class EditCollection(object):
         'avg_rank_position_0',   # 14
         'avg_rank_position_1',   # 15
     ]
-    collection = None
-    test_errors = None
-    test_error_skips = None
-    test_false_errors = None
+    CONFUSION_MATRIX = None
+    SUBSTITUTIONS = None
 
-    def __init__(self, collection):
+    def __init__(self, collection, substitutions, feature_func=get_single_feature_classify):
         """collection - array of Edit objects"""
         self.collection = sorted(collection, key=lambda x: x.is_error, reverse=True)
         self.labels = [int(edit.is_error) for edit in self.collection]
+        self.__class__.CONFUSION_MATRIX = self._reverse_confusion_matrix()
+        self.test_errors = None
+        self.test_error_skips = None
+        self.test_false_errors = None
+        self.__class__.SUBSTITUTIONS = substitutions
+        self.feature_func = feature_func
 
-    def reverse_confusion_matrix(self):
+    def _reverse_confusion_matrix(self):
         confusion_dict = defaultdict(Counter)
         for e in self.collection:
             confusion_dict[e.edit1][e.edit2] += 1
@@ -86,15 +99,15 @@ class EditCollection(object):
         labels = np.concatenate((np.ones(num_class1), np.zeros(num_class0)))
         return col, labels
 
-    def balance_features(self, substitutions, class0_k=1., class1_k=1.):
+    def balance_features(self, class0_k=1., class1_k=1.):
         feature_names = self.FEATURE_NAMES[:]
-        feature_names.extend(substitutions)
+        feature_names.extend(self.SUBSTITUTIONS)
         feature_names.extend([x+'prev' for x in self.TOP_POS_TAGS])
         feature_names.extend([x+'next' for x in self.TOP_POS_TAGS])
 
         print('Balancing errors')
         data, _ = self._balance(class0_k, class1_k)
-        data, labels = self.get_feature_array(data, substitutions)
+        data, labels = self.get_feature_array(data)
 
         import numpy as np
         print('Converting to numpy arrays')
@@ -106,8 +119,7 @@ class EditCollection(object):
         print('2nd class', len([1 for x in labels if not x]))
         return data, labels, feature_names
 
-    def get_feature_array(self, balanced_collection, substitutions):
-        confusion_matrix = self.reverse_confusion_matrix()
+    def get_feature_array(self, balanced_collection):
         features = []
         labels = []
         print('Generating features from raw data')
@@ -116,8 +128,7 @@ class EditCollection(object):
         pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
-                                                self.TOP_POS_TAGS, confusion_matrix)
+        get_single_feature1 = functools.partial(self.feature_func)
         collection = pool.map(get_single_feature1, balanced_collection)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
@@ -129,20 +140,18 @@ class EditCollection(object):
                 labels.extend(local_labels)
         return features, labels
 
-    def test_validation(self, substitutions, classifier, test_col):
+    def test_validation(self, classifier, test_col):
         """
         :param classifier: any valid scikit-learn classifier
         """
         self.test_errors = []
         self.test_error_skips = []
         self.test_false_errors = []
-        conf_matrix = self.reverse_confusion_matrix()
 
         pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        get_single_feature1 = functools.partial(get_single_feature_local, substitutions,
-                                                self.TOP_POS_TAGS, conf_matrix)
+        get_single_feature1 = functools.partial(self.feature_func)
         test_collection = pool.map(get_single_feature1, test_col)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
@@ -152,7 +161,7 @@ class EditCollection(object):
                 return None
 
             predictions = clf.predict_proba(features)
-            for klasses, prep in zip(predictions, substitutions):
+            for klasses, prep in zip(predictions, self.SUBSTITUTIONS):
                 klass0, klass1 = klasses
                 if klass1 >= 0.5:
                     top_suggestions.append((klass1, prep))
@@ -326,7 +335,7 @@ class Edit(object):
         self._ngram_context[size] = result_ngrams
         return result_ngrams
 
-    def get_single_feature(self, SUBST_LIST, TOP_POS_TAGS, confusion_matrix, size=4):
+    def get_single_feature(self, SUBS_LIST, size=4):
         import pandas as pd
         if not self.pos_tokens:
             self._init_pos_tags()
@@ -341,7 +350,8 @@ class Edit(object):
 
         def get_pos_tag_features(bigrams):
             pos_tag_feature = []
-            pos_tag_dict = dict([(bigram.edit_pos, [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in TOP_POS_TAGS])
+            pos_tag_dict = dict([(bigram.edit_pos,
+                                  [int(bigram.pos_tag[int(1 != bigram.edit_pos)] == x) for x in EditCollection.TOP_POS_TAGS])
                                  for bigram in bigrams if bigram])
             # append 1 or 0 whether POS tag is catch-all OTHER
             for key in pos_tag_dict.keys():
@@ -349,7 +359,7 @@ class Edit(object):
                     pos_tag_dict[key][-1] = 1
             for position in (0, 1):
                 if position not in pos_tag_dict:
-                    pos_tag_feature.extend([0 for _ in TOP_POS_TAGS])
+                    pos_tag_feature.extend([0 for _ in EditCollection.TOP_POS_TAGS])
                 else:
                     pos_tag_feature.extend(pos_tag_dict[position])
             return pos_tag_feature
@@ -386,18 +396,17 @@ class Edit(object):
                 ngram_weight = 0
                 if NGRAM_REGRESSOR:
                     ngram_weight = NGRAM_REGRESSOR.predict(ngram.get_single_feature(self.edit2)[0])[0]
-                for subst in SUBST_LIST:
+                for subst in SUBS_LIST:
                     df_list_substs.append([subst, score_dict.get(subst, DEFAULT_SCORE)[1],
                                            score_dict.get(subst, DEFAULT_SCORE)[0],
                                            ngram_type, norm_pos, 1/(ngram_weight+1)])
         assert len(df_list_substs) > 0
         df_substs = pd.DataFrame(df_list_substs, columns=['substitution', 'score', 'rank', 'type', 'norm_position', 'weight'])
 
-        max_weight = df_substs.max()['weight']
-        central_prob = df_substs[(df_substs.weight==max_weight)][:len(SUBST_LIST)].set_index('substitution')#df_substs[(df_substs.norm_position == 0)][:len(SUBST_LIST)].set_index('substitution')
+        central_prob = df_substs[(df_substs.norm_position == 0)][:len(SUBS_LIST)].set_index('substitution')
         """type: DataFrame"""
 
-        matrix = confusion_matrix[self.edit1]
+        matrix = EditCollection.CONFUSION_MATRIX[self.edit1]
         matrix_sum = sum(matrix.values())
         assert matrix_sum > 0
 
@@ -408,9 +417,12 @@ class Edit(object):
         type_group = df_substs.groupby(['substitution', 'type'])
         avg_by_position = df_substs.groupby(['substitution', 'norm_position']).mean()
         avg_by_type = type_group.mean()
+        #weighted_ranks_types = type_group.apply(lambda subf: sum(subf['weight']*subf['rank'])/sum(subf['weight']))
+        #weighted_scores_types = type_group.apply(lambda subf: sum(subf['weight']*subf['score'])/sum(subf['score']))
+        #weighted_ranks_positions = df_substs.groupby(['substitution', 'norm_position']).apply(lambda subf: sum(subf['weight']*subf['rank'])/sum(subf['weight']))
         top_type_counts = type_group.apply(lambda x: x[x['rank'] == 0]['rank'].count())
 
-        for subst in SUBST_LIST:
+        for subst in SUBS_LIST:
 
             feature_vector = []
             for ngram_size in range(2, 4):
@@ -438,7 +450,7 @@ class Edit(object):
                 feature_vector.append(avg_by_position.loc[subst]['rank'].get(position, 50))
 
             # substitutions themselves
-            feature_vector.extend([int(x == subst) for x in SUBST_LIST])
+            feature_vector.extend([int(x == subst) for x in EditCollection.SUBSTITUTIONS])
 
             # POS TAG enumeration
             feature_vector.extend(get_pos_tag_features(context_ngrams[2]))
