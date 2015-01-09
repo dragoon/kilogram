@@ -97,7 +97,7 @@ class NgramService(object):
                 # Stupid NLTK needs a word when n==1, and tuple if n>1
                 res = {ngram: count}
             elif 2 <= split_len <= 3:
-                count = cls.hbase_count('ngrams2', ngram)
+                count = cls.hbase_count('ngrams', ngram)
                 res = {cls._tuple(split_ngram): count}
             else:
                 raise Exception('%d-grams are not supported' % split_len)
