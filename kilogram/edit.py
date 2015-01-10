@@ -12,8 +12,6 @@ import re
 from .lang import number_replace
 from .ngram import EditNgram
 
-PUNCT_SET = re.compile('[!(),.:;?/[\\]^`{|}]')
-
 
 def get_single_feature_classify(edit):
     try:
