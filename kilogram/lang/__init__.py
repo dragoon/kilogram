@@ -1,6 +1,7 @@
 import re
 
-DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its'}
+DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
+PUNCT_SET = set('[!(),.:;?/[\\]^`{|}]')
 
 FLOAT_REGEX = r'(?:[1-9]\d*|0)(?:[\.,]\d+)?'
 
@@ -24,3 +25,16 @@ def number_replace(word):
         if word1 != word:
             break
     return word1
+
+def strip_determiners(ngram):
+    """
+    :type ngram: unicode
+    :return: n-gram with stripped determiners
+    """
+    ngram = ngram.split()
+    dt_positions = [i for i, x in enumerate(ngram) if x in DT_STRIPS]
+    new_ngram = [word for i, word in enumerate(ngram)
+                 if i not in dt_positions or
+                 (i+1 < len(ngram) and ngram[i+1] in PUNCT_SET)]
+    return ' '.join(new_ngram)
+
