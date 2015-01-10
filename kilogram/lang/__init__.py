@@ -32,7 +32,7 @@ def strip_determiners(ngram):
     :return: n-gram with stripped determiners
     """
     ngram = ngram.split()
-    dt_positions = [i for i, x in enumerate(ngram) if x in DT_STRIPS]
+    dt_positions = [i for i, x in enumerate(ngram) if x.lower() in DT_STRIPS]
     new_ngram = [word for i, word in enumerate(ngram)
                  if i not in dt_positions or
                  (i+1 < len(ngram) and ngram[i+1] in PUNCT_SET)]
