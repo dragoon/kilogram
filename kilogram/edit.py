@@ -234,19 +234,14 @@ class Edit(object):
         def strip_dash(text):
             return re.sub(r'\-{2,}', '-', text)
 
-        def lowercase_token(token):
-            if token == '.':
-                return ','
-            return number_replace(token.lower())
-
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
-        self.text1 = strip_dash(text1)
-        self.text2 = strip_dash(text2)
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
-        self.tokens = [lowercase_token(x) for x in self.text2.split()]
+
+        self.orig_tokens = [x for x in strip_dash(text1).split()]
+        self.tokens = [x for x in strip_dash(text2).split()]
         self.pos_tokens = None
         self._ngram_context = {}
 
@@ -272,7 +267,7 @@ class Edit(object):
             elif pos_tag == 'NNS':
                 pos_tag = 'NN'
             return pos_tag
-        pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, self.text2).strip()
+        pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, ' '.join(self.tokens)).strip()
         self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
     def __unicode__(self):
@@ -285,31 +280,22 @@ class Edit(object):
     def is_error(self):
         return self.edit1 != self.edit2
 
-    @staticmethod
-    def _reduce_punct(tokens, fill):
-        # remove anything after/before punctuation
-        center_index = len(tokens)//2
-        punct_indexes = [i for i, ngram in enumerate(tokens)
-                         if ngram != fill and PUNCT_SET.search(ngram)]
-        left_indexes = [i for i in punct_indexes if i < center_index]
-        left_indexes.append(0)
-        right_indexes = [i for i in punct_indexes if i > center_index]
-        right_indexes.append(len(tokens))
-        left_index = max(left_indexes)
-        right_index = min(right_indexes)
-        return [fill]*left_index + tokens[left_index:right_index]\
-            + [fill]*(len(tokens)-right_index)
-
     def context(self, size=3, fill=''):
         """Normal context"""
+        def lowercase_token(token):
+            if token == '.':
+                return ','
+            return number_replace(token.lower())
+
+        tokens = [lowercase_token(x) for x in self.tokens]
         left_index_orig = left_index = self.positions2[0]-size
         right_index_orig = right_index = self.positions2[1]+size
         if left_index < 0:
             left_index = 0
-        if right_index > len(self.tokens):
-            right_index = len(self.tokens)
-        return [fill]*(-left_index_orig) + self.tokens[left_index:right_index]\
-            + [fill]*(right_index_orig-len(self.tokens))
+        if right_index > len(tokens):
+            right_index = len(tokens)
+        return [fill]*(-left_index_orig) + tokens[left_index:right_index]\
+            + [fill]*(right_index_orig-len(tokens))
 
     def ngram_context(self, size=3, fill=''):
         """N-gram context"""
@@ -321,7 +307,6 @@ class Edit(object):
             local_tokens = self.context(n_size, fill)
             local_indices = range(self.positions2[0]-n_size, self.positions2[1]+n_size)
             result_ngrams[n_size+1] = []
-            local_tokens = Edit._reduce_punct(local_tokens, fill)
 
             for edit_pos, ngram, indices in zip(range(n_size, -1, -1),
                                                 nltk.ngrams(local_tokens, n_size+1),
@@ -335,7 +320,7 @@ class Edit(object):
         self._ngram_context[size] = result_ngrams
         return result_ngrams
 
-    def get_single_feature(self, SUBS_LIST, size=4):
+    def get_single_feature(self, SUBS_LIST, size=3):
         import pandas as pd
         if not self.pos_tokens:
             self._init_pos_tags()
@@ -376,13 +361,6 @@ class Edit(object):
                     continue
                 if not is_useful(ngram.pos_tag):
                     continue
-                if ngram_type == 4:
-                    if ngram.edit_pos == 1 and ngram.pos_tag[2] in ('DT', 'PRP$'):
-                        ngram_temp = list(ngram.ngram)
-                        ngram_temp[2] = '<SKIP:DT>'
-                        ngram.ngram = ngram_temp
-                    else:
-                        continue
 
                 norm_pos = ngram.normal_position
                 if norm_pos in added_normal_positions:
