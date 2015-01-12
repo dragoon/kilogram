@@ -5,11 +5,13 @@ import unicodecsv as csv
 
 from ..edit import Edit
 from pyutils import print_progress
+from kilogram.lang import strip_determiners
 from .tokenize import default_tokenize_func
 
-MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?]){2,}')
+MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?-]){2,}')
 MULTIPLE_SPACE_REGEX = re.compile(r'([ ]){2,}')
 GARBAGE_REGEX = re.compile(r'[^\w\s]')
+ADJ_REGEX = re.compile(r'([^\s]+_JJ\w?\s?)+ (?=[^\s]+_NN.?)')
 
 
 def _get_line_num(edit_file):
@@ -74,8 +76,10 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             # tokenize to words, since we want word diff
             edit1 = tokenize_func(edit1)
             edit2 = tokenize_func(edit2)
-            context1 = ' '.join(edit1)
-            context2 = ' '.join(edit2)
+            context1 = strip_determiners(' '.join(edit1))
+            context2 = strip_determiners(' '.join(edit2))
+            edit1 = context1.split()
+            edit2 = context2.split()
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
                 for tag, i1, i2, j1, j2 in seq:
                     if tag == 'equal':

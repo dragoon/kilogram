@@ -43,10 +43,9 @@ class EditCollection(object):
     TOP_POS_TAGS = ['VB', 'NN', 'JJ', 'RB', 'DT', 'OTHER']
     FEATURE_NAMES = [
         'avg_rank_2gram',        # 1
-        'has_avg_2gram',         # 1
-        'avg_rank_3gram',        # 2
-        'has_avg_3gram',         # 2
-        'avg_pmi_2gram',         # 4
+        'has_avg_2gram',         # 2
+        'avg_rank_3gram',        # 3
+        'has_avg_3gram',         # 4
         'avg_pmi_3gram',         # 5
         'len_zero_ngram',        # 7
         'zero_ngram_rank',       # 8
@@ -229,17 +228,14 @@ class Edit(object):
 
     def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
-        def strip_dash(text):
-            return re.sub(r'\-{2,}', '-', text)
-
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
 
-        self.orig_tokens = [x for x in strip_dash(text1).split()]
-        self.tokens = [x for x in strip_dash(text2).split()]
+        self.orig_tokens = text1.split()
+        self.tokens = text2.split()
         self.pos_tokens = None
         self._ngram_context = {}
 
@@ -404,8 +400,7 @@ class Edit(object):
             for ngram_size in range(2, 4):
                 feature_vector.append(avg_by_type.loc[subst]['rank'].get(ngram_size, 50))
                 feature_vector.append(int(feature_vector[-1] != 50))
-            for ngram_size in range(2, 4):
-                feature_vector.append(avg_by_type.loc[subst]['score'].get(ngram_size, -10))
+            feature_vector.append(avg_by_type.loc[subst]['score'].get(3, -10))
 
             # START: zero prob indicator feature -----
             central_prob_len = 0
