@@ -6,7 +6,6 @@ import unicodecsv as csv
 
 from ..edit import Edit
 from pyutils import print_progress
-from .. import ST_HOSTNAME, ST_PORT
 from kilogram.lang import strip_determiners
 from .tokenize import default_tokenize_func
 
@@ -54,6 +53,7 @@ def _is_garbage(ngram1, ngram2):
 
 
 def _init_pos_tags(tokens):
+    from .. import ST_HOSTNAME, ST_PORT
     def _pos_tag_socket(hostname, port, content):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((hostname, port))
