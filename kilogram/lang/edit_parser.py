@@ -75,7 +75,7 @@ def _init_pos_tags(sentence):
             pos_tag = 'NN'
         return pos_tag
     pos_tokens = _pos_tag_socket(ST_HOSTNAME, ST_PORT, sentence).strip()
-    return [compress_pos(x.split('_')) for x in pos_tokens.split()]
+    return [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
 
 def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_func):
