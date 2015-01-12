@@ -6,13 +6,12 @@ import unicodecsv as csv
 
 from ..edit import Edit
 from pyutils import print_progress
-from kilogram.lang import strip_determiners
+from kilogram.lang import strip_determiners, strip_adjectives
 from .tokenize import default_tokenize_func
 
 MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?-]){2,}')
 MULTIPLE_SPACE_REGEX = re.compile(r'([ ]){2,}')
 GARBAGE_REGEX = re.compile(r'[^\w\s]')
-ADJ_REGEX = re.compile(r'([^\s]+_JJ\w?\s?)+ (?=[^\s]+_NN.?)')
 
 
 def _get_line_num(edit_file):
@@ -52,7 +51,7 @@ def _is_garbage(ngram1, ngram2):
     return False
 
 
-def _init_pos_tags(tokens):
+def _init_pos_tags(sentence):
     from .. import ST_HOSTNAME, ST_PORT
 
     def _pos_tag_socket(hostname, port, content):
@@ -75,8 +74,8 @@ def _init_pos_tags(tokens):
         elif pos_tag == 'NNS':
             pos_tag = 'NN'
         return pos_tag
-    pos_tokens = ADJ_REGEX.sub('', _pos_tag_socket(ST_HOSTNAME, ST_PORT, ' '.join(tokens)).strip())
-    return [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
+    pos_tokens = _pos_tag_socket(ST_HOSTNAME, ST_PORT, sentence).strip()
+    return [compress_pos(x.split('_')) for x in pos_tokens.split()]
 
 
 def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_func):
@@ -102,13 +101,12 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             if edit1 is None or edit2 is None:
                 continue
             # tokenize to words, since we want word diff
-            edit1 = tokenize_func(edit1)
-            edit2 = tokenize_func(edit2)
-            context1 = strip_determiners(' '.join(edit1))
-            context2 = strip_determiners(' '.join(edit2))
-            edit1 = context1.split()
-            edit2 = context2.split()
-            pos_tokens = _init_pos_tags(edit2)
+            context1 = strip_determiners(' '.join(tokenize_func(edit1)))
+            context2 = strip_determiners(' '.join(tokenize_func(edit2)))
+            edit1, _ = strip_adjectives(context1.split(), _init_pos_tags(context1))
+            edit2, pos_tokens2 = strip_adjectives(context2.split(), _init_pos_tags(context2))
+            context2 = ' '.join(edit2)
+            context1 = ' '.join(edit1)
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
                 for tag, i1, i2, j1, j2 in seq:
                     if tag == 'equal':
@@ -126,7 +124,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                         ngram1, ngram2 = edit1[index1[0][1]], edit2[index2[0][1]]
                         i1, i2 = index1[0][1], index1[0][1]+1
                         j1, j2 = index2[0][1], index2[0][1]+1
-                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2), pos_tokens))
+                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2), pos_tokens2))
                     edit_n += 1
 
             # Add all other substitution if supplied

@@ -38,3 +38,21 @@ def strip_determiners(ngram):
                  (i+1 < len(ngram) and ngram[i+1] in PUNCT_SET)]
     return ' '.join(new_ngram)
 
+
+def strip_adjectives(tokens, pos_tokens):
+    """
+    :type tokens: list
+    :type pos_tokens: list
+    :return: (tokens, pos_tokens) with stripped adjectives
+    """
+    new_tokens = []
+    adj_tokens = []
+    for token, pos_tag in zip(tokens, pos_tokens):
+        if pos_tag.startswith(('JJ', 'CC')):
+            adj_tokens.append((token, pos_tag))
+            continue
+        elif not pos_tag.startswith('NN') and adj_tokens:
+            new_tokens.extend(adj_tokens)
+            adj_tokens = []
+        new_tokens.append((token, pos_tag))
+    return new_tokens
