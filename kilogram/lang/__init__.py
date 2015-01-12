@@ -55,6 +55,4 @@ def strip_adjectives(tokens, pos_tokens):
             new_tokens.extend(adj_tokens)
             adj_tokens = []
         new_tokens.append((token, pos_tag))
-    if not new_tokens:
-        return [], []
     return new_tokens

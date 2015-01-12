@@ -103,8 +103,12 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             # tokenize to words, since we want word diff
             context1 = strip_determiners(' '.join(tokenize_func(edit1)))
             context2 = strip_determiners(' '.join(tokenize_func(edit2)))
-            edit1, _ = strip_adjectives(context1.split(), _init_pos_tags(context1))
-            edit2, pos_tokens2 = strip_adjectives(context2.split(), _init_pos_tags(context2))
+            try:
+                edit1, _ = strip_adjectives(context1.split(), _init_pos_tags(context1))
+                edit2, pos_tokens2 = strip_adjectives(context2.split(), _init_pos_tags(context2))
+            except ValueError:
+                print 'Value Error', row
+                continue
             context2 = ' '.join(edit2)
             context1 = ' '.join(edit1)
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
