@@ -5,10 +5,8 @@ import functools
 import multiprocessing
 
 from datetime import datetime
-import socket
 
 import nltk
-import re
 from .lang import number_replace
 from .ngram import EditNgram
 
@@ -31,9 +29,6 @@ def get_single_feature_detect(edit):
         return None
 
 
-# Define host and port for Stanford POS tagger service
-ST_HOSTNAME = 'localhost'
-ST_PORT = 2020
 # ngram importance regressor
 NGRAM_REGRESSOR = None
 
@@ -226,7 +221,7 @@ class Edit(object):
     # increases F1 by ~6-7%
     IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
 
-    def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
+    def __init__(self, edit1, edit2, text1, text2, positions1, positions2, pos_tokens):
 
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
@@ -236,33 +231,8 @@ class Edit(object):
 
         self.orig_tokens = text1.split()
         self.tokens = text2.split()
-        self.pos_tokens = None
+        self.pos_tokens = pos_tokens
         self._ngram_context = {}
-
-    @staticmethod
-    def _pos_tag_socket(hostname, port, content):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((hostname, port))
-        s.sendall(content.encode('utf-8'))
-        s.shutdown(socket.SHUT_WR)
-        data = ""
-        while 1:
-            l_data = s.recv(8192)
-            if l_data == "":
-                break
-            data += l_data
-        s.close()
-        return data
-
-    def _init_pos_tags(self):
-        def compress_pos(pos_tag):
-            if pos_tag.startswith('VB'):
-                pos_tag = 'VB'
-            elif pos_tag == 'NNS':
-                pos_tag = 'NN'
-            return pos_tag
-        pos_tokens = self._pos_tag_socket(ST_HOSTNAME, ST_PORT, ' '.join(self.tokens)).strip()
-        self.pos_tokens = [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
@@ -316,9 +286,6 @@ class Edit(object):
 
     def get_single_feature(self, SUBS_LIST, size=3):
         import pandas as pd
-        if not self.pos_tokens:
-            self._init_pos_tags()
-
         def is_useful(pos_seq):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
