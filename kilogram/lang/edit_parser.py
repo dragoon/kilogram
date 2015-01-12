@@ -54,6 +54,7 @@ def _is_garbage(ngram1, ngram2):
 
 def _init_pos_tags(tokens):
     from .. import ST_HOSTNAME, ST_PORT
+
     def _pos_tag_socket(hostname, port, content):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((hostname, port))
@@ -74,7 +75,7 @@ def _init_pos_tags(tokens):
         elif pos_tag == 'NNS':
             pos_tag = 'NN'
         return pos_tag
-    pos_tokens = _pos_tag_socket(ST_HOSTNAME, ST_PORT, ' '.join(tokens)).strip()
+    pos_tokens = ADJ_REGEX.sub('', _pos_tag_socket(ST_HOSTNAME, ST_PORT, ' '.join(tokens)).strip())
     return [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
 
 
