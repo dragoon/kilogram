@@ -48,7 +48,7 @@ def strip_adjectives(tokens, pos_tokens):
     new_tokens = []
     adj_tokens = []
     for token, pos_tag in zip(tokens, pos_tokens):
-        if pos_tag.startswith(('JJ', 'CC')):
+        if pos_tag.startswith('JJ') or (adj_tokens and pos_tag.startswith('CC')):
             adj_tokens.append((token, pos_tag))
             continue
         elif pos_tag.startswith('NN') and adj_tokens:
