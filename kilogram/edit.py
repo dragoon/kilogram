@@ -60,8 +60,9 @@ class EditCollection(object):
         self.labels = [int(edit.is_error) for edit in self.collection]
         self.__class__.CONFUSION_MATRIX = self._reverse_confusion_matrix()
         self.test_errors = None
-        self.test_error_skips = None
+        self.test_skip_errors = None
         self.test_false_errors = None
+        self.test_correct_positions = None
         self.__class__.SUBSTITUTIONS = substitutions
         self.feature_func = feature_func
 
@@ -137,8 +138,9 @@ class EditCollection(object):
         :param classifier: any valid scikit-learn classifier
         """
         self.test_errors = []
-        self.test_error_skips = []
+        self.test_skip_errors = []
         self.test_false_errors = []
+        self.test_correct_positions = []
 
         pool = multiprocessing.Pool(12)
         print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
@@ -147,21 +149,17 @@ class EditCollection(object):
         test_collection = pool.map(get_single_feature1, test_col)
         print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
 
-        def predict_substitution(features, clf):
-            top_suggestions = []
+        def predict_substitution(features, clf, correct_edit):
             if not features:
                 return None
 
             predictions = clf.predict_proba(features)
-            for klasses, prep in zip(predictions, self.SUBSTITUTIONS):
-                klass0, klass1 = klasses
-                if klass1 >= 0.5:
-                    top_suggestions.append((klass1, prep))
+            predictions = sorted([(prep, classes[1]) for classes, prep in zip(predictions, self.SUBSTITUTIONS)],
+                                 key=lambda x: x[1], reverse=True)
+            self.test_correct_positions.append([i for i, x in enumerate(predictions) if x[0] == correct_edit][0])
+            top_suggestions = [prep for prep, confidence in predictions if confidence >= 0.5]
 
-            if top_suggestions:
-                top_suggestions.sort(reverse=True, key=lambda x: x[0])
-                return zip(*top_suggestions)[1]
-            return None
+            return top_suggestions or None
 
         true_pos = 0
         false_pos = 0
@@ -178,11 +176,11 @@ class EditCollection(object):
             if labels_features is None:
                 continue
             features = labels_features[0]
-            predicted_substs = predict_substitution(features, classifier)
+            predicted_substs = predict_substitution(features, classifier, edit.edit2)
             if predicted_substs is None or edit.edit1 in predicted_substs:# -- improves F1 by ~ 1%: evaluate more
                 skips += 1
                 if edit.is_error:
-                    self.test_error_skips.append((edit, predicted_substs))
+                    self.test_skip_errors.append((edit, predicted_substs))
                     skip_err += 1
                 continue
             is_valid = False
