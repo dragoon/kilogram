@@ -1,3 +1,4 @@
+from collections import defaultdict
 import re
 
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
@@ -48,7 +49,7 @@ def strip_adjectives(tokens, pos_tokens):
     new_tokens = []
     adj_tokens = []
     for token, pos_tag in zip(tokens, pos_tokens):
-        if pos_tag.startswith('JJ') or (adj_tokens and pos_tag.startswith('CC')):
+        if (pos_tag.startswith('JJ') or (adj_tokens and pos_tag.startswith('CC'))) and token == 'other':
             adj_tokens.append((token, pos_tag))
             continue
         elif pos_tag.startswith('NN') and adj_tokens:
