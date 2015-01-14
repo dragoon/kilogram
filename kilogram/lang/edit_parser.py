@@ -73,36 +73,30 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             if edit1 is None or edit2 is None:
                 continue
             # tokenize to words, since we want word diff
-            context1 = strip_determiners(' '.join(tokenize_func(edit1)))
-            context2 = strip_determiners(' '.join(tokenize_func(edit2)))
-            edit1 = context1.split()
-            edit2 = context2.split()
+            edit1 = strip_determiners(' '.join(tokenize_func(edit1))).split()
+            edit2 = strip_determiners(' '.join(tokenize_func(edit2))).split()
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
                 for tag, i1, i2, j1, j2 in seq:
                     if tag == 'equal':
                         continue
-                    ngram1, ngram2 = ' '.join(edit1[i1:i2]), ' '.join(edit2[j1:j2])
-                    #if _is_garbage(ngram1, ngram2):
-                    #    continue
-                    # TODO: works only for unigram substitutions
                     # extract merged edits into unigrams that match substitutions
                     if substitutions:
+                        # TODO: works only for unigram substitutions
                         index1 = [(ix, i) for ix, i in enumerate(range(i1, i2)) if edit1[i] in substitutions]
                         index2 = [(ix, i) for ix, i in enumerate(range(j1, j2)) if edit2[i] in substitutions]
                         if len(index1) != 1 or len(index2) != 1 or index1[0][0] != index2[0][0]:
                             continue
-                        ngram1, ngram2 = edit1[index1[0][1]], edit2[index2[0][1]]
                         i1, i2 = index1[0][1], index1[0][1]+1
                         j1, j2 = index2[0][1], index2[0][1]+1
-                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
+                    edits.append(Edit(edit1, edit2, (i1, i2), (j1, j2)))
                     edit_n += 1
 
-            # Add all other substitution if supplied
+            # Add all other substitutions if supplied
             # TODO: works only for unigrams
             if substitutions:
                 for i, unigram in enumerate(edit2):
                     if unigram in substitutions:
-                        edits.append(Edit(unigram, unigram, context1, context2, (i, i+1), (i, i+1)))
+                        edits.append(Edit(edit1, edit2, (i, i+1), (i, i+1)))
                         edit_n += 1
 
         del csvreader.__class__.__len__
@@ -129,10 +123,9 @@ def extract_filtered(edit_file, filter_func, tokenize_func=default_tokenize_func
                 continue
             # tokenize to words, since we want word diff
             edit2 = tokenize_func(edit2)
-            context2 = ' '.join(edit2)
             for i1, word in enumerate(edit2):
                 if filter_func(word):
-                    edits.append(Edit(word, word, context2, context2, (i1, i1+1), (i1, i1+1)))
+                    edits.append(Edit(edit2, edit2, (i1, i1+1), (i1, i1+1)))
                     edit_n += 1
         del csvreader.__class__.__len__
     print 'Total edits extracted:', edit_n

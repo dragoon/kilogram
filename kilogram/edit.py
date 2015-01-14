@@ -177,7 +177,7 @@ class EditCollection(object):
                 continue
             features = labels_features[0]
             predicted_substs = predict_substitution(features, classifier, edit.edit2)
-            if predicted_substs is None or edit.edit1 in predicted_substs:# -- improves F1 by ~ 1%: evaluate more
+            if predicted_substs is None or edit.edit1 in predicted_substs:  # -- improves F1 by ~ 1%: evaluate more
                 skips += 1
                 if edit.is_error:
                     self.test_skip_errors.append((edit, predicted_substs))
@@ -217,20 +217,21 @@ class EditCollection(object):
 
 class Edit(object):
     # increases F1 by ~6-7%
-    IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
+    IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'}  # CD doesn't improve - why?
 
-    def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
+    def __init__(self, tokens1, tokens2, positions1, positions2):
 
-        self.edit1 = edit1.lower()
-        self.edit2 = edit2.lower()
+        self.edit1 = tokens1[slice(*positions1)].lower()
+        self.edit2 = tokens2[slice(*positions2)].lower()
         self.positions1 = positions1
         self.positions2 = positions2
-        # TODO: when edit is bigger than 1 word, need not to split it
-        # TODO: do this by replacing space with underscores
+        self.left_tokens = tokens2[:positions2[0]]
+        self.right_tokens = tokens2[positions2[1]:]
 
-        self.orig_tokens = text1.split()
-        self.tokens = text2.split()
-        self.pos_tokens = pos_tag(edit2)
+        pos_tokens = pos_tag(tokens2)
+        self.left_pos_tokens = pos_tokens[:positions2[0]]
+        self.right_pos_tokens = pos_tokens[positions2[1]:]
+        self.edit_pos_tokens = pos_tokens[slice(*positions2)]
         self._ngram_context = {}
 
     def __unicode__(self):
@@ -243,48 +244,46 @@ class Edit(object):
     def is_error(self):
         return self.edit1 != self.edit2
 
-    def context(self, size=3, fill=''):
-        """Normal context"""
-        def lowercase_token(token):
-            if token == '.':
-                return ','
-            return number_replace(token.lower())
+    @staticmethod
+    def _lowercase_token(token):
+        if token == '.':
+            return ','
+        return number_replace(token.lower())
 
-        tokens = [lowercase_token(x) for x in self.tokens]
-        left_index_orig = left_index = self.positions2[0]-size
-        right_index_orig = right_index = self.positions2[1]+size
-        if left_index < 0:
-            left_index = 0
-        if right_index > len(tokens):
-            right_index = len(tokens)
-        return [fill]*(-left_index_orig) + tokens[left_index:right_index]\
-            + [fill]*(right_index_orig-len(tokens))
+    def context(self, size=3, fill='', pos_tagged=False):
+        """Normal context"""
+        def context_tokens(left, center, right):
+            return [fill] * (size - len(left)) + \
+                left[-size:] + center + right[:size] + \
+                [fill] * (size - len(right))
+        ct = context_tokens(self.left_tokens, self.edit2, self.right_tokens)
+        if pos_tagged:
+            pos_tokens = context_tokens(self.left_pos_tokens, self.edit_pos_tokens, self.right_pos_tokens)
+            ct = zip(ct, pos_tokens)
+        return ct
 
     def ngram_context(self, size=3, fill=''):
         """N-gram context"""
         if size in self._ngram_context:
             return self._ngram_context[size]
         result_ngrams = {}
-        pos_tag = bool(self.pos_tokens)
         for n_size in range(1, size):
-            local_tokens = self.context(n_size, fill)
-            local_indices = range(self.positions2[0]-n_size, self.positions2[1]+n_size)
+            context_tokens = self.context(n_size, fill, pos_tagged=True)
             result_ngrams[n_size+1] = []
 
-            for edit_pos, ngram, indices in zip(range(n_size, -1, -1),
-                                                nltk.ngrams(local_tokens, n_size+1),
-                                                nltk.ngrams(local_indices, n_size+1)):
+            for edit_pos, ngram in zip(range(n_size, -1, -1), nltk.ngrams(context_tokens, n_size+1)):
+                ngram, ngram_pos_tag = zip(*ngram)
                 if fill in ngram:
                     result_ngrams[n_size+1].append(fill)
                 else:
                     result_ngrams[n_size+1].append(EditNgram(ngram, edit_pos))
-                    if pos_tag:
-                        result_ngrams[n_size+1][-1].pos_tag = self.pos_tokens[indices[0]:indices[-1]+1]
+                    result_ngrams[n_size+1][-1].pos_tag = ngram_pos_tag
         self._ngram_context[size] = result_ngrams
         return result_ngrams
 
     def get_single_feature(self, SUBS_LIST, size=3):
         import pandas as pd
+
         def is_useful(pos_seq):
             """Manually marked useless pos sequences, such a DT, PRP$, etc."""
             result = True
