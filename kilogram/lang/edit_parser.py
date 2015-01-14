@@ -1,12 +1,11 @@
 import difflib
 import re
-import socket
 
 import unicodecsv as csv
 
 from ..edit import Edit
 from pyutils import print_progress
-from kilogram.lang import strip_determiners, strip_adjectives
+from kilogram.lang import strip_determiners
 from .tokenize import default_tokenize_func
 
 MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?-]){2,}')
@@ -51,33 +50,6 @@ def _is_garbage(ngram1, ngram2):
     return False
 
 
-def _init_pos_tags(sentence):
-    from .. import ST_HOSTNAME, ST_PORT
-
-    def _pos_tag_socket(hostname, port, content):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((hostname, port))
-        s.sendall(content.encode('utf-8'))
-        s.shutdown(socket.SHUT_WR)
-        data = ""
-        while 1:
-            l_data = s.recv(8192)
-            if l_data == "":
-                break
-            data += l_data
-        s.close()
-        return data
-
-    def compress_pos(pos_tag):
-        if pos_tag.startswith('VB'):
-            pos_tag = 'VB'
-        elif pos_tag == 'NNS':
-            pos_tag = 'NN'
-        return pos_tag
-    pos_tokens = _pos_tag_socket(ST_HOSTNAME, ST_PORT, sentence).strip()
-    return [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]
-
-
 def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_func):
     """
     Extracts contexts for all n-grams that were changed between two text versions.
@@ -103,7 +75,6 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             # tokenize to words, since we want word diff
             context1 = strip_determiners(' '.join(tokenize_func(edit1)))
             context2 = strip_determiners(' '.join(tokenize_func(edit2)))
-            pos_tokens2 = _init_pos_tags(context2)
             edit1 = context1.split()
             edit2 = context2.split()
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
@@ -123,7 +94,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                         ngram1, ngram2 = edit1[index1[0][1]], edit2[index2[0][1]]
                         i1, i2 = index1[0][1], index1[0][1]+1
                         j1, j2 = index2[0][1], index2[0][1]+1
-                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2), pos_tokens2))
+                    edits.append(Edit(ngram1, ngram2, context1, context2, (i1, i2), (j1, j2)))
                     edit_n += 1
 
             # Add all other substitution if supplied
@@ -131,7 +102,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             if substitutions:
                 for i, unigram in enumerate(edit2):
                     if unigram in substitutions:
-                        edits.append(Edit(unigram, unigram, context1, context2, (i, i+1), (i, i+1), pos_tokens2))
+                        edits.append(Edit(unigram, unigram, context1, context2, (i, i+1), (i, i+1)))
                         edit_n += 1
 
         del csvreader.__class__.__len__

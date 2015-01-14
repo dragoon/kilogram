@@ -1,5 +1,6 @@
 from collections import defaultdict
 import re
+import socket
 
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
 PUNCT_SET = set('[!(),.:;?/[\\]^`{|}]')
@@ -49,7 +50,7 @@ def strip_adjectives(tokens, pos_tokens):
     new_tokens = []
     adj_tokens = []
     for token, pos_tag in zip(tokens, pos_tokens):
-        if (pos_tag.startswith('JJ') or (adj_tokens and pos_tag.startswith('CC'))) and token == 'other':
+        if pos_tag == 'JJ':# or (adj_tokens and pos_tag == 'CC'):
             adj_tokens.append((token, pos_tag))
             continue
         elif pos_tag.startswith('NN') and adj_tokens:
@@ -59,3 +60,30 @@ def strip_adjectives(tokens, pos_tokens):
             adj_tokens = []
         new_tokens.append((token, pos_tag))
     return zip(*new_tokens)
+
+
+def pos_tag(sentence):
+    from .. import ST_HOSTNAME, ST_PORT
+
+    def _pos_tag_socket(hostname, port, content):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((hostname, port))
+        s.sendall(content.encode('utf-8'))
+        s.shutdown(socket.SHUT_WR)
+        data = ""
+        while 1:
+            l_data = s.recv(8192)
+            if l_data == "":
+                break
+            data += l_data
+        s.close()
+        return data
+
+    def compress_pos(pos_tag):
+        if pos_tag.startswith('VB'):
+            pos_tag = 'VB'
+        elif pos_tag == 'NNS':
+            pos_tag = 'NN'
+        return pos_tag
+    pos_tokens = _pos_tag_socket(ST_HOSTNAME, ST_PORT, sentence).strip()
+    return [compress_pos(x.split('_')[1]) for x in pos_tokens.split()]

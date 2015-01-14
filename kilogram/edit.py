@@ -7,7 +7,7 @@ import multiprocessing
 from datetime import datetime
 
 import nltk
-from .lang import number_replace
+from .lang import number_replace, pos_tag
 from .ngram import EditNgram
 
 
@@ -219,17 +219,18 @@ class Edit(object):
     # increases F1 by ~6-7%
     IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'} # CD doesn't improve - why?
 
-    def __init__(self, edit1, edit2, text1, text2, positions1, positions2, pos_tokens):
+    def __init__(self, edit1, edit2, text1, text2, positions1, positions2):
 
         self.edit1 = edit1.lower()
         self.edit2 = edit2.lower()
         self.positions1 = positions1
         self.positions2 = positions2
         # TODO: when edit is bigger than 1 word, need not to split it
+        # TODO: do this by replacing space with underscores
 
         self.orig_tokens = text1.split()
         self.tokens = text2.split()
-        self.pos_tokens = pos_tokens
+        self.pos_tokens = pos_tag(edit2)
         self._ngram_context = {}
 
     def __unicode__(self):
