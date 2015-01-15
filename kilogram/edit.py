@@ -221,8 +221,8 @@ class Edit(object):
 
     def __init__(self, tokens1, tokens2, positions1, positions2):
 
-        self.edit1 = tokens1[slice(*positions1)].lower()
-        self.edit2 = tokens2[slice(*positions2)].lower()
+        self.edit1 = [x.lower() for x in tokens1[slice(*positions1)]]
+        self.edit2 = [x.lower() for x in tokens2[slice(*positions2)]]
         self.positions1 = positions1
         self.positions2 = positions2
         self.left_tokens = tokens2[:positions2[0]]
