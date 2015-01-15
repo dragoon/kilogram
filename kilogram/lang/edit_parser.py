@@ -76,7 +76,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             edit1 = strip_determiners(' '.join(tokenize_func(edit1))).split()
             edit2 = strip_determiners(' '.join(tokenize_func(edit2))).split()
             # identify pos tags here to not do it multiple times
-            pos_tokens = pos_tag(edit2.split())
+            pos_tokens = pos_tag(' '.join(edit2))
             for seq in difflib.SequenceMatcher(None, edit1, edit2).get_grouped_opcodes(0):
                 for tag, i1, i2, j1, j2 in seq:
                     if tag == 'equal':
