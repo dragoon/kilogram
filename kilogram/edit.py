@@ -228,7 +228,7 @@ class Edit(object):
         self.left_tokens = tokens2[:positions2[0]]
         self.right_tokens = tokens2[positions2[1]:]
 
-        pos_tokens = pos_tag(tokens2)
+        pos_tokens = pos_tag(' '.join(tokens2))
         self.left_pos_tokens = pos_tokens[:positions2[0]]
         self.right_pos_tokens = pos_tokens[positions2[1]:]
         self.edit_pos_tokens = pos_tokens[slice(*positions2)]
