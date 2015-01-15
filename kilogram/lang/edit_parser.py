@@ -96,7 +96,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
             if substitutions:
                 for i, unigram in enumerate(edit2):
                     if unigram in substitutions:
-                        edits.append(Edit(edit1, edit2, (i, i+1), (i, i+1)))
+                        edits.append(Edit(edit2, edit2, (i, i+1), (i, i+1)))
                         edit_n += 1
 
         del csvreader.__class__.__len__
