@@ -264,7 +264,7 @@ class Edit(object):
             return [fill] * (size - len(left)) + \
                 left[-size:] + center + right[:size] + \
                 [fill] * (size - len(right))
-        ct = context_tokens(self.left_tokens, self.edit2.split(), self.right_tokens)
+        ct = [self._lowercase_token(x) for x in context_tokens(self.left_tokens, self.edit2.split(), self.right_tokens)]
         if pos_tagged:
             pos_tokens = context_tokens(self.left_pos_tokens, self.edit_pos_tokens, self.right_pos_tokens)
             ct = zip(ct, pos_tokens)
