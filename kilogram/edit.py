@@ -242,8 +242,6 @@ class Edit(object):
             self.edit_pos_tokens = pos_tokens[slice(*positions2)]
         self._ngram_context = {}
 
-    @property
-
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
 
