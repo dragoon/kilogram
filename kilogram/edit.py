@@ -45,7 +45,6 @@ class EditCollection(object):
         'len_zero_ngram',        # 7
         'zero_ngram_rank',       # 8
         'conf_matrix_score',     # 9
-        'top_prep_count_2gram',  # 10
         'top_prep_count_3gram',  # 11
         'avg_rank_position_-1',  # 13
         'avg_rank_position_0',   # 14
@@ -289,6 +288,9 @@ class Edit(object):
         self._ngram_context[size] = result_ngrams
         return result_ngrams
 
+    def ngram_context_no_adj(self, size=3, fill=''):
+        pass
+
     def get_single_feature(self, SUBS_LIST, size=3):
         import pandas as pd
 
@@ -386,8 +388,7 @@ class Edit(object):
             # reverse confusion matrix
             feature_vector.append(matrix.get(subst, 0)/matrix_sum)
             # counts of a preposition on top of a ranking
-            for ngram_size in range(2, 4):
-                feature_vector.append(top_type_counts.loc[subst].get(ngram_size, 0))
+            feature_vector.append(top_type_counts.loc[subst].get(3, 0))
 
             # average rank by normalized position
             for position in (-1, 0, 1):
