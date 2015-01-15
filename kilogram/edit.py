@@ -221,8 +221,8 @@ class Edit(object):
 
     def __init__(self, tokens1, tokens2, positions1, positions2):
 
-        self.edit1 = [x.lower() for x in tokens1[slice(*positions1)]]
-        self.edit2 = [x.lower() for x in tokens2[slice(*positions2)]]
+        self.edit1 = ' '.join(tokens1[slice(*positions1)]).lower()
+        self.edit2 = ' '.join(tokens2[slice(*positions2)]).lower()
         self.positions1 = positions1
         self.positions2 = positions2
         self.left_tokens = tokens2[:positions2[0]]
@@ -233,6 +233,8 @@ class Edit(object):
         self.right_pos_tokens = pos_tokens[positions2[1]:]
         self.edit_pos_tokens = pos_tokens[slice(*positions2)]
         self._ngram_context = {}
+
+    @property
 
     def __unicode__(self):
         return self.edit1+u'→'+self.edit2 + u'\n' + u' '.join(self.context()).strip()
@@ -256,7 +258,7 @@ class Edit(object):
             return [fill] * (size - len(left)) + \
                 left[-size:] + center + right[:size] + \
                 [fill] * (size - len(right))
-        ct = context_tokens(self.left_tokens, self.edit2, self.right_tokens)
+        ct = context_tokens(self.left_tokens, self.edit2.split(), self.right_tokens)
         if pos_tagged:
             pos_tokens = context_tokens(self.left_pos_tokens, self.edit_pos_tokens, self.right_pos_tokens)
             ct = zip(ct, pos_tokens)
