@@ -7,7 +7,7 @@ import multiprocessing
 from datetime import datetime
 
 import nltk
-from .lang import number_replace, pos_tag
+from .lang import number_replace
 from .ngram import EditNgram
 
 
@@ -219,7 +219,15 @@ class Edit(object):
     # increases F1 by ~6-7%
     IGNORE_TAGS = {'DT', 'PR', 'TO', 'CD', 'WD', 'WP'}  # CD doesn't improve - why?
 
-    def __init__(self, tokens1, tokens2, positions1, positions2):
+    def __init__(self, tokens1, tokens2, positions1, positions2, pos_tokens=None):
+        """
+        :type tokens1: list
+        :type tokens2: list
+        :type positions1: tuple
+        :type positions2: tuple
+        :type pos_tokens: list
+        :return:
+        """
 
         self.edit1 = ' '.join(tokens1[slice(*positions1)]).lower()
         self.edit2 = ' '.join(tokens2[slice(*positions2)]).lower()
@@ -228,10 +236,10 @@ class Edit(object):
         self.left_tokens = tokens2[:positions2[0]]
         self.right_tokens = tokens2[positions2[1]:]
 
-        pos_tokens = pos_tag(' '.join(tokens2))
-        self.left_pos_tokens = pos_tokens[:positions2[0]]
-        self.right_pos_tokens = pos_tokens[positions2[1]:]
-        self.edit_pos_tokens = pos_tokens[slice(*positions2)]
+        if pos_tokens:
+            self.left_pos_tokens = pos_tokens[:positions2[0]]
+            self.right_pos_tokens = pos_tokens[positions2[1]:]
+            self.edit_pos_tokens = pos_tokens[slice(*positions2)]
         self._ngram_context = {}
 
     @property
