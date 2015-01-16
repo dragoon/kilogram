@@ -7,7 +7,7 @@ import multiprocessing
 from datetime import datetime
 
 import nltk
-from .lang import number_replace
+from .lang import number_replace, strip_adjectives
 from .ngram import EditNgram
 
 
@@ -261,7 +261,7 @@ class Edit(object):
         """Normal context"""
         def context_tokens(left, center, right):
             return [fill] * (size - len(left)) + \
-                left[-size:] + center + right[:size] + \
+                list(left[-size:]) + center + list(right[:size]) + \
                 [fill] * (size - len(right))
         ct = [self._lowercase_token(x) for x in context_tokens(self.left_tokens, self.edit2.split(), self.right_tokens)]
         if pos_tagged:
@@ -289,7 +289,17 @@ class Edit(object):
         return result_ngrams
 
     def ngram_context_no_adj(self, size=3, fill=''):
-        pass
+        # save original tokens
+        old_left, old_pos_left = self.left_tokens, self.left_pos_tokens
+        old_right, old_pos_right = self.right_tokens, self.right_pos_tokens
+        ######
+        self.left_tokens, self.left_pos_tokens = strip_adjectives(self.left_tokens, self.left_pos_tokens)
+        self.right_tokens, self.right_pos_tokens = strip_adjectives(self.right_tokens, self.right_pos_tokens)
+        result_ngrams = self.ngram_context(size, fill)
+        # restore original tokens
+        self.left_tokens, self.left_pos_tokens = old_left, old_pos_left
+        self.right_tokens, self.right_pos_tokens = old_right, old_pos_right
+        return result_ngrams
 
     def get_single_feature(self, SUBS_LIST, size=3):
         import pandas as pd
