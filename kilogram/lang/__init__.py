@@ -59,7 +59,10 @@ def strip_adjectives(tokens, pos_tokens):
             new_tokens.extend(adj_tokens)
             adj_tokens = []
         new_tokens.append((token, pos_tag))
-    return zip(*new_tokens)
+    if new_tokens:
+        return zip(*new_tokens)
+    else:
+        return [], []
 
 
 def pos_tag(sentence):
