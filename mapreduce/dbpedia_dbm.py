@@ -59,10 +59,13 @@ for line in p.stdout:
 dbpediadb = shelve.open('dbpedia_types.dbm')
 dbpediadb_lower = shelve.open('dbpedia_lowercase2labels.dbm', writeback=True)
 
+# sort types
+for uri, types in dbpediadb_types.iteritems():
+    dbpediadb_types[uri] = sorted(types, key=lambda x: dbpedia_types_order[x], reverse=True)
+
 # write canonical labels first
-for uri, types in dbpediadb_types.items():
-    # sort types here
-    dbpediadb[uri] = sorted(types, key=lambda x: dbpedia_types_order[x], reverse=True)
+for uri, types in dbpediadb_types.iteritems():
+    dbpediadb[uri] = types
     dbpediadb_lower[uri.lower()] = [uri]
 
 
