@@ -13,6 +13,26 @@ import subprocess
 import urllib
 from collections import defaultdict
 import shelve
+import rdflib
+
+
+# parse dbpedia ontology
+dbpedia_types = defaultdict(list)
+g = rdflib.Graph()
+g.parse("dbpedia_3.9.owl", format="xml")
+for subject, predicate, obj in g:
+    if str(predicate) == 'http://www.w3.org/2000/01/rdf-schema#subClassOf':
+        dbpedia_types[str(obj)].append(str(subject))
+#BFS traversal
+dbpedia_types_order = {}
+nodes = [('http://www.w3.org/2002/07/owl#Thing', 0)]
+while nodes:
+    node, order = nodes.pop(0)
+    dbpedia_types_order[node.replace('http://dbpedia.org/ontology/', '')] = order
+    for child in dbpedia_types[node]:
+        nodes.append((child, order+1))
+del dbpedia_types
+
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
@@ -41,7 +61,8 @@ dbpediadb_lower = shelve.open('dbpedia_lowercase2labels.dbm', writeback=True)
 
 # write canonical labels first
 for uri, types in dbpediadb_types.items():
-    dbpediadb[uri] = types
+    # sort types here
+    dbpediadb[uri] = sorted(types, key=lambda x: dbpedia_types_order[x], reverse=True)
     dbpediadb_lower[uri.lower()] = [uri]
 
 
