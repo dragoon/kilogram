@@ -19,7 +19,7 @@ import rdflib
 # parse dbpedia ontology
 dbpedia_types = defaultdict(list)
 g = rdflib.Graph()
-g.parse("dbpedia_3.9.owl", format="xml")
+g.parse("dbpedia_2014.owl", format="xml")
 for subject, predicate, obj in g:
     if str(predicate) == 'http://www.w3.org/2000/01/rdf-schema#subClassOf':
         dbpedia_types[str(obj)].append(str(subject))
