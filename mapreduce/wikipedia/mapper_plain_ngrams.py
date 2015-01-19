@@ -4,6 +4,7 @@
 import sys
 import nltk
 import os
+from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.wikipedia import line_filter
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
@@ -15,8 +16,8 @@ if not N:
 for line in sys.stdin:
     if not line:
         continue
-    line = parse_types_text(line, {}, numeric=False)
-    for sentence in line_filter(line):
+    for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
+        sentence = parse_types_text(sentence, {}, numeric=False)
         words = sentence.split()
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):

@@ -10,9 +10,8 @@ def parse_types_text(text, dbpedia_types, numeric=True):
     """
     :type dbpedia_types: dict
     """
-    line = wiki_tokenize_func(text)
     new_line = []
-    for word in line:
+    for word in text.split():
         match = ENTITY_MATCH_RE.search(word)
         if match:
             uri = match.group(1)

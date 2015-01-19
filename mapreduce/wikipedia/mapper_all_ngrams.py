@@ -5,6 +5,7 @@ import sys
 import nltk
 import os
 import shelve
+from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.wikipedia import line_filter
 from kilogram.dataset.wikipedia.entities import parse_types_text
 
@@ -19,16 +20,17 @@ for line in sys.stdin:
     if not line:
         continue
 
-    line_types = parse_types_text(line, dbpedia_types, numeric=False)
-    line_plain = parse_types_text(line, {}, numeric=False)
-    for sentence in line_filter(line_plain):
-        words = sentence.split()
+    for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
+        sentence_plain = parse_types_text(sentence, {}, numeric=False)
+        sentence_types = parse_types_text(sentence, dbpedia_types, numeric=False)
+
+        words = sentence_plain.split()
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
                 print '%s\t%s' % (ngram_joined, 1)
-    for sentence in line_filter(line_types):
-        words = sentence.split()
+
+        words = sentence_types.split()
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)
