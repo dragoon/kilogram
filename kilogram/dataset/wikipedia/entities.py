@@ -4,9 +4,10 @@ from ...lang.tokenize import wiki_tokenize_func
 
 
 ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
+SIMPLE_TYPES = set(['Place', 'Person', 'Organisation'])
 
 
-def parse_types_text(text, dbpedia_types, numeric=True):
+def parse_types_text(text, dbpedia_types, numeric=False, type_level=-1, type_filter=None):
     """
     :type dbpedia_types: dict
     """
@@ -20,7 +21,11 @@ def parse_types_text(text, dbpedia_types, numeric=True):
             stop = False
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
-                    new_line.append(match.expand('<dbpedia:' + dbpedia_types[uri][0]+'>'))
+                    types = dbpedia_types[uri]
+                    dbp_type = types[type_level]
+                    if type_filter and dbp_type not in type_filter:
+                        continue
+                    new_line.append(match.expand('<dbpedia:' + dbp_type+'>'))
                     stop = True
                     break
             if not stop:
