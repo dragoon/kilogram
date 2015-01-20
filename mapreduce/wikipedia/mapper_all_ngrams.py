@@ -22,7 +22,7 @@ for line in sys.stdin:
 
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
         sentence_plain = parse_types_text(sentence, {}, numeric=False)
-        sentence_types = parse_types_text(sentence, dbpedia_types, numeric=False)
+        sentence_types = parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)
 
         words = sentence_plain.split()
         for n in range(1, N+1):
