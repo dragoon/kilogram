@@ -37,7 +37,7 @@ for line in sys.stdin:
                 ngram, _ = zip(*ngram)
                 ngram_joined = ' '.join(ngram)
                 if '<dbpedia:' in ngram_joined:
-                    print '%s\t%s' % (ngram_joined, 0.5)
+                    print '%s\t%s' % (ngram_joined, 1)
 
 
 dbpedia_types.close()
