@@ -17,7 +17,7 @@ for line in sys.stdin:
         continue
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
         # -1 = most generic, 0 = most specific
-        print parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)
+        print ' '.join(zip(*parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)[0])[0])
 
 if dbpedia_types:
     dbpedia_types.close()

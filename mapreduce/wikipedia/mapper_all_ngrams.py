@@ -21,22 +21,22 @@ for line in sys.stdin:
         continue
 
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        sentence_plain = parse_types_text(sentence, {}, numeric=False)
-        sentence_types = parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)
+        tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)
 
-        words = sentence_plain.split()
         for n in range(1, N+1):
-            for ngram in nltk.ngrams(words, n):
-                ngram_joined = ' '.join(ngram)
-                print '%s\t%s' % (ngram_joined, 1)
+            for ngram in nltk.ngrams(tokens_plain, n):
+                ngram, markers = zip(*ngram)
+                count = 1
+                if 1 in markers:
+                    count = 0.5
+                print '%s\t%s' % (' '.join(ngram), count)
 
-        words = sentence_types.split()
         for n in range(1, N+1):
-            for ngram in nltk.ngrams(words, n):
+            for ngram in nltk.ngrams(tokens_types, n):
+                ngram, _ = zip(*ngram)
                 ngram_joined = ' '.join(ngram)
                 if '<dbpedia:' in ngram_joined:
-                    print '%s\t%s' % (ngram_joined, 1)
-
+                    print '%s\t%s' % (ngram_joined, 0.5)
 
 
 dbpedia_types.close()
