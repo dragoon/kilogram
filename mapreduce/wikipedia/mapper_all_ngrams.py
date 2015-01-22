@@ -27,8 +27,9 @@ for line in sys.stdin:
             for ngram in nltk.ngrams(tokens_plain, n):
                 ngram, markers = zip(*ngram)
                 count = 1
-                if 1 in markers:
-                    count = 0.5
+                # does not work
+                #if 1 in markers:
+                #    count = 0.5
                 print '%s\t%s' % (' '.join(ngram), count)
 
         for n in range(1, N+1):
