@@ -12,7 +12,10 @@ for line in sys.stdin:
     line = line.strip()
 
     # parse the input we got from mapper.py
-    ngram, w_count = line.split('\t')
+    try:
+        ngram, w_count = line.split('\t')
+    except:
+        continue
 
     # this IF-switch only works because Hadoop sorts map output
     # by key (here: word) before it is passed to the reducer
