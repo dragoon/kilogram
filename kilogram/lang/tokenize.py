@@ -11,7 +11,7 @@ GARBAGE_REGEX = re.compile(r'[^\w\s]')
 _DOT_TOKENS = {'i.e.', 'u.s.', 'u.s.a.', 'e.g.', 'ft.', 'cf.', 'etc.', 'approx.',
                'al.', 'no.', 'vs.', 'v.', 'op.',
                'mr.', 'ms.', 'mrs.', 'dr.', 'ph.d.', 'st.', 'jr.', 'sr.',  # people
-               'sgt.', 'lt.', 'maj.', 'gen.',  # military
+               'sgt.', 'lt.', 'maj.', 'col.', 'gen.',  # military
                'a.m.', 'p.m.',  # time
                'corp.', 'inc.', 'ltd.', 'bros.', 'co.'}  # organizations
 
