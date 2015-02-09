@@ -1,12 +1,19 @@
 import re
 
+FLOAT_REGEX = r'\.\d+'
+NUM_RE = re.compile(FLOAT_REGEX)
+
 INITIAL_REGEX = re.compile(r'[A-Z]\.')
 MULTIPLE_PUNCT_REGEX = re.compile(r'([.!?]){2,}')
 MULTIPLE_SPACE_REGEX = re.compile(r'([ ]){2,}')
 GARBAGE_REGEX = re.compile(r'[^\w\s]')
 
-_DOT_TOKENS = {'mr.', 'dr.', 'ltd.', 'i.e.', 'u.s.', 'u.s.a.', 'e.g.', 'ft.', 'cf.', 'etc.', 'al.'}
-_TIME_TOKENS = {'a.', 'p.', 'm.', 'a.m.', 'p.m.', 'p.m', 'a.m'}
+_DOT_TOKENS = {'i.e.', 'u.s.', 'u.s.a.', 'e.g.', 'ft.', 'cf.', 'etc.', 'approx.',
+               'al.', 'no.', 'vs.', 'v.', 'op.',
+               'mr.', 'ms.', 'mrs.', 'dr.', 'ph.d.', 'st.', 'jr.', 'sr.',  # people
+               'sgt.', 'lt.', 'maj.', 'gen.',  # military
+               'a.m.', 'p.m.',  # time
+               'corp.', 'inc.', 'ltd.', 'bros.', 'co.'}  # organizations
 
 _SIMPLE_PUNCT = set('!"()*,:;<=>?[]{}.?')
 _SIMPLE_PUNCT_WIKI = set('!"()*,:;=?[]{}.?')
@@ -31,12 +38,7 @@ def default_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT):
                 return
             to_append = []
 
-            # concatenate a.m./p.m. for simpler time parsing
-            if token in _TIME_TOKENS and len(all_tokens) > 0:
-                all_tokens[-1] += token
-                return
-
-            if token.lower() in _DOT_TOKENS or INITIAL_REGEX.match(token):
+            if token.lower() in _DOT_TOKENS or INITIAL_REGEX.match(token) or NUM_RE.match(token):
                 all_tokens.append(token)
                 return
 
@@ -49,6 +51,7 @@ def default_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT):
             else:
                 all_tokens.append(token)
             all_tokens.extend(to_append)
+
         parse_token(tokens, orig_token)
         new_tokens.extend(tokens)
     return new_tokens
@@ -63,3 +66,11 @@ if __name__ == '__main__':
     text = 'reclassic and Classic (roughly 500 BC to 800 AD). The site was the capital of a Maya city-state located'
     tokens = default_tokenize_func(text)
     assert ' '.join(tokens) == 'reclassic and Classic ( roughly 500 BC to 800 AD ) . The site was the capital of a Maya city-state located'
+
+    text = 'The same Latin stem gives rise to the terms a.m. (ante meridiem) and p.m. (post meridiem)'
+    tokens = default_tokenize_func(text)
+    assert ' '.join(tokens) == 'The same Latin stem gives rise to the terms a.m. ( ante meridiem ) and p.m. ( post meridiem )'
+
+    text = 'Around .4 percent'
+    tokens = default_tokenize_func(text)
+    assert ' '.join(tokens) == 'Around .4 percent'
