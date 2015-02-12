@@ -113,4 +113,4 @@ def replace_ne(sentence):
             is_ne = False
         elif not is_ne:
             typed_tokens.append(ne_token)
-
+    return ' '.join(typed_tokens)
