@@ -1,5 +1,10 @@
+import re
+
+END_SENTENCE_RE = re.compile(r'\s\.\s(?=[^a-z])')
+
+
 def line_filter(line):
-    sentences = line.split(' . ')
+    sentences = END_SENTENCE_RE.split(line)
     last = len(sentences) - 1
     for i, sentence in enumerate(sentences):
         if i == last and not sentence.endswith('.'):
