@@ -1,6 +1,7 @@
 from collections import defaultdict
 import re
 import socket
+import struct
 
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
 PUNCT_SET = set('[!(),.:;?/[\\]^`{|}]')
@@ -70,7 +71,7 @@ def strip_adjectives(tokens, pos_tokens):
 
 def _stanford_socket(hostname, port, content):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
     s.connect((hostname, port))
     s.sendall(content.encode('utf-8'))
     s.shutdown(socket.SHUT_WR)
