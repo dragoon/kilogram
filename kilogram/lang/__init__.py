@@ -70,6 +70,7 @@ def strip_adjectives(tokens, pos_tokens):
 
 def _stanford_socket(hostname, port, content):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.connect((hostname, port))
     s.sendall(content.encode('utf-8'))
     s.shutdown(socket.SHUT_WR)
@@ -79,7 +80,6 @@ def _stanford_socket(hostname, port, content):
         if l_data == "":
             break
         data += l_data
-    s.shutdown(socket.SHUT_RD)
     s.close()
     return data
 
