@@ -6,3 +6,5 @@ DEBUG = True
 # Define host and port for Stanford POS tagger service
 ST_HOSTNAME = 'localhost'
 ST_PORT = 2020
+NER_HOSTNAME = 'localhost'
+NER_PORT = 9191
