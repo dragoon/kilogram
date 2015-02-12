@@ -1,6 +1,6 @@
 import re
 
-END_SENTENCE_RE = re.compile(r'\s\.\s(?=[^a-z])')
+END_SENTENCE_RE = re.compile(r'\s\.\s(?=[A-Z])')
 
 
 def line_filter(line):
