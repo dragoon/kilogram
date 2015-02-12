@@ -105,12 +105,14 @@ def replace_ne(sentence):
     typed_tokens = []
     is_ne = False
     for ne_token in ne_tokens.split():
-        match = NE_TOKEN.match(ne_token)
-        if match:
-            typed_tokens.append(match.group(0))
+        match_start = NE_TOKEN.match(ne_token)
+        match_end = NE_END_TOKEN.search(ne_token)
+        if match_start:
+            typed_tokens.append(match_start.group(0))
             is_ne = True
-        elif NE_END_TOKEN.search(ne_token):
+        if match_end:
             is_ne = False
-        elif not is_ne:
+            continue
+        if not is_ne:
             typed_tokens.append(ne_token)
     return ' '.join(typed_tokens)
