@@ -79,6 +79,7 @@ def _stanford_socket(hostname, port, content):
         if l_data == "":
             break
         data += l_data
+    s.shutdown(socket.SHUT_RD)
     s.close()
     return data
 
