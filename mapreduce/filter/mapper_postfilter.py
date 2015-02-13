@@ -2,7 +2,6 @@
 
 import sys
 from kilogram.lang import number_replace
-import re
 
 
 # input comes from STDIN (standard input)

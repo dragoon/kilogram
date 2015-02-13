@@ -9,6 +9,10 @@ NE_TOKEN = re.compile(r'<[A-Z]+>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+>$')
 
 
+def number_replace(word):
+    """DUMMY"""
+    return word
+
 def strip_determiners(ngram):
     """
     :type ngram: unicode
