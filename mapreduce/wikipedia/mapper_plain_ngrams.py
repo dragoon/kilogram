@@ -17,7 +17,7 @@ for line in sys.stdin:
     if not line:
         continue
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        words = zip(*parse_types_text(sentence, {}, numeric=False)[0])[0]
+        words = zip(*parse_types_text(sentence, {})[0])[0]
         for n in range(1, N+1):
             for ngram in nltk.ngrams(words, n):
                 ngram_joined = ' '.join(ngram)

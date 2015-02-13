@@ -21,14 +21,14 @@ for line in sys.stdin:
         continue
 
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types, numeric=False, type_level=-1)
+        tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types, type_level=-1)
 
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_plain, n):
                 ngram, markers = zip(*ngram)
                 count = 1
                 # does not work
-                #if 1 in markers:
+                # if 1 in markers:
                 #    count = 0.5
                 print '%s\t%s' % (' '.join(ngram), count)
 

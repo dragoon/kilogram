@@ -1,5 +1,4 @@
 import re
-from ...lang import number_replace
 from ...lang.tokenize import wiki_tokenize_func
 
 
@@ -7,7 +6,7 @@ ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
 SIMPLE_TYPES = set(['Place', 'Person', 'Organisation'])
 
 
-def parse_types_text(text, dbpedia_types, numeric=False, type_level=-1, type_filter=None):
+def parse_types_text(text, dbpedia_types, type_level=-1, type_filter=None):
     """
     :type dbpedia_types: dict
     """
@@ -28,18 +27,10 @@ def parse_types_text(text, dbpedia_types, numeric=False, type_level=-1, type_fil
                     if type_filter and dbp_type not in type_filter:
                         continue
                     res = [('<dbpedia:' + dbp_type+'>', 1)]
-                    if numeric:
-                        res1 = [(number_replace(x), 1) for x in wiki_tokenize_func(orig_text)]
-                    else:
-                        res1 = [(x, 1) for x in wiki_tokenize_func(orig_text)]
+                    res1 = [(x, 1) for x in wiki_tokenize_func(orig_text)]
                     break
             if not res:
-                if numeric:
-                    res = [(number_replace(x), 0) for x in wiki_tokenize_func(orig_text)]
-                else:
-                    res = [(x, 0) for x in wiki_tokenize_func(orig_text)]
-        elif numeric:
-            res = [(number_replace(word), 0)]
+                res = [(x, 0) for x in wiki_tokenize_func(orig_text)]
         else:
             res = [(word, 0)]
         new_line.extend(res)
