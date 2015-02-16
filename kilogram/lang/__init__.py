@@ -1,3 +1,4 @@
+# coding=utf-8
 import re
 import socket
 import time
@@ -5,13 +6,36 @@ import time
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
 PUNCT_SET = set('[!(),.:;?/[\\]^`{|}]')
 
+FLOAT_REGEX = r'-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?'
+INT_REGEX = r'\b[1-9][\d,]*\b'
+
+FAST_NUM_REGEX = re.compile(r'\d')
+
+INT_RE = re.compile(INT_REGEX)
+PERCENT_RE = re.compile(r'\b{0}%'.format(FLOAT_REGEX))
+NUM_RE = re.compile(FLOAT_REGEX)
+TIME_RE1 = re.compile(r'\b\d{1,2}:\d{2}\b')
+TIME_RE2 = re.compile(r'\b\d{1,2}(?:[:\.][0-5]\d)?\s?(a\.m\.|p\.m\.|am|pm)\b')
+
+VOL_RE = re.compile(r'\b{0}\s?(m3|cubic \w+)\b'.format(FLOAT_REGEX))
+SQ_RE = re.compile(r'\b{0}\s?(m2|square \w+)\b'.format(FLOAT_REGEX))
+GEO_RE = re.compile(r"{0}° {1}'".format(INT_REGEX, INT_REGEX))
+TEMPERATURE_RE = re.compile(r'{0}\s?(°C|Celsius|°F|Fahrenheit)'.format(FLOAT_REGEX))
+
+_RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_RE),
+                ('<NUM:TEMP>', TEMPERATURE_RE), ('<NUM:PERCENT>', PERCENT_RE),
+                ('<NUM:TIME>', TIME_RE1), ('<NUM:TIME>', TIME_RE2), ('<NUM:INT>', INT_RE)]
+
 NE_TOKEN = re.compile(r'<[A-Z]+>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+>$')
 
 
-def number_replace(word):
-    """DUMMY"""
-    return word
+def number_replace(sentence):
+    for repl, regex in _RE_NUM_SUBS:
+        if not FAST_NUM_REGEX.search(sentence):
+            break
+        sentence = regex.sub(repl, sentence)
+    return sentence
 
 def strip_determiners(ngram):
     """
