@@ -45,6 +45,15 @@ class NgramService(object):
         """
         :rtype: int
         """
+        res = cls.hbase_raw(table, ngram, "ngram:value")
+        if res is None:
+            res = 0
+        else:
+            res = long(res[0].value)
+        return res
+
+    @classmethod
+    def hbase_raw(cls, table, ngram, column):
         from . import DEBUG
         cls.h_rate += 1
         time_diff = time.time() - cls.h_start
@@ -53,10 +62,10 @@ class NgramService(object):
             cls.h_start = time.time()
             cls.h_rate = 0
         try:
-            res = cls.h_client.get(table, ngram.encode('utf-8'), "ngram:value", None)
-            return long(res[0].value)
+            res = cls.h_client.get(table, ngram.encode('utf-8'), column, None)
+            return res
         except (ValueError, IndexError):
-            return 0
+            return None
 
     @staticmethod
     def _tuple(ngram):
