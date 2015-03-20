@@ -37,10 +37,13 @@ def predict_types(context):
     """Context should always be a 5-element list"""
     # pre, post, mid bigrams
     bigrams = [(context[:2], 2),  (context[-2:], 0), (context[1] + " " + context[3], 1)]
-    types = [TypeDataPacker.unpack(NgramService.hbase_raw("ngram_types", bigram+str(type_index), "ngram:value"))
-             for bigram, type_index in bigrams]
-    totals = [sum(zip(*type_values)[1]) for type_values in types]
-    bigram_probs = [[(entity_type, count/totals[i]) for entity_type, count in type_values] for i, type_values in enumerate(types)]
+    types = []
+    for bigram, type_index in bigrams:
+        type_values = NgramService.hbase_raw("ngram_types", " ".join(bigram)+str(type_index), "ngram:value")
+        if type_values:
+            types.append(TypeDataPacker.unpack(type_values))
+    totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
+    bigram_probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values] for i, type_values in enumerate(types)]
     type_probs = defaultdict(lambda: 0)
     for probs in bigram_probs:
         for entity_type, prob in probs:
