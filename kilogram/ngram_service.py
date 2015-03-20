@@ -49,7 +49,7 @@ class NgramService(object):
         if res is None:
             res = 0
         else:
-            res = long(res[0].value)
+            res = long(res)
         return res
 
     @classmethod
@@ -63,7 +63,7 @@ class NgramService(object):
             cls.h_rate = 0
         try:
             res = cls.h_client.get(table, ngram.encode('utf-8'), column, None)
-            return res
+            return res[0].value
         except (ValueError, IndexError):
             return None
 
