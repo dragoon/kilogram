@@ -15,6 +15,9 @@ class TypeDataPacker(object):
 
     @classmethod
     def unpack(cls, entity_type_counts_str):
+        """
+        :return: list of tuples
+        """
         return [x.split(',') for x in entity_type_counts_str.split()]
 
 
@@ -34,7 +37,8 @@ def predict_types(context):
     """Context should always be a 5-element list"""
     # pre, post, mid bigrams
     bigrams = [(context[:2], 2),  (context[-2:], 0), (context[1] + " " + context[3], 1)]
-    types = [NgramService.hbase_raw("ngram_types", bigram+str(type_index), "types:value") for bigram, type_index in bigrams]
+    types = [TypeDataPacker.unpack(NgramService.hbase_raw("ngram_types", bigram+str(type_index), "ngram:value"))
+             for bigram, type_index in bigrams]
     totals = [sum(zip(*type_values)[1]) for type_values in types]
     bigram_probs = [[(entity_type, count/totals[i]) for entity_type, count in type_values] for i, type_values in enumerate(types)]
     type_probs = defaultdict(lambda: 0)
