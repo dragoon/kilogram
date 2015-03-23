@@ -1,24 +1,6 @@
 from __future__ import division
 from collections import defaultdict
-from .. import NgramService
-
-
-class TypeDataPacker(object):
-
-    @classmethod
-    def pack(cls, entity_type_counts):
-        """
-        :type entity_type_counts: list of tuples
-        :return: str
-        """
-        return ' '.join([x[0]+','+x[1] for x in entity_type_counts])
-
-    @classmethod
-    def unpack(cls, entity_type_counts_str):
-        """
-        :return: list of tuples
-        """
-        return [x.split(',') for x in entity_type_counts_str.split()]
+from .. import NgramService, SUBSTITUTION_TOKEN, ListPacker
 
 
 def parse_counts(filename):
@@ -36,12 +18,13 @@ def parse_counts(filename):
 def predict_types(context):
     """Context should always be a 5-element list"""
     # pre, post, mid bigrams
-    bigrams = [(context[:2], 2),  (context[-2:], 0), (context[1] + " " + context[3], 1)]
+    context[2] = SUBSTITUTION_TOKEN
+    bigrams = [context[:3], context[-3:], context[1:4]]
     types = []
-    for bigram, type_index in bigrams:
-        type_values = NgramService.hbase_raw("ngram_types", " ".join(bigram)+str(type_index), "ngram:value")
+    for bigram in bigrams:
+        type_values = NgramService.hbase_raw("ngram_types", " ".join(bigram), "ngram:value")
         if type_values:
-            types.append(TypeDataPacker.unpack(type_values))
+            types.append(ListPacker.unpack(type_values))
     totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
     bigram_probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values] for i, type_values in enumerate(types)]
     type_probs = defaultdict(lambda: 0)
