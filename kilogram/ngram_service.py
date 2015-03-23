@@ -10,7 +10,6 @@ from .hbase import Hbase
 import pymongo
 
 SUBSTITUTION_TOKEN = 'SUB'
-SKIP_START = '<SKIP:'
 
 
 class NgramService(object):
@@ -75,7 +74,7 @@ class NgramService(object):
         :type ngram: list
         :returns: tuple with replacement if necessary
         """
-        return tuple([x for x in ngram if not x.startswith(SKIP_START)])
+        return tuple([x for x in ngram])
 
     @classmethod
     def get_freq(cls, ngram):
