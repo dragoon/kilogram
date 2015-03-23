@@ -4,7 +4,6 @@ import re
 import unicodecsv as csv
 
 from ..edit import Edit
-from pyutils import print_progress
 from . import strip_determiners, pos_tag
 from .tokenize import default_tokenize_func
 
@@ -60,6 +59,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
 
     :returns: list of Edit objects
     """
+    from pyutils import print_progress
     edit_n = 0
     edits = []
     line_n = _get_line_num(edit_file)
@@ -112,6 +112,7 @@ def extract_filtered(edit_file, filter_func, tokenize_func=default_tokenize_func
     Only second text version is used.
     :returns: list of Edit objects
     """
+    from pyutils import print_progress
     edit_n = 0
     edits = []
     line_n = _get_line_num(edit_file)
