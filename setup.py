@@ -39,8 +39,7 @@ setup(
     dependency_links=[
         'https://github.com/dragoon/pyutils/tarball/master#egg=pyutils-dev',
     ],
-    scripts=['bin/mongo/insert_to_mongo.py', 'bin/mongo/convert_to_mongo.py',
-             'kilogram/dataset/stackexchange/se_parse_edit_history.py',
+    scripts=['kilogram/dataset/stackexchange/se_parse_edit_history.py',
              'kilogram/dataset/wikipedia/wiki_parse_edit_history.py',
              'kilogram/dataset/conll/conll_sgml_parse.py',
              'kilogram/dataset/fce/fce_parse_edit_history.py'],
