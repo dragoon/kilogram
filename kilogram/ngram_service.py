@@ -23,20 +23,22 @@ class NgramService(object):
         return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
-    def configure(cls, substitutions, mongo_host=('localhost', '27017'), hbase_host=('localhost', '9090')):
+    def configure(cls, substitutions, mongo_host=None, hbase_host=None):
         cls.substitutions = sorted(substitutions)
 
-        cls.m_client = pymongo.MongoClient(host=mongo_host[0], port=int(mongo_host[1]))
-        cls.m_1grams = cls.m_client['1grams']['default']
-        cls.m_ngrams = cls.m_client['ngrams']['default']
+        if mongo_host:
+            cls.m_client = pymongo.MongoClient(host=mongo_host[0], port=int(mongo_host[1]))
+            cls.m_1grams = cls.m_client['1grams']['default']
+            cls.m_ngrams = cls.m_client['ngrams']['default']
 
-        # HBASE
-        cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
-        protocol = TBinaryProtocol.TBinaryProtocolAccelerated(cls.h_transport)
-        cls.h_client = Hbase.Client(protocol)
-        cls.h_transport.open()
-        cls.h_rate = 0
-        cls.h_start = time.time()
+        if hbase_host:
+            # HBASE
+            cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
+            protocol = TBinaryProtocol.TBinaryProtocolAccelerated(cls.h_transport)
+            cls.h_client = Hbase.Client(protocol)
+            cls.h_transport.open()
+            cls.h_rate = 0
+            cls.h_start = time.time()
 
         cls.substitution_counts = dict([(subst, cls.get_freq(subst)[subst]) for subst in cls.substitutions])
 
