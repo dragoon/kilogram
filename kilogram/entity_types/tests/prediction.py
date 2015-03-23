@@ -23,5 +23,5 @@ class WikipediaUserCuratedTest(unittest.TestCase):
                 except (ValueError, IndexError):
                     continue
                 total_correct_index.append(correct_index)
-        self.assertEquals(len(total_correct_index), 877)
-        self.assertAlmostEqual(sum(total_correct_index)/len(total_correct_index), 11, 1)
+        self.assertEquals(len(total_correct_index), 988)
+        self.assertAlmostEqual(sum(total_correct_index)/len(total_correct_index), 10.6, 1)
