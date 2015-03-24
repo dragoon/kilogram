@@ -51,7 +51,7 @@ for line in sys.stdin:
             for ngram in nltk.ngrams(tokens_types, n):
                 type_indexes = [i for i, x in enumerate(ngram) if '<dbpedia:' in x]
                 if len(type_indexes) > 0:
-                    ngrams = [ngram[:]]
+                    ngrams = [list(ngram)]
                     for type_index in type_indexes:
                         new_ngrams = []
                         for ngram in ngrams:
