@@ -49,9 +49,21 @@ for line in sys.stdin:
 
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_types, n):
-                ngram_joined = ' '.join(ngram)
-                if '<dbpedia:' in ngram_joined:
-                    print '%s\t%s' % (ngram_joined, 1)
+                type_indexes = [i for i, x in enumerate(ngram) if '<dbpedia:' in x]
+                if len(type_indexes) > 0:
+                    ngrams = [ngram]
+                    for type_index in type_indexes:
+                        new_ngrams = []
+                        for ngram in ngrams:
+                            entity_types = ngram[type_index].split(',')
+                            for entity_type in entity_types:
+                                new_ngram = ngram[:]
+                                new_ngram[type_index] = entity_type
+                                new_ngrams.append(new_ngram)
+                        ngrams = new_ngrams
+
+                    for ngram in ngrams:
+                        print '%s\t%s' % (' '.join(ngram), 1)
 
 
 dbpedia_types.close()
