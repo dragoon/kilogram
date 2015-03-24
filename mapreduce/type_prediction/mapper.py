@@ -8,6 +8,9 @@ for line in sys.stdin:
     # split the line into words
     ngram, num = line.strip().split('\t')
 
+    if int(num) < 100:
+        continue
+
     type_count = ngram.count('<dbpedia:')
     ngram = ngram.split()
     if type_count > 0:
