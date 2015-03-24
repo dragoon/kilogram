@@ -98,9 +98,9 @@ class EditNgram(Ngram):
         n = len(self.ngram)
         if n == 2:
             dist = (word_fd, whole_fd)
-        elif 3 <= n <= 4:
+        elif n == 3:
             # need to add wild-card and bigram distributions
-            wildfd = self.ngram_freq([subst_ngram[0] + u' ' + u' '.join(subst_ngram[2:])])
+            wildfd = self.ngram_freq([subst_ngram[0] + u' ' + subst_ngram[2]])
             bfd = self.ngram_freq([u' '.join(subst_ngram[:2]), u' '.join(subst_ngram[1:])])
             dist = (word_fd, bfd, wildfd, whole_fd)
         else:

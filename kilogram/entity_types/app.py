@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from kilogram.entity_types.prediction import predict_types
 from kilogram import NgramService
 
-NgramService.configure([], hbase_host=('diufpc301', 9090))
+NgramService.configure(hbase_host=('diufpc301', 9090))
 
 app = Flask(__name__)
 

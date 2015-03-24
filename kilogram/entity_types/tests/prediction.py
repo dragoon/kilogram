@@ -9,9 +9,10 @@ import pkg_resources
 class WikipediaUserCuratedTest(unittest.TestCase):
 
     def setUp(self):
-        NgramService.configure([], hbase_host=('diufpc301', 9090))
+        NgramService.configure(hbase_host=('diufpc301', 9090))
 
     def test_base(self):
+        NgramService
         total_correct_index = []
         with pkg_resources.resource_stream('kilogram', r'entity_types/tests/test.tsv') as test_file:
             for line in test_file:

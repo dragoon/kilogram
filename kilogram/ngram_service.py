@@ -42,8 +42,7 @@ class NgramService(object):
         return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
-    def configure(cls, substitutions, ngram_table="ngrams", subst_table="ngram_types", hbase_host=None):
-        cls.substitutions = sorted(substitutions)
+    def configure(cls, ngram_table="ngrams", subst_table="ngram_types", hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
 
@@ -55,7 +54,8 @@ class NgramService(object):
         cls.h_rate = 0
         cls.h_start = time.time()
 
-        cls.substitution_counts = dict([(subst, cls.get_freq(subst)[subst]) for subst in cls.substitutions])
+        cls.substitution_counts = cls.get_freq(SUBSTITUTION_TOKEN)
+        cls.substitutions = sorted(cls.substitution_counts.keys())
 
     @classmethod
     def hbase_count(cls, table, ngram):
@@ -100,7 +100,11 @@ class NgramService(object):
         if NgramService._is_subst(split_ngram):
             sub_index = split_ngram.index(SUBSTITUTION_TOKEN)
             if split_len == 1:
-                return cls.substitution_counts
+                if cls.substitution_counts:
+                    return cls.substitution_counts
+                else:
+                    counts = ListPacker.unpack(NgramService.hbase_raw(cls.subst_table, SUBSTITUTION_TOKEN, "ngram:value"))
+                    return dict((word, long(count)) for word, count in counts)
             if 1 < split_len < 5:
                 counts = dict(ListPacker.unpack(NgramService.hbase_raw(cls.subst_table, ngram, "ngram:value")))
             else:
