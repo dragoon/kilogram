@@ -27,12 +27,12 @@ def parse_types_text(text, dbpedia_types, type_level=-1, type_filter=None):
                     if type_filter and dbp_type not in type_filter:
                         continue
                     res = [('<dbpedia:' + dbp_type+'>', 1)]
-                    res1 = [(x, 1) for x in wiki_tokenize_func(orig_text)]
+                    res1 = wiki_tokenize_func(orig_text)
                     break
             if not res:
-                res = [(x, 0) for x in wiki_tokenize_func(orig_text)]
+                res = wiki_tokenize_func(orig_text)
         else:
-            res = [(word, 0)]
+            res = [word]
         new_line.extend(res)
         if res1:
             res = res1

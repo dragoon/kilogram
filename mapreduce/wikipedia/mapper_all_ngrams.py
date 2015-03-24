@@ -45,13 +45,10 @@ for line in sys.stdin:
 
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_plain, n):
-                ngram, markers = zip(*ngram)
-                count = 1
-                print '%s\t%s' % (' '.join(ngram), count)
+                print '%s\t%s' % (' '.join(ngram), 1)
 
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_types, n):
-                ngram, _ = zip(*ngram)
                 ngram_joined = ' '.join(ngram)
                 if '<dbpedia:' in ngram_joined:
                     print '%s\t%s' % (ngram_joined, 1)
