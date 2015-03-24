@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from kilogram.types.prediction import  TypeDataPacker
+from kilogram.ngram_service import ListPacker
 
 current_ngram = None
 ngram = None
@@ -25,10 +25,10 @@ for line in sys.stdin:
     else:
         if current_ngram:
             # write result to STDOUT
-            print '%s\t%s' % (current_ngram, TypeDataPacker.pack(cur_counts))
+            print '%s\t%s' % (current_ngram, ListPacker.pack(cur_counts))
         cur_counts = [(entity_type, count)]
         current_ngram = ngram
 
 # do not forget to output the last word if needed!
 if ngram and current_ngram == ngram:
-    print '%s\t%s' % (ngram, TypeDataPacker.pack(cur_counts))
+    print '%s\t%s' % (ngram, ListPacker.pack(cur_counts))
