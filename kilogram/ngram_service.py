@@ -25,7 +25,10 @@ class ListPacker(object):
         """
         :return: list of tuples
         """
-        return [x.split(',') for x in list_counts_str.split()]
+        if list_counts_str:
+            return [x.split(',') for x in list_counts_str.split()]
+        else:
+            return []
 
 
 class NgramService(object):
