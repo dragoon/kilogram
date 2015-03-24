@@ -26,7 +26,8 @@ def parse_types_text(text, dbpedia_types, type_level=-1, type_filter=None):
                     dbp_type = types[type_level]
                     if type_filter and dbp_type not in type_filter:
                         continue
-                    res = [('<dbpedia:' + dbp_type+'>', 1)]
+                    res = ['<dbpedia:' + dbp_type+'>']
+                    # TODO: check if we really should split
                     res1 = wiki_tokenize_func(orig_text)
                     break
             if not res:
