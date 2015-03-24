@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-"""Filters determiners and forms new n-grams with skips"""
 
 import sys
 import nltk
@@ -14,6 +13,23 @@ if not N:
     print 'N is not specified'
     exit(0)
 
+
+def merge_titlecases(tokens):
+    new_tokens = []
+    last_title = False
+    for token in tokens:
+        if token[0].isupper():
+            if last_title:
+                new_tokens[-1] += ' ' + token
+            else:
+                new_tokens.append(token)
+            last_title = True
+        else:
+            new_tokens.append(token)
+            last_title = False
+    return new_tokens
+
+
 dbpedia_types = shelve.open('dbpedia_types.dbm', flag='r')
 
 for line in sys.stdin:
@@ -23,13 +39,14 @@ for line in sys.stdin:
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
         tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types, type_level=-1)
 
+        # do not split title-case sequences
+        tokens_plain = merge_titlecases(tokens_plain)
+        tokens_types = merge_titlecases(tokens_types)
+
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_plain, n):
                 ngram, markers = zip(*ngram)
                 count = 1
-                # does not work
-                # if 1 in markers:
-                #    count = 0.5
                 print '%s\t%s' % (' '.join(ngram), count)
 
         for n in range(1, N+1):
