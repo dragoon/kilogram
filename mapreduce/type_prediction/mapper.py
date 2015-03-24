@@ -9,10 +9,11 @@ for line in sys.stdin:
     ngram, num = line.strip().split('\t')
 
     type_count = ngram.count('<dbpedia:')
-    if type_count == 1:
-        ngram = ngram.split()
-        type_index = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')][0]
-        entity_type = ngram[type_index]
-        ngram[type_index] = SUBSTITUTION_TOKEN
-        new_ngram = " ".join(ngram)
-        print '%s\t%s\t%s' % (new_ngram, entity_type, num)
+    ngram = ngram.split()
+    if type_count > 0:
+        type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
+        for type_index in type_indexes:
+            entity_type = ngram[type_index]
+            ngram[type_index] = SUBSTITUTION_TOKEN
+            new_ngram = " ".join(ngram)
+            print '%s\t%s\t%s' % (new_ngram, entity_type, num)
