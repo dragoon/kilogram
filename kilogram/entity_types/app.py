@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, jsonify, request
-from dataset.dbpedia import get_dbpedia_type_hierarchy
+from kilogram.dataset.dbpedia import get_dbpedia_type_hierarchy
 from kilogram.entity_types.prediction import predict_types
 from kilogram import NgramService
 
