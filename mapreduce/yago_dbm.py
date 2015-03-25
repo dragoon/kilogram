@@ -15,7 +15,7 @@ from collections import defaultdict
 import shelve
 
 
-TYPES_FILE = 'yago_types_en.nt.bz2'
+TYPES_FILE = 'yago_types.nt.bz2'
 
 dbpediadb_types = defaultdict(list)
 # BZ2File module cannot process multi-stream files, so use subprocess
