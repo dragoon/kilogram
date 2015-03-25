@@ -1,3 +1,4 @@
+rdflib
 unicodecsv
 thrift
 lxml>=3.0
