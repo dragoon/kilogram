@@ -1,5 +1,6 @@
 from __future__ import division
 import unittest
+from kilogram.dataset.dbpedia import get_dbpedia_type_hierarchy
 from kilogram import NgramService
 from kilogram.entity_types.prediction import predict_types
 
@@ -13,17 +14,20 @@ class WikipediaUserCuratedTest(unittest.TestCase):
 
     def test_base(self):
         total_correct_index = []
+        dbpedia_type_hierarchy = get_dbpedia_type_hierarchy('dbpedia_2014.owl')
         with pkg_resources.resource_stream('kilogram', r'entity_types/tests/test.tsv') as test_file:
             for line in test_file:
                 line = line.strip().split()
                 correct_type = line[2]
                 try:
-                    predicted_types = zip(*predict_types(line))[0]
+                    predicted_types = predict_types(line, dbpedia_type_hierarchy)
                     correct_index = predicted_types.index(correct_type)
                 except ValueError:
-                    continue
-                except IndexError:
                     correct_index = len(predicted_types) + 1
+                except IndexError:
+                    # means empty list, continue
+                    continue
                 total_correct_index.append(correct_index)
-        self.assertAlmostEqual(sum(total_correct_index)/len(total_correct_index), 11.5, 1)
-        self.assertEquals(len(total_correct_index), 994)
+        print len(total_correct_index)
+        self.assertAlmostEqual(sum(total_correct_index)/len(total_correct_index), 3.98, 2)
+        self.assertEquals(len(total_correct_index), 659)

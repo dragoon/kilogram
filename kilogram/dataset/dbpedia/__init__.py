@@ -13,7 +13,7 @@ def get_dbpedia_type_hierarchy(owl_filename):
             obj = str(obj)
             subject = str(subject)
             if 'http://dbpedia.org/ontology/' in obj and 'http://dbpedia.org/ontology/' in subject:
-                obj = obj.replace('http://dbpedia.org/ontology/', '')
-                subject = subject.replace('http://dbpedia.org/ontology/', '')
+                obj = obj.replace('http://dbpedia.org/ontology/', '<dbpedia:') + '>'
+                subject = subject.replace('http://dbpedia.org/ontology/', '<dbpedia:') + '>'
                 dbpedia_types[obj].append(subject)
     return dbpedia_types
