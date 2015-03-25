@@ -37,7 +37,7 @@ def predict_types(context, type_hierarchy):
 
     result_probs = sorted([(entity_type, prob/3) for entity_type, prob in type_probs.iteritems()],
                           key=lambda x: x[1], reverse=True)
-    return zip(*result_probs)[0]
+    return result_probs
     result_probs_dict = dict(result_probs)
 
     correct_types = []
