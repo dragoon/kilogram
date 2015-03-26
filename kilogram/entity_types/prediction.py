@@ -1,5 +1,6 @@
 from __future__ import division
 from collections import defaultdict
+import shelve
 
 from scipy.stats import entropy, kurtosis
 
@@ -21,14 +22,29 @@ def parse_counts(filename):
 class TypePredictor(object):
     type_hierarchy = None
     hbase_table = None
+    dbpedia_types_db = None
 
-    def __init__(self, hbase_table, type_hierarchy=None):
+    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None):
         self.type_hierarchy = type_hierarchy
         self.hbase_table = hbase_table
+        if dbpedia_types_db:
+            self.dbpedia_types_db = shelve.open(dbpedia_types_db, flag='r')
+
+    def _resolve_entities(self, context):
+        entity_idx = [x for x in context if x.startswith('<URI:')]
+        if len(entity_idx) > 0:
+            for entity_ind in entity_idx:
+                uri = context[entity_ind][5:-1]
+                if uri in self.dbpedia_types_db:
+                    types = self.dbpedia_types_db[uri]
+                    # most specific
+                    context[entity_ind] = '<dbpedia:' + types[0] + '>'
+        return context
 
     def _get_ngram_probs(self, context):
         # pre, post, mid bigrams
         context[2] = SUBSTITUTION_TOKEN
+        context = self._resolve_entities(context)
         bigrams = [context[:3], context[-3:], context[1:4]]
         types = []
         for bigram in bigrams:
