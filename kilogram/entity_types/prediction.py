@@ -39,6 +39,8 @@ class TypePredictor(object):
                     types = self.dbpedia_types_db[uri]
                     # most specific
                     context[entity_ind] = '<dbpedia:' + types[0] + '>'
+                else:
+                    context[entity_ind] = context[entity_ind][5:-1].replace('_', ' ').split()[0]
         return context
 
     def _get_ngram_probs(self, context):
