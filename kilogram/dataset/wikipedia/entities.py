@@ -5,7 +5,7 @@ from ...lang.tokenize import wiki_tokenize_func
 ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
 
 
-def parse_types_text(text, dbpedia_types, type_level=-1):
+def parse_types_text(text, dbpedia_types):
     """
     :type dbpedia_types: dict
     """
@@ -22,7 +22,6 @@ def parse_types_text(text, dbpedia_types, type_level=-1):
             for uri in (uri, uri.capitalize()):
                 if uri in dbpedia_types:
                     types = dbpedia_types[uri]
-                    #dbp_type = types[type_level]
                     res = [','.join(['<dbpedia:' + entity_type+'>' for entity_type in types])]
                     # TODO: check if we really should split
                     res1 = wiki_tokenize_func(orig_text)
