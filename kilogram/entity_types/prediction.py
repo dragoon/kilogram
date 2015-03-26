@@ -34,7 +34,7 @@ class TypePredictor(object):
         entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
         if len(entity_idx) > 0:
             for entity_ind in entity_idx:
-                uri = context[entity_ind][5:-1]
+                uri = context[entity_ind][5:-1].encode('utf8')
                 if uri in self.dbpedia_types_db:
                     types = self.dbpedia_types_db[uri]
                     # most specific
