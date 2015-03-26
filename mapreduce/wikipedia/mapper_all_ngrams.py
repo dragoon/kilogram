@@ -13,7 +13,7 @@ if not N:
     print 'N is not specified'
     exit(0)
 
-type_level = os.environ['TYPE_LEVEL'] or None
+type_level = os.environ.get('TYPE_LEVEL', None)
 if type_level is not None:
     type_level = int(type_level)
 
