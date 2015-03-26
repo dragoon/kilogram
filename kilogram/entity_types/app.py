@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from kilogram.dataset.dbpedia import DBPediaOntology
 from kilogram.entity_types.prediction import TypePredictor
 from kilogram import NgramService
+from kilogram.lang.unicode import strip_unicode
 
 NgramService.configure(hbase_host=('diufpc301', 9090))
 
@@ -12,7 +13,7 @@ predictor = TypePredictor("ngram_types", dbpedia_ontology, '/home/roman/notebook
 
 @app.route('/', methods=['GET'])
 def predict():
-    context = request.args.get('context').strip().split()
+    context = strip_unicode(request.args.get('context').strip()).split()
     return jsonify({'types': predictor.predict_types(context)})
 
 
