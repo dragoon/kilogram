@@ -13,6 +13,10 @@ if not N:
     print 'N is not specified'
     exit(0)
 
+type_level = os.environ['TYPE_LEVEL'] or None
+if type_level is not None:
+    type_level = int(type_level)
+
 
 def merge_titlecases(tokens):
     new_tokens = []
@@ -37,7 +41,7 @@ for line in sys.stdin:
         continue
 
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types, type_level=-1)
+        tokens_types, tokens_plain = parse_types_text(sentence, dbpedia_types)
 
         # do not split title-case sequences
         tokens_plain = merge_titlecases(tokens_plain)
@@ -56,14 +60,16 @@ for line in sys.stdin:
                         new_ngrams = []
                         for ngram in ngrams:
                             entity_types = ngram[type_index].split(',')
+                            if type_level is not None:
+                                entity_types = [entity_types[type_level]]
                             for entity_type in entity_types:
                                 new_ngram = ngram[:]
                                 new_ngram[type_index] = entity_type
                                 new_ngrams.append(new_ngram)
                         ngrams = new_ngrams
 
-                    for ngram in ngrams:
-                        print '%s\t%s' % (' '.join(ngram), 1)
+                    for resolved_ngram in ngrams:
+                        print '%s\t%s' % (' '.join(resolved_ngram), 1)
 
 
 dbpedia_types.close()
