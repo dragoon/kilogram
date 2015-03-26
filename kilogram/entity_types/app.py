@@ -8,7 +8,7 @@ NgramService.configure(hbase_host=('diufpc301', 9090))
 
 app = Flask(__name__)
 dbpedia_ontology = DBPediaOntology('dbpedia_2014.owl')
-predictor = TypePredictor("ngram_types", dbpedia_ontology)
+predictor = TypePredictor("ngram_types", dbpedia_ontology, '/home/roman/notebooks/kilogram/mapreduce/dbpedia_types.dbm')
 
 @app.route('/', methods=['GET'])
 def predict():
