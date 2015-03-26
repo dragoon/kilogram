@@ -31,7 +31,7 @@ class TypePredictor(object):
             self.dbpedia_types_db = shelve.open(dbpedia_types_db, flag='r')
 
     def _resolve_entities(self, context):
-        entity_idx = [x for x in context if x.startswith('<URI:')]
+        entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
         if len(entity_idx) > 0:
             for entity_ind in entity_idx:
                 uri = context[entity_ind][5:-1]
