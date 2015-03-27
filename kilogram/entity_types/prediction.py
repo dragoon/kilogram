@@ -23,12 +23,17 @@ class TypePredictor(object):
     type_hierarchy = None
     hbase_table = None
     dbpedia_types_db = None
+    type_priors = None
 
     def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None):
         self.type_hierarchy = type_hierarchy
         self.hbase_table = hbase_table
         if dbpedia_types_db:
             self.dbpedia_types_db = shelve.open(dbpedia_types_db, flag='r')
+        self.type_priors = {}
+        total = sum(NgramService.substitution_counts.values())
+        for entity_type, count in NgramService.substitution_counts.items():
+            self.type_priors[entity_type] = count/total
 
     def _resolve_entities(self, context):
         entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
@@ -58,7 +63,6 @@ class TypePredictor(object):
                         for i, type_values in enumerate(types)]
         return bigram_probs
 
-
     def predict_types(self, context):
         """Context should always be a 5-element list"""
         bigram_probs = self._get_ngram_probs(context)
@@ -66,12 +70,15 @@ class TypePredictor(object):
         type_probs = defaultdict(lambda: 0)
         for probs in bigram_probs:
             for entity_type, prob in probs:
-                type_probs[entity_type] += prob
+                type_probs[entity_type] += prob/len(bigram_probs)
 
-        result_probs = sorted([(entity_type, prob/3) for entity_type, prob in type_probs.iteritems()],
-                              key=lambda x: x[1], reverse=True)
+        min_prob = min(type_probs.values())
+        for entity_type, prior in self.type_priors.items():
+            if entity_type not in type_probs:
+                type_probs[entity_type] = prior*min_prob
+
+        result_probs = sorted([type_probs.items()], key=lambda x: x[1], reverse=True)
         return result_probs
-
 
     def predict_types_full(self, context):
         """Context should always be a 5-element list
