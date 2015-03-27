@@ -71,8 +71,11 @@ class TypePredictor(object):
         for probs in bigram_probs:
             for entity_type, prob in probs:
                 type_probs[entity_type] += prob/len(bigram_probs)
-
-        min_prob = min(type_probs.values())
+        try:
+            min_prob = min(type_probs.values())
+        except ValueError:
+            # empty sequence
+            min_prob = 1
         for entity_type, prior in self.type_priors.items():
             if entity_type not in type_probs:
                 type_probs[entity_type] = prior*min_prob
