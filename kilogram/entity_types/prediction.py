@@ -80,7 +80,7 @@ class TypePredictor(object):
             if entity_type not in type_probs:
                 type_probs[entity_type] = prior*min_prob
 
-        result_probs = sorted([type_probs.items()], key=lambda x: x[1], reverse=True)
+        result_probs = sorted(type_probs.items(), key=lambda x: x[1], reverse=True)
         return result_probs
 
     def predict_types_full(self, context):
