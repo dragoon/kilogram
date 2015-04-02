@@ -48,8 +48,10 @@ class TypePredictor(object):
             except KeyError:
                 continue
             types_ranked.append((entity_type, score))
-        types_ranked.sort(key=lambda x: x[1])
-        return types_ranked
+        return self._hierachical_sum_output([types_ranked])
+
+    def train_type_predictor(self):
+        pass
 
     def _resolve_entities(self, context):
         entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
@@ -104,6 +106,9 @@ class TypePredictor(object):
         :type type_hierarchy: DBPediaOntology
         """
         bigram_probs = self._get_ngram_probs(context)
+        return self._hierachical_sum_output(bigram_probs)
+
+    def _hierachical_sum_output(self, bigram_probs):
         correct_types = [None]
         while True:
             parent = correct_types[-1]
@@ -115,13 +120,8 @@ class TypePredictor(object):
             for probs in parent_probs:
                 for entity_type, prob in probs:
                     type_probs[entity_type] += prob
-            correct_types.append(max(type_probs.items(), key=lambda x: x[1])[0])
-
-            # checks how often the selected type in not on top of n-gram separate ranks
-            if correct_types[-1] not in [max(probs, key=lambda x: x[1])[0] for probs in parent_probs]:
-                print parent_probs
-
-        return list(reversed(correct_types[1:]))
+            correct_types.append(sorted(type_probs.items(), key=lambda x: x[1], reverse=True))
+        return correct_types[1:]
 
     def _sum_probabilities(self, probabilities_list, parent):
         new_prob_list = []
