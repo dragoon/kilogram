@@ -43,7 +43,10 @@ class TypePredictor(object):
     def _predict_types_from_ngram(self, ngram):
         types_ranked = []
         for entity_type in self.type_priors.keys():
-            score = self.word2vec_model.similarity(ngram, entity_type)
+            try:
+                score = self.word2vec_model.similarity(ngram, entity_type)
+            except KeyError:
+                continue
             types_ranked.append((entity_type, score))
         types_ranked.sort(key=lambda x: x[1])
         return types_ranked
