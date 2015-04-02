@@ -112,11 +112,11 @@ class TypePredictor(object):
         correct_types = []
         while True:
             if not correct_types:
-                parents = [None]
+                parents = [(None, 0)]
             else:
                 parents = correct_types[-1]
             correct_types_local = []
-            for parent in parents:
+            for parent, _score in parents:
                 parent_probs = self._sum_probabilities(bigram_probs, parent)
 
                 if len(parent_probs) == 0:
@@ -126,6 +126,8 @@ class TypePredictor(object):
                     for entity_type, prob in probs:
                         type_probs[entity_type] += prob
                 correct_types_local.extend(sorted(type_probs.items(), key=lambda x: x[1], reverse=True))
+            if len(correct_types_local) == 0:
+                break
             correct_types.append(correct_types_local)
         return correct_types
 
