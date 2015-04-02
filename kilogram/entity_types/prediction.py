@@ -109,19 +109,25 @@ class TypePredictor(object):
         return self._hierachical_sum_output(bigram_probs)
 
     def _hierachical_sum_output(self, bigram_probs):
-        correct_types = [None]
+        correct_types = []
         while True:
-            parent = correct_types[-1]
-            parent_probs = self._sum_probabilities(bigram_probs, parent)
+            if not correct_types:
+                parents = [None]
+            else:
+                parents = correct_types[-1]
+            correct_types_local = []
+            for parent in parents:
+                parent_probs = self._sum_probabilities(bigram_probs, parent)
 
-            if len(parent_probs) == 0:
-                break
-            type_probs = defaultdict(lambda: 0)
-            for probs in parent_probs:
-                for entity_type, prob in probs:
-                    type_probs[entity_type] += prob
-            correct_types.append(sorted(type_probs.items(), key=lambda x: x[1], reverse=True))
-        return correct_types[1:]
+                if len(parent_probs) == 0:
+                    break
+                type_probs = defaultdict(lambda: 0)
+                for probs in parent_probs:
+                    for entity_type, prob in probs:
+                        type_probs[entity_type] += prob
+                correct_types_local.extend(sorted(type_probs.items(), key=lambda x: x[1], reverse=True))
+            correct_types.append(correct_types_local)
+        return correct_types
 
     def _sum_probabilities(self, probabilities_list, parent):
         new_prob_list = []
