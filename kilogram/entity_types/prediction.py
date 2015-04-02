@@ -24,8 +24,9 @@ class TypePredictor(object):
     hbase_table = None
     dbpedia_types_db = None
     type_priors = None
+    word2vec_model = None
 
-    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None):
+    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None, word2vec_model_filename=None):
         self.type_hierarchy = type_hierarchy
         self.hbase_table = hbase_table
         if dbpedia_types_db:
@@ -34,6 +35,18 @@ class TypePredictor(object):
         total = sum(NgramService.substitution_counts.values())
         for entity_type, count in NgramService.substitution_counts.items():
             self.type_priors[entity_type] = count/total
+
+        if word2vec_model_filename:
+            from gensim.models.word2vec import Word2Vec
+            self.word2vec_model = Word2Vec.load(word2vec_model_filename)
+
+    def _predict_types_from_ngram(self, ngram):
+        types_ranked = []
+        for entity_type in self.type_priors.keys():
+            score = self.word2vec_model.similarity(ngram, entity_type)
+            types_ranked.append((entity_type, score))
+        types_ranked.sort(key=lambda x: x[1])
+        return types_ranked
 
     def _resolve_entities(self, context):
         entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
@@ -124,4 +137,3 @@ class TypePredictor(object):
             except:
                 continue
         return new_prob_list
-
