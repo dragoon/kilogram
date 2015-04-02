@@ -13,9 +13,9 @@ if not N:
     print 'N is not specified'
     exit(0)
 
-type_level = os.environ.get('TYPE_LEVEL', None)
-if type_level is not None:
-    type_level = int(type_level)
+TYPE_LEVEL = os.environ.get('TYPE_LEVEL', None)
+if TYPE_LEVEL is not None:
+    TYPE_LEVEL = int(TYPE_LEVEL)
 
 
 def merge_titlecases(tokens):
@@ -60,8 +60,8 @@ for line in sys.stdin:
                         new_ngrams = []
                         for ngram in ngrams:
                             entity_types = ngram[type_index].split(',')
-                            if type_level is not None:
-                                entity_types = [entity_types[type_level]]
+                            if TYPE_LEVEL is not None:
+                                entity_types = [entity_types[TYPE_LEVEL]]
                             for entity_type in entity_types:
                                 new_ngram = ngram[:]
                                 new_ngram[type_index] = entity_type
