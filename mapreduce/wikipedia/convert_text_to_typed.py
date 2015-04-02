@@ -29,6 +29,7 @@ for line in sys.stdin:
                 words.append(entity_types[TYPE_LEVEL])
             else:
                 words.append(word)
+        print ' '.join(words)
 
 if dbpedia_types:
     dbpedia_types.close()
