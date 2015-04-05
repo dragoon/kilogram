@@ -14,12 +14,12 @@ predictor = TypePredictor("ngram_types", dbpedia_ontology,
                           word2vec_model_filename='/home/roman/berkeleylm/300features_40minwords_10context')
 
 @app.route('/predict/types/context', methods=['GET'])
-def predict():
+def predict_context():
     context = strip_unicode(request.args.get('context').strip()).split()
     return jsonify({'types': predictor.predict_types(context)})
 
 @app.route('/predict/types/word', methods=['GET'])
-def predict():
+def predict_nram():
     ngram = strip_unicode(request.args.get('ngram').strip()).split()
     return jsonify({'types': predictor._predict_types_from_ngram(ngram)})
 
