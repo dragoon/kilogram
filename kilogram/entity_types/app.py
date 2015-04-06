@@ -20,8 +20,8 @@ def predict_context():
 
 @app.route('/predict/types/word', methods=['GET'])
 def predict_nram():
-    ngram = strip_unicode(request.args.get('ngram').strip()).split()
-    return jsonify({'types': predictor._predict_types_from_ngram(ngram)})
+    ngram = strip_unicode(request.args.get('ngram').strip())
+    return jsonify({'types': predictor._predict_types_from_ngram(ngram)[0]})
 
 
 if __name__ == '__main__':
