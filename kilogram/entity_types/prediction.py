@@ -40,7 +40,7 @@ class TypePredictor(object):
             from gensim.models.word2vec import Word2Vec
             self.word2vec_model = Word2Vec.load(word2vec_model_filename)
 
-    def _predict_types_from_ngram(self, ngram):
+    def _predict_types_from_ngram(self, ngram, summarize=False):
         types_ranked = []
         for entity_type in self.type_priors.keys():
             try:
@@ -48,7 +48,10 @@ class TypePredictor(object):
             except KeyError:
                 continue
             types_ranked.append((entity_type, score))
-        return self._hierachical_sum_output([types_ranked])
+        if summarize:
+            return self._hierachical_sum_output([types_ranked])
+        else:
+            return [types_ranked]
 
     def train_type_predictor(self):
         pass
