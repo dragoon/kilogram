@@ -51,7 +51,7 @@ class TypePredictor(object):
         if summarize:
             return self._hierachical_sum_output([types_ranked])
         else:
-            return [types_ranked]
+            return [sorted(types_ranked, key=lambda x: x[1], reverse=True)]
 
     def train_type_predictor(self):
         pass
