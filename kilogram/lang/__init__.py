@@ -21,11 +21,8 @@ VOL_RE = re.compile(r'\b{0}\s?(m3|cubic \w+)\b'.format(FLOAT_REGEX))
 SQ_RE = re.compile(r'\b{0}\s?(m2|square \w+)\b'.format(FLOAT_REGEX))
 GEO_RE = re.compile(r"{0}° {1}'".format(INT_REGEX, INT_REGEX))
 TEMPERATURE_RE = re.compile(r'{0}\s?(°C|Celsius|°F|Fahrenheit)'.format(FLOAT_REGEX))
-CENTURY_RE = re.compile(r'\b\d{1,2}\w{2}[\s\-]century(\sAC|\sBC)?\b')
-DECADE_RE = re.compile(r'\b((?:early|late|mid)[\s\-])?[1-2]\d{3}s\b')
 
 _RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_RE),
-                ('<DATE:CENTURY>', CENTURY_RE), ('<DATE:DECADE>', DECADE_RE),
                 ('<NUM:TEMP>', TEMPERATURE_RE), ('<NUM:PERCENT>', PERCENT_RE),
                 ('<DATE:TIME>', TIME_RE1), ('<DATE:TIME>', TIME_RE2), ('<NUM:INT>', INT_RE)]
 
