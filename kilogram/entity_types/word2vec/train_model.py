@@ -29,7 +29,17 @@ class TypePredictionModel(object):
         self.word2vec_model = word2vec_model
         self.clf = linear_model.LinearRegression()
 
-    def fit(self, X, y):
+    def fit(self, type_train_file):
+        model = self.word2vec_model
+        X = []
+        y = []
+        for line in open(type_train_file):
+            ngram, entity_type = line.strip().split('\t')
+            ngram_vec = model[ngram]
+            entity_type_vec = model[entity_type]
+            X.append(ngram_vec)
+            y.append(entity_type_vec)
+
         self.clf.fit(X, y)
 
     def get_types(self, ngram):
