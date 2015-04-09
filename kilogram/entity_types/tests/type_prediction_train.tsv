@@ -2,7 +2,6 @@ actor	<dbpedia:Actor>
 administration	<dbpedia:Organisation>
 adult	<dbpedia:Person>
 advisor	<dbpedia:Person>
-advocate	<dbpedia:Lawyer>
 agency	<dbpedia:Organisation>
 agent	<dbpedia:Agent>
 aircraft	<dbpedia:Aircraft>
@@ -25,7 +24,6 @@ article	<dbpedia:Newspaper>
 assembly	<dbpedia:Legislature>
 attack	<dbpedia:Attack>
 attendant	<dbpedia:Person>
-attorney	<dbpedia:Lawyer>
 baby	<dbpedia:Person>
 back	<dbpedia:Bone>
 backer	<dbpedia:Person>
