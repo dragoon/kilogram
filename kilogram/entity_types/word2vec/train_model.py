@@ -26,7 +26,7 @@ class TypePredictionModel(object):
         :type word2vec_model: word2vec.Word2Vec
         """
         from sklearn import linear_model
-        self.word2vec_model = word2vec_model
+        self.word2vec_model = word2vec.Word2Vec.load(word2vec_model)
         self.clf = linear_model.LinearRegression()
 
     def fit(self, type_train_file):
