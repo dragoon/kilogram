@@ -3,7 +3,6 @@ administration	<dbpedia:Organisation>
 adult	<dbpedia:Person>
 advisor	<dbpedia:Person>
 agency	<dbpedia:Organisation>
-agent	<dbpedia:Agent>
 aircraft	<dbpedia:Aircraft>
 airline	<dbpedia:Airline>
 airman	<dbpedia:MilitaryUnit>
