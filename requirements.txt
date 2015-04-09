@@ -6,3 +6,4 @@ unicodecsv
 -e git+https://github.com/dragoon/pyutils#egg=pyutils-dev
 nltk
 pandas
+gensim
