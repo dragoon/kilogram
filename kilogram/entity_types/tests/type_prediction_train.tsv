@@ -1,5 +1,3 @@
-accident	<dbpedia:SocietalEvent>
-acquisition	<dbpedia:SocietalEvent>
 actor	<dbpedia:Actor>
 administration	<dbpedia:Organisation>
 adult	<dbpedia:Person>
@@ -50,11 +48,8 @@ believer	<dbpedia:Person>
 biologist	<dbpedia:Scientist>
 biology	<dbpedia:Eukaryote>
 birthday	<dbpedia:PersonalEvent>
-blast	<dbpedia:SocietalEvent>
-blockade	<dbpedia:SocietalEvent>
 boat	<dbpedia:Ship>
 bomb	<dbpedia:Weapon>
-bombing	<dbpedia:SocietalEvent>
 bone	<dbpedia:Bone>
 book	<dbpedia:Book>
 booster	<dbpedia:Rocket>
@@ -148,7 +143,6 @@ jet	<dbpedia:Aircraft>
 judge	<dbpedia:Judge>
 juror	<dbpedia:Judge>
 kid	<dbpedia:Person>
-killing	<dbpedia:SocietalEvent>
 knife	<dbpedia:Weapon>
 lady	<dbpedia:Person>
 lake	<dbpedia:Lake>
