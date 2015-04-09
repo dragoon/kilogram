@@ -14,8 +14,6 @@ FAST_NUM_REGEX = re.compile(r'\d')
 INT_RE = re.compile(INT_REGEX)
 PERCENT_RE = re.compile(r'\b{0}%'.format(FLOAT_REGEX))
 NUM_RE = re.compile(FLOAT_REGEX)
-TIME_RE1 = re.compile(r'\b\d{1,2}:\d{2}\b')
-TIME_RE2 = re.compile(r'\b\d{1,2}(?:[:\.][0-5]\d)?\s?(a\.m\.|p\.m\.|am|pm)\b')
 
 VOL_RE = re.compile(r'\b{0}\s?(m3|cubic \w+)\b'.format(FLOAT_REGEX))
 SQ_RE = re.compile(r'\b{0}\s?(m2|square \w+)\b'.format(FLOAT_REGEX))
@@ -24,7 +22,7 @@ TEMPERATURE_RE = re.compile(r'{0}\s?(°C|Celsius|°F|Fahrenheit)'.format(FLOAT_R
 
 _RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_RE),
                 ('<NUM:TEMP>', TEMPERATURE_RE), ('<NUM:PERCENT>', PERCENT_RE),
-                ('<DATE:TIME>', TIME_RE1), ('<DATE:TIME>', TIME_RE2), ('<NUM:INT>', INT_RE)]
+                ('<NUM:INT>', INT_RE)]
 
 NE_TOKEN = re.compile(r'<[A-Z]+>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+>$')
