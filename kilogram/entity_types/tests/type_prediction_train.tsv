@@ -13,7 +13,6 @@ ancestor	<dbpedia:Person>
 angel	<dbpedia:Religious>
 angels	<dbpedia:Religious>
 animal	<dbpedia:Animal>
-anniversary	<dbpedia:PersonalEvent>
 anthem	<dbpedia:MusicalWork>
 anthropologist	<dbpedia:Scientist>
 apprentice	<dbpedia:Person>
@@ -44,7 +43,6 @@ belfry	<dbpedia:ReligiousBuilding>
 believer	<dbpedia:Person>
 biologist	<dbpedia:Scientist>
 biology	<dbpedia:Eukaryote>
-birthday	<dbpedia:PersonalEvent>
 boat	<dbpedia:Ship>
 bomb	<dbpedia:Weapon>
 bone	<dbpedia:Bone>
