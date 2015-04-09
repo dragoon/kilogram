@@ -27,6 +27,7 @@ class TypePredictionModel(object):
         """
         from sklearn import linear_model
         self.word2vec_model = word2vec.Word2Vec.load(word2vec_model)
+        self.word2vec_model.init_sims()
         self.clf = linear_model.LinearRegression()
 
     def fit(self, type_train_file):
@@ -43,7 +44,7 @@ class TypePredictionModel(object):
         self.clf.fit(X, y)
 
     def get_types(self, ngram):
-        return self.clf.predict(self.word2vec_model[ngram])
+        return self._most_similar_vect(self.clf.predict(self.word2vec_model[ngram]))
 
     def _most_similar_vect(self, vectenter, topn=10):
         vect_unit = unitvec(vectenter)
