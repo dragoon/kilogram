@@ -293,7 +293,7 @@ shutdown	thing
 side	thing
 sign	thing
 sin	thing
-singer	<dbpedia:Singer>
+singer	<dbpedia:MusicalArtist>
 sister	<dbpedia:Person>
 smoker	<dbpedia:Person>
 soldier	<dbpedia:MilitaryUnit>
