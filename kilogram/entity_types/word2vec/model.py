@@ -50,7 +50,7 @@ class TypePredictionModel(object):
         self.clf.fit(X, y)
 
     def _wordvec_similarity(self, word, vector):
-        np.dot(unitvec(self.word2vec_model[word]), vector)
+        return np.dot(unitvec(self.word2vec_model[word]), vector)
 
     def predict_types_similarity(self, ngram):
         types_ranked = []
