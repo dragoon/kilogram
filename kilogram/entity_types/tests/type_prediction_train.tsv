@@ -345,4 +345,7 @@ theory	thing
 tourist	<dbpedia:Person>
 thief	<dbpedia:Criminal>
 thing	thing
+tree	<dbpedia:Plant>
+troops	<dbpedia:MilitaryStructure>
+troupe: <dbpedia:Person>
 whale	<dbpedia:Mammal>
