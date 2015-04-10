@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, jsonify, request
-from entity_types.word2vec.model import TypePredictionModel
+from kilogram.entity_types.word2vec.model import TypePredictionModel
 from kilogram.dataset.dbpedia import DBPediaOntology
 from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
