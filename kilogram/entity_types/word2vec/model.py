@@ -34,7 +34,7 @@ class TypePredictionModel(object):
         self.available_types.append('thing')
         self.clf = linear_model.LinearRegression()
         if type_train_file:
-            self.clf.fit(type_train_file)
+            self.fit(type_train_file)
 
     def fit(self, type_train_file):
         model = self.word2vec_model
