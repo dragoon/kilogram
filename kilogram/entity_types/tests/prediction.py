@@ -2,7 +2,7 @@ from __future__ import division
 import unittest
 from kilogram.dataset.dbpedia import DBPediaOntology
 from kilogram import NgramService
-from kilogram.entity_types.prediction import TypePredictor
+from kilogram.entity_types.prediction import NgramTypePredictor
 
 import pkg_resources
 
@@ -16,7 +16,7 @@ class WikipediaUserCuratedTest(unittest.TestCase):
         skipped = 0
         total_correct_index = []
         dbpedia_ontology = DBPediaOntology('dbpedia_2014.owl')
-        predictor = TypePredictor("ngram_types", dbpedia_ontology)
+        predictor = NgramTypePredictor("ngram_types", dbpedia_ontology)
         with pkg_resources.resource_stream('kilogram', r'entity_types/tests/test.tsv') as test_file:
             for line in test_file:
                 line = line.strip().split()

@@ -19,14 +19,13 @@ def parse_counts(filename):
     return counts
 
 
-class TypePredictor(object):
+class NgramTypePredictor(object):
     type_hierarchy = None
     hbase_table = None
     dbpedia_types_db = None
     type_priors = None
-    word2vec_model = None
 
-    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None, word2vec_model_filename=None):
+    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None):
         self.type_hierarchy = type_hierarchy
         self.hbase_table = hbase_table
         if dbpedia_types_db:
@@ -35,26 +34,6 @@ class TypePredictor(object):
         total = sum(NgramService.substitution_counts.values())
         for entity_type, count in NgramService.substitution_counts.items():
             self.type_priors[entity_type] = count/total
-
-        if word2vec_model_filename:
-            from gensim.models.word2vec import Word2Vec
-            self.word2vec_model = Word2Vec.load(word2vec_model_filename)
-
-    def _predict_types_from_ngram(self, ngram, summarize=False):
-        types_ranked = []
-        for entity_type in self.type_priors.keys():
-            try:
-                score = self.word2vec_model.similarity(ngram, entity_type)
-            except KeyError:
-                continue
-            types_ranked.append((entity_type, score))
-        if summarize:
-            return self._hierachical_sum_output([types_ranked])
-        else:
-            return [sorted(types_ranked, key=lambda x: x[1], reverse=True)]
-
-    def train_type_predictor(self):
-        pass
 
     def _resolve_entities(self, context):
         entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
