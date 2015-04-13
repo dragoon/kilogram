@@ -13,7 +13,8 @@ dbpedia_ontology = DBPediaOntology('dbpedia_2014.owl')
 ngram_predictor = NgramTypePredictor("ngram_types", dbpedia_ontology,
                           '/home/roman/notebooks/kilogram/mapreduce/dbpedia_types.dbm')
 deep_predictor = TypePredictionModel('/home/roman/berkeleylm/300features_40minwords_10context',
-                                     '/home/roman/notebooks/kilogram/kilogram/entity_types/tests/type_prediction_train.tsv')
+                                     '/home/roman/notebooks/kilogram/kilogram/entity_types/tests/type_prediction_train.tsv',
+                                     type_hierarchy=dbpedia_ontology)
 
 
 @app.route('/predict/types/context', methods=['GET'])

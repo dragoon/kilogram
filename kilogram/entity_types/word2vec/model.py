@@ -22,10 +22,11 @@ class TypePredictionModel(object):
     word2vec_model = None
     available_types = None
 
-    def __init__(self, word2vec_model, type_train_file=None):
+    def __init__(self, word2vec_model, type_train_file=None, type_hierarchy=None):
         """
         :type word2vec_model: word2vec.Word2Vec
         """
+        self.type_hierarchy = type_hierarchy
         from sklearn import linear_model
         self.word2vec_model = word2vec.Word2Vec.load(word2vec_model)
         self.word2vec_model.init_sims()
@@ -59,7 +60,10 @@ class TypePredictionModel(object):
                 score = self.word2vec_model.similarity(ngram, entity_type)
             except KeyError:
                 continue
-            types_ranked.append((entity_type, score))
+            generic_type = self.type_hierarchy.get_parent(entity_type, '<dbpedia:Agent>')
+            if not generic_type:
+                generic_type = self.type_hierarchy.get_parent(entity_type, None)
+            types_ranked.append((generic_type, score))
         return [sorted(types_ranked, key=lambda x: x[1], reverse=True)]
 
     def predict_types_linear(self, ngram):
