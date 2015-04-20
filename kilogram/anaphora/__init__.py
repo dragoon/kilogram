@@ -1,9 +1,7 @@
 from __future__ import division
 from gensim.models import word2vec
-from numpy import exp, dot, zeros, outer, random, dtype, float32 as REAL,\
-    uint32, seterr, array, uint8, vstack, argsort, fromstring, sqrt, newaxis,\
-    ndarray, empty, sum as np_sum, prod
-from gensim import utils, matutils
+from numpy import dot, float32 as REAL, vstack
+from gensim import matutils
 w2v_model = word2vec.Word2Vec.load('/Users/dragoon/Downloads/300features_40minwords_10context')
 w2v_model.init_sims()
 
@@ -13,11 +11,11 @@ from collections import defaultdict
 class CorefCluster(object):
     # groups of mentions, can be headword or some other grouping
     mention_groups = None
-    non_noun_lemmas = None
+    non_noun_groups = None
     coref_cluster_id = None
 
     def __init__(self):
-        self.non_noun_lemmas = set()
+        self.non_noun_groups = defaultdict(lambda: MentionGroup())
         self.mention_groups = defaultdict(lambda: MentionGroup())
 
     def __repr__(self):
@@ -34,7 +32,7 @@ class CorefCluster(object):
 
     def add_mention(self, mention):
         if mention.head_pos in ('PRP', 'PRP$', 'DT'):
-            self.non_noun_lemmas.add(mention.head_lemma)
+            self.non_noun_groups[mention.head_lemma].add_mention(mention)
         else:
             self.mention_groups[mention.head_lemma].add_mention(mention)
         self.coref_cluster_id = mention.coref_cluster_id
@@ -267,7 +265,6 @@ class ClusterReassigner(object):
         import copy
         copy_coref_clusters = copy.deepcopy(self.coref_clusters)
         for key, doc_clusters in copy_coref_clusters.iteritems():
-            doc_id, par_id = key
             non_matching_groups = []
             while True:
                 for auto_cluster_id, coref_cluster in doc_clusters.iteritems():
@@ -277,7 +274,7 @@ class ClusterReassigner(object):
                         non_matching_groups.append(non_matching)
                 if len(non_matching_groups) == 0:
                     break
-                while len(non_matching_groups)>0:
+                while len(non_matching_groups) > 0:
                     mention_group = non_matching_groups.pop()
                     # try to assign group to a new cluster
                     matched = False
@@ -294,8 +291,9 @@ class ClusterReassigner(object):
                             break
                     if not matched:
                         # create new cluster
+                        print 'NEW CLUSTER'
                         new_cluster_id = max([int(x) for x in doc_clusters.keys()]) + 1
-                        doc_clusters[new_cluster_id].coref_cluster_id = new_cluster_id
+                        doc_clusters[new_cluster_id].coref_cluster_id = str(new_cluster_id)
                         doc_clusters[new_cluster_id].add_mention_group(mention_group)
         return copy_coref_clusters
 
@@ -320,72 +318,60 @@ reassigner.evaluate_internal()
 reassigner.coref_clusters = real_coref_data
 new_coref_clusters = reassigner.generate_external_file()
 
-new_mentions = defaultdict(dict)
-old_mentions = defaultdict(dict)
+
+new_mentions = defaultdict(list)
 for doc_id, doc_coref_clusters in new_coref_clusters.iteritems():
     doc_id, par_id = doc_id
     for cluster_id, coref_cluster in doc_coref_clusters.iteritems():
         for mention_group in coref_cluster.mention_groups.itervalues():
             for mention in mention_group.mentions:
-                new_mentions[(doc_id, par_id, int(mention.sent_id), mention.start_i)][mention.end_i] = cluster_id
-for doc_id, doc_coref_clusters in real_coref_data.iteritems():
-    doc_id, par_id = doc_id
-    for cluster_id, coref_cluster in doc_coref_clusters.iteritems():
-        for mention_group in coref_cluster.mention_groups.itervalues():
+                key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
+                new_mentions[key].append((cluster_id, mention.end_i))
+        for mention_group in coref_cluster.non_noun_groups.itervalues():
             for mention in mention_group.mentions:
-                old_mentions[(doc_id, par_id, int(mention.sent_id), mention.start_i)][mention.end_i] = cluster_id
-diff_dict = {}
-for key, end_cluster_dict in new_mentions.items():
-    old_end_cluster_dict = old_mentions[key]
-    # find non-matching clusters
-    non_matching = []
-    for end_i, cluster_id in end_cluster_dict.items():
-        if old_end_cluster_dict[end_i] != cluster_id:
-            non_matching.append()
-    diff_dict[key[:-1]] = {'cluster_id': cluster_id, 'old_cluster_id': old_mentions[key], 'end_i': key[-1]}
-
-print 'Differences length:', len(diff_dict)
+                key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
+                new_mentions[key].append((cluster_id, mention.end_i))
 
 
-def generate_conll_corefs_file(diff_dict):
+def generate_conll_corefs_file(new_mentions):
     old_corefs_data = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conlloutput-Sun-Apr-19-15-07-03-CEST-2015.coref.predicted.txt')
-    new_corefs_data = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conlloutput-Sun-Apr-19-15-07-03-CEST-2015.coref.predicted.new.txt', 'w')
+    new_corefs_file = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conlloutput-Sun-Apr-19-15-07-03-CEST-2015.coref.predicted.new.txt', 'w')
 
     sent_id = 0
-    replacements = defaultdict(list)
+    end_clusters = defaultdict(list)
     for line_num, line in enumerate(old_corefs_data):
         line = line.strip()
         if line.startswith(('#begin', '#end')):
             sent_id = 0
-            new_corefs_data.write(line+'\n')
+            new_corefs_file.write(line+'\n')
         elif len(line) == 0:
             sent_id += 1
-            new_corefs_data.write(line+'\n')
+            new_corefs_file.write(line+'\n')
         else:
             line = line.split('\t')
-            cluster_tag = line[-1]
             doc_id, par_id, word_num = line[:3]
             key = (doc_id, par_id, sent_id, word_num)
-            if line_num in replacements:
-                replacement = replacements.pop(line_num)
-                for old_cluster_id, new_cluster_id in replacement:
-                    cluster_tag = cluster_tag.replace(old_cluster_id, new_cluster_id)
-                line[-1] = cluster_tag
-            if key in diff_dict:
-                current_span = diff_dict[key]
-                #print line, diff_dict[key]
-                if cluster_tag.count(current_span['old_cluster_id']) == 1:
-                    cluster_tag = cluster_tag.replace(current_span['old_cluster_id'], current_span['cluster_id'])
-                    line[-1] = cluster_tag
-                    if int(word_num) + 1 < int(current_span['end_i']):
-                        # remember to replace
-                        replacements[line_num+int(current_span['end_i']) - int(word_num) - 1].append((current_span['old_cluster_id'], current_span['cluster_id']))
-                else:
-                    print 'LOL'
-            new_corefs_data.write('\t'.join(line) + '\n')
-
+            tags = []
+            if str(int(word_num)+1) in end_clusters:
+                tags = [x + ')' for x in end_clusters.pop(str(int(word_num)+1))]
+            if key in new_mentions:
+                start_tags = []
+                mentions = sorted(new_mentions[key], key=lambda x: int(x[1]), reverse=True)
+                for cluster_id, end_i in mentions:
+                    if int(end_i) == int(word_num) + 1:
+                        start_tags.append('('+cluster_id+')')
+                    else:
+                        start_tags.append('('+cluster_id)
+                        # LIFO, stack
+                        end_clusters[end_i].append(cluster_id)
+                tags = start_tags + tags
+            if len(tags) > 0:
+                if '|'.join(tags) != line[-1]:
+                    print line[:3], line[-1], tags
+                line[-1] = '|'.join(tags)
+            new_corefs_file.write('\t'.join(line) + '\n')
     old_corefs_data.close()
-    new_corefs_data.close()
+    new_corefs_file.close()
 
 
-generate_conll_corefs_file(diff_dict)
+generate_conll_corefs_file(new_mentions)
