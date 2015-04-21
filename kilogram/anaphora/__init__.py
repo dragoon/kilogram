@@ -121,19 +121,25 @@ class FeatureExtractor(object):
         self.coref_clusters = coref_clusters
 
     @staticmethod
-    def get_feature_vector(gold_head_lemmas, test_head_lemma):
+    def get_feature_vector(mentions, test_mention_group):
+
+        # START: VECTORS
         try:
-            test_vector = w2v_model.syn0norm[w2v_model.vocab[test_head_lemma].index]
+            test_vector = w2v_model.syn0norm[w2v_model.vocab[test_mention_group.head_lemma].index]
         except KeyError:
             raise NoWordInVocabularyError()
-        gold_words = [x for x in gold_head_lemmas if x in w2v_model.vocab]
+        gold_words = set([x.head_lemma for x in mentions if x.head_lemma in w2v_model.vocab])
         if len(gold_words) == 0:
             raise EmptyGoldCluster()
         vectors = vstack(w2v_model.syn0norm[w2v_model.vocab[word].index] for word in gold_words).astype(REAL)
         mean = matutils.unitvec(vectors.mean(axis=0)).astype(REAL)
         similarity = dot(test_vector, mean)
-        min_sim = min([dot(matutils.unitvec(x), test_vector) for x in vectors])
-        max_sim = max([dot(matutils.unitvec(x), test_vector) for x in vectors])
+        similarities = [dot(matutils.unitvec(x), test_vector) for x in vectors]
+        min_sim = min(similarities)
+        max_sim = max(similarities)
+        # END: VECTORS
+
+
         feature_vector = [similarity, min_sim, max_sim]
         # feature_vector.extend(list(test_vector))
         # feature_vector.extend(list(mean))
@@ -165,21 +171,20 @@ class FeatureExtractor(object):
 
         gold_clusters = defaultdict(list)
         # populate gold clusters
-        for head_lemma, mention_group in coref_cluster.mention_groups.items():
+        for mention_group in coref_cluster.mention_groups.values():
             for mention in mention_group.mentions:
-                gold_clusters[mention.gold_coref_id].append(head_lemma)
+                gold_clusters[mention.gold_coref_id].append(mention)
         # generate features
-        for gold_cluster_id, gold_lemmas in gold_clusters.items():
+        for gold_cluster_id, gold_mentions in gold_clusters.items():
             label = int(gold_cluster_id in mention_gold_ids)
             if label == 1:
                 # exclude mention from gold_values if same cluster
-                gold_lemmas = [x for x in gold_lemmas if x != mention_group.head_lemma]
-            if len(gold_lemmas) == 0:
+                gold_mentions = [x for x in gold_mentions if x.head_lemma != mention_group.head_lemma]
+            if len(gold_mentions) == 0:
                 self.skipped_empty_cluster += 1
                 continue
             try:
-                feature_vector = FeatureExtractor.get_feature_vector(gold_lemmas,
-                                                                     mention_group.head_lemma)
+                feature_vector = FeatureExtractor.get_feature_vector(gold_mentions, mention_group)
             except NoWordInVocabularyError:
                 self.skipped_no_word += 1
                 continue
@@ -219,18 +224,20 @@ class ClusterReassigner(object):
 
     def _get_mention_classes(self, mention_groups):
         mention_group_classes = []
-        mention_group_lemmas = mention_groups.keys()
-        for i, mention_group_lemma in enumerate(mention_group_lemmas):
-            other_mention_lemmas = mention_group_lemmas[:]
-            del other_mention_lemmas[i]
+        mention_groups = mention_groups.values()
+        for i, mention_group in enumerate(mention_groups):
+
+            other_mentions = [mention for x_group in mention_groups
+                              for mention in x_group.mentions
+                              if mention.head_lemma != mention_group.head_lemma]
             try:
-                features = FeatureExtractor.get_feature_vector(other_mention_lemmas, mention_group_lemma)
+                features = FeatureExtractor.get_feature_vector(other_mentions, mention_group)
             except:
                 self.skipped += 1
                 continue
             class1, class2 = self.clf.predict_proba(features)[0]
             #print mention.gold_coref_id, class1, class2
-            mention_group_classes.append((class1, mention_groups[mention_group_lemma]))
+            mention_group_classes.append((class1, mention_group))
         mention_group_classes.sort(key=lambda x: x[0])
         return mention_group_classes
 
@@ -281,9 +288,11 @@ class ClusterReassigner(object):
                     # try to assign group to a new cluster
                     matched = False
                     for coref_cluster in doc_clusters.values():
-                        coref_cluster_lemmas = coref_cluster.mention_groups.keys()
+                        coref_cluster_mentions = \
+                            [mention for x_group in coref_cluster.mention_groups.values()
+                             for mention in x_group.mentions]
                         try:
-                            features = FeatureExtractor.get_feature_vector(coref_cluster_lemmas, mention_group.head_lemma)
+                            features = FeatureExtractor.get_feature_vector(coref_cluster_mentions, mention_group)
                         except:
                             continue
                         if self.clf.predict(features)[0] == 1:
@@ -309,7 +318,7 @@ feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
 feature_vectors_labels = zip(feature_vectors, labels)
 positive = [x for x in feature_vectors_labels if x[1] == 1]
-negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*20)
+negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*10)
 feature_vectors_labels = positive+negative
 feature_vectors, labels = zip(*feature_vectors_labels)
 
