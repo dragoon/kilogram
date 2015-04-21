@@ -135,59 +135,61 @@ class FeatureExtractor(object):
         min_sim = min([dot(matutils.unitvec(x), test_vector) for x in vectors])
         max_sim = max([dot(matutils.unitvec(x), test_vector) for x in vectors])
         feature_vector = [similarity, min_sim, max_sim]
-        #feature_vector.extend(list(test_vector))
-        #feature_vector.extend(list(mean))
+        # feature_vector.extend(list(test_vector))
+        # feature_vector.extend(list(mean))
         return feature_vector
 
     def get_features(self):
         feature_vectors = []
         labels = []
         for doc_coref_clusters in self.coref_clusters.values():
+            mention_groups = []
             for coref_cluster in doc_coref_clusters.values():
-                local_fv, local_lab = self._get_features_for_cluster(coref_cluster)
-                feature_vectors.extend(local_fv)
-                labels.extend(local_lab)
+                for mention_group in coref_cluster.mention_groups.values():
+                    mention_groups.append(mention_group)
+            for coref_cluster in doc_coref_clusters.values():
+                for mention_group in mention_groups:
+                    local_fv, local_lab = self._get_features(coref_cluster, mention_group)
+                    feature_vectors.extend(local_fv)
+                    labels.extend(local_lab)
         print 'Skipped Small Cluster:', self.skipped_empty_cluster
         print 'Skipped Empty Gold Cluster:', self.skipped_empty_gold
         print 'Skipped No Test Word Vector:', self.skipped_no_word
         print 'Passed:', self.passed
         return feature_vectors, labels
 
-    def _get_features_for_cluster(self, coref_cluster):
+    def _get_features(self, coref_cluster, mention_group):
         feature_vectors = []
         labels = []
+        mention_gold_ids = [mention.gold_coref_id for mention in mention_group.mentions]
+
         gold_clusters = defaultdict(list)
         # populate gold clusters
         for head_lemma, mention_group in coref_cluster.mention_groups.items():
             for mention in mention_group.mentions:
                 gold_clusters[mention.gold_coref_id].append(head_lemma)
         # generate features
-        for head_lemma, mention_group in coref_cluster.mention_groups.items():
-            mention_gold_ids = [mention.gold_coref_id for mention in mention_group.mentions]
-            for gold_cluster_id, gold_lemmas in gold_clusters.items():
-                label = int(gold_cluster_id in mention_gold_ids)
-                if label == 1:
-                    # exclude mention from gold_values if same cluster
-                    gold_lemmas = [x for x in gold_lemmas if x != head_lemma]
-                if len(gold_lemmas) == 0:
-                    self.skipped_empty_cluster += 1
-                    continue
-                try:
-                    feature_vector = FeatureExtractor.get_feature_vector(gold_lemmas, head_lemma)
-                except NoWordInVocabularyError:
-                    self.skipped_no_word += 1
-                    continue
-                except EmptyGoldCluster:
-                    self.skipped_empty_gold += 1
-                    continue
-                self.passed += 1
-                labels.append(label)
-                feature_vectors.append(feature_vector)
+        for gold_cluster_id, gold_lemmas in gold_clusters.items():
+            label = int(gold_cluster_id in mention_gold_ids)
+            if label == 1:
+                # exclude mention from gold_values if same cluster
+                gold_lemmas = [x for x in gold_lemmas if x != mention_group.head_lemma]
+            if len(gold_lemmas) == 0:
+                self.skipped_empty_cluster += 1
+                continue
+            try:
+                feature_vector = FeatureExtractor.get_feature_vector(gold_lemmas,
+                                                                     mention_group.head_lemma)
+            except NoWordInVocabularyError:
+                self.skipped_no_word += 1
+                continue
+            except EmptyGoldCluster:
+                self.skipped_empty_gold += 1
+                continue
+            self.passed += 1
+            labels.append(label)
+            feature_vectors.append(feature_vector)
         return feature_vectors, labels
-
-
-gold_corefs_data = parse_corefs_data('/Users/dragoon/Downloads/corefs_gold_mentions.txt')
-feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
 
 class ClusterReassigner(object):
@@ -292,17 +294,30 @@ class ClusterReassigner(object):
                     if not matched:
                         # create new cluster
                         print 'NEW CLUSTER'
-                        new_cluster_id = max([int(x) for x in doc_clusters.keys()]) + 1
-                        doc_clusters[new_cluster_id].coref_cluster_id = str(new_cluster_id)
+                        new_cluster_id = str(max([int(x) for x in doc_clusters.keys()]) + 1)
+                        doc_clusters[new_cluster_id].coref_cluster_id = new_cluster_id
                         doc_clusters[new_cluster_id].add_mention_group(mention_group)
         return copy_coref_clusters
 
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.linear_model import *
 from sklearn.cross_validation import cross_val_score
+from sklearn.utils import resample
 
-clf_extra_trees = ExtraTreesClassifier(n_estimators=50, class_weight='auto', bootstrap=True)
-clf_log_reg = LogisticRegression(class_weight='auto')
+gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
+feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
+
+feature_vectors_labels = zip(feature_vectors, labels)
+positive = [x for x in feature_vectors_labels if x[1] == 1]
+negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*20)
+feature_vectors_labels = positive+negative
+feature_vectors, labels = zip(*feature_vectors_labels)
+
+print 'Positive Labels:', len(filter(lambda x: x == 1, labels))
+print 'Negative Labels:', len(filter(lambda x: x == 0, labels))
+
+clf_extra_trees = ExtraTreesClassifier(n_estimators=50)
+clf_log_reg = LogisticRegression()
 
 # QUICK EVALUATION
 print cross_val_score(clf_extra_trees, feature_vectors, labels, cv=5)
@@ -311,7 +326,7 @@ print cross_val_score(clf_log_reg, feature_vectors, labels, cv=5)
 # Fit before evaluation
 clf_extra_trees.fit(feature_vectors, labels)
 
-real_coref_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs.txt')
+real_coref_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt')
 reassigner = ClusterReassigner(gold_corefs_data, clf_extra_trees)
 reassigner.evaluate_internal()
 
@@ -319,23 +334,25 @@ reassigner.coref_clusters = real_coref_data
 new_coref_clusters = reassigner.generate_external_file()
 
 
-new_mentions = defaultdict(list)
-for doc_id, doc_coref_clusters in new_coref_clusters.iteritems():
-    doc_id, par_id = doc_id
-    for cluster_id, coref_cluster in doc_coref_clusters.iteritems():
-        for mention_group in coref_cluster.mention_groups.itervalues():
-            for mention in mention_group.mentions:
-                key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
-                new_mentions[key].append((cluster_id, mention.end_i))
-        for mention_group in coref_cluster.non_noun_groups.itervalues():
-            for mention in mention_group.mentions:
-                key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
-                new_mentions[key].append((cluster_id, mention.end_i))
+def generate_new_mentions(new_coref_clusters):
+    new_mentions = defaultdict(list)
+    for doc_id, doc_coref_clusters in new_coref_clusters.iteritems():
+        doc_id, par_id = doc_id
+        for cluster_id, coref_cluster in doc_coref_clusters.iteritems():
+            for mention_group in coref_cluster.mention_groups.itervalues():
+                for mention in mention_group.mentions:
+                    key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
+                    new_mentions[key].append((cluster_id, mention.end_i))
+            for mention_group in coref_cluster.non_noun_groups.itervalues():
+                for mention in mention_group.mentions:
+                    key = (doc_id, par_id, int(mention.sent_id), mention.start_i)
+                    new_mentions[key].append((cluster_id, mention.end_i))
+    return new_mentions
 
 
 def generate_conll_corefs_file(new_mentions):
-    old_corefs_data = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conlloutput-Sun-Apr-19-15-07-03-CEST-2015.coref.predicted.txt')
-    new_corefs_file = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conlloutput-Sun-Apr-19-15-07-03-CEST-2015.coref.predicted.new.txt', 'w')
+    old_corefs_data = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conll-dev.predicted.txt')
+    new_corefs_file = open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/conll-dev.predicted.new.txt', 'w')
 
     sent_id = 0
     end_clusters = defaultdict(list)
@@ -374,4 +391,4 @@ def generate_conll_corefs_file(new_mentions):
     new_corefs_file.close()
 
 
-generate_conll_corefs_file(new_mentions)
+generate_conll_corefs_file(generate_new_mentions(new_coref_clusters))
