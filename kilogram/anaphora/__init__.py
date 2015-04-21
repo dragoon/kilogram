@@ -252,8 +252,7 @@ class ClusterReassigner(object):
 
     def evaluate_internal(self):
         for key, doc_clusters in self.coref_clusters.iteritems():
-            doc_id, par_id = key
-            for auto_cluster_id, coref_cluster in doc_clusters.iteritems():
+            for coref_cluster in doc_clusters.values():
                 mention_groups = coref_cluster.mention_groups
                 if len(mention_groups) < 2:
                     continue
@@ -322,12 +321,12 @@ from sklearn.linear_model import *
 from sklearn.cross_validation import cross_val_score
 from sklearn.utils import resample
 
-gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt')
+gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
 feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
 feature_vectors_labels = zip(feature_vectors, labels)
 positive = [x for x in feature_vectors_labels if x[1] == 1]
-negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*40)
+negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive))
 feature_vectors_labels = positive+negative
 feature_vectors, labels = zip(*feature_vectors_labels)
 
@@ -348,7 +347,7 @@ reassigner = ClusterReassigner(gold_corefs_data, clf_extra_trees)
 print 'Evaluate on Train data:'
 reassigner.evaluate_internal()
 print 'Evaluate on Test data:'
-reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
+reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt')
 reassigner.evaluate_internal()
 
 print 'Generating External File:'
