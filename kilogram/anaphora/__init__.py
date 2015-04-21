@@ -260,7 +260,7 @@ class ClusterReassigner(object):
                 if not mention_classes:
                     continue
                 lowest = mention_classes.pop(-1)
-                other_gold_ids = set([y.gold_coref_id for prob, mention_group in mention_classes
+                other_gold_ids = set([y.gold_coref_id for _, mention_group in mention_classes
                                       for y in mention_group.mentions])
                 lowest_gold_ids = set([mention.gold_coref_id for mention in lowest[1].mentions])
                 if lowest[0] > 0.5:
