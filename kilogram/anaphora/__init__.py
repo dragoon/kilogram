@@ -148,8 +148,8 @@ class FeatureExtractor(object):
         # END: SYNTACTIC
 
 
-        feature_vector = [similarity, min(similarities), max(similarities),
-                          min(distances), max(distances), np.mean(distances)]
+        feature_vector = [similarity, min(similarities), max(similarities)]
+                          #min(distances), max(distances), np.mean(distances)]
         # feature_vector.extend(list(test_vector))
         # feature_vector.extend(list(mean))
         return feature_vector
@@ -253,6 +253,10 @@ class ClusterReassigner(object):
     def evaluate_internal(self):
         for key, doc_clusters in self.coref_clusters.iteritems():
             for coref_cluster in doc_clusters.values():
+                if len(set(
+                        [y.gold_coref_id for mention_group in coref_cluster.mention_groups.values()
+                         for y in mention_group.mentions])) > 1:
+                    self.internal_recall += 1
                 mention_groups = coref_cluster.mention_groups
                 if len(mention_groups) < 2:
                     continue
@@ -266,13 +270,10 @@ class ClusterReassigner(object):
                 if lowest[0] > 0.5:
                     # need to re-assign at least one entity
                     self.internal_precision.append(int(not lowest_gold_ids.intersection(other_gold_ids)))
-                    self.internal_recall += 1
-                if len(other_gold_ids.union(lowest_gold_ids)) > 1:
-                    self.internal_recall += 1
         print 'Total identified cases:', len(self.internal_precision)
         print 'Skipped:', self.skipped
         print 'Precision:', sum(self.internal_precision)/len(self.internal_precision)
-        print 'Recall: ', sum(self.internal_precision)/self.internal_recall
+        print 'Recall: ', sum(self.internal_precision)/self.internal_recall, self.internal_recall
         # reset
         self.skipped = 0
         self.internal_recall = 0
