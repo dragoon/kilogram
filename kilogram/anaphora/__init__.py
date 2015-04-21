@@ -1,6 +1,7 @@
 from __future__ import division
 from gensim.models import word2vec
 from numpy import dot, float32 as REAL, vstack
+import numpy as np
 from gensim import matutils
 w2v_model = word2vec.Word2Vec.load('/Users/dragoon/Downloads/300features_40minwords_10context')
 w2v_model.init_sims()
@@ -135,12 +136,20 @@ class FeatureExtractor(object):
         mean = matutils.unitvec(vectors.mean(axis=0)).astype(REAL)
         similarity = dot(test_vector, mean)
         similarities = [dot(matutils.unitvec(x), test_vector) for x in vectors]
-        min_sim = min(similarities)
-        max_sim = max(similarities)
         # END: VECTORS
 
+        # START: SYNTACTIC
+        sent_ids = set(int(x.sent_id) for x in mentions)
+        test_sent_ids = set(int(x.sent_id) for x in test_mention_group.mentions)
+        distances = []
+        for sent_id in sent_ids:
+            for test_sent_id in test_sent_ids:
+                distances.append(abs(sent_id - test_sent_id))
+        # END: SYNTACTIC
 
-        feature_vector = [similarity, min_sim, max_sim]
+
+        feature_vector = [similarity, min(similarities), max(similarities),
+                          min(distances), max(distances), np.mean(distances)]
         # feature_vector.extend(list(test_vector))
         # feature_vector.extend(list(mean))
         return feature_vector
@@ -171,8 +180,8 @@ class FeatureExtractor(object):
 
         gold_clusters = defaultdict(list)
         # populate gold clusters
-        for mention_group in coref_cluster.mention_groups.values():
-            for mention in mention_group.mentions:
+        for x_group in coref_cluster.mention_groups.values():
+            for mention in x_group.mentions:
                 gold_clusters[mention.gold_coref_id].append(mention)
         # generate features
         for gold_cluster_id, gold_mentions in gold_clusters.items():
@@ -313,12 +322,12 @@ from sklearn.linear_model import *
 from sklearn.cross_validation import cross_val_score
 from sklearn.utils import resample
 
-gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
+gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt')
 feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
 feature_vectors_labels = zip(feature_vectors, labels)
 positive = [x for x in feature_vectors_labels if x[1] == 1]
-negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*10)
+negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive)*40)
 feature_vectors_labels = positive+negative
 feature_vectors, labels = zip(*feature_vectors_labels)
 
@@ -335,11 +344,15 @@ print cross_val_score(clf_log_reg, feature_vectors, labels, cv=5)
 # Fit before evaluation
 clf_extra_trees.fit(feature_vectors, labels)
 
-real_coref_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt')
 reassigner = ClusterReassigner(gold_corefs_data, clf_extra_trees)
+print 'Evaluate on Train data:'
+reassigner.evaluate_internal()
+print 'Evaluate on Test data:'
+reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
 reassigner.evaluate_internal()
 
-reassigner.coref_clusters = real_coref_data
+print 'Generating External File:'
+reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt')
 new_coref_clusters = reassigner.generate_external_file()
 
 
@@ -392,7 +405,7 @@ def generate_conll_corefs_file(new_mentions):
                         end_clusters[end_i].append(cluster_id)
                 tags = start_tags + tags
             if len(tags) > 0:
-                if '|'.join(tags) != line[-1]:
+                if set(tags) != set(line[-1].split('|')):
                     print line[:3], line[-1], tags
                 line[-1] = '|'.join(tags)
             new_corefs_file.write('\t'.join(line) + '\n')
