@@ -1,6 +1,6 @@
 from __future__ import division
 from gensim.models import word2vec
-from numpy import dot, float32 as REAL, vstack
+from numpy import dot, vstack
 import numpy as np
 from gensim import matutils
 w2v_model = word2vec.Word2Vec.load('/Users/dragoon/Downloads/300features_40minwords_10context')
@@ -87,9 +87,6 @@ class Mention(object):
     def __repr__(self):
         return self.mention
 
-    def __eq__(self, mention):
-        return self.head_lemma == mention.head_lemma
-
 
 class NoWordInVocabularyError(Exception):
     pass
@@ -122,20 +119,30 @@ class FeatureExtractor(object):
         self.coref_clusters = coref_clusters
 
     @staticmethod
+    def get_ngram_vector(ngram):
+        words = [word for word in ngram.split() if word in w2v_model.vocab]
+        if not words:
+            return None
+        vectors = vstack(w2v_model.syn0norm[w2v_model.vocab[word].index] for word in words)
+        mean = matutils.unitvec(vectors.mean(axis=0))
+        return mean
+
+    @staticmethod
     def get_feature_vector(mentions, test_mention_group):
 
         # START: VECTORS
-        try:
-            test_vector = w2v_model.syn0norm[w2v_model.vocab[test_mention_group.head_lemma].index]
-        except KeyError:
+        test_vector = FeatureExtractor.get_ngram_vector(test_mention_group.head_lemma)
+        if test_vector is None:
             raise NoWordInVocabularyError()
-        gold_words = set([x.head_lemma for x in mentions if x.head_lemma in w2v_model.vocab])
-        if len(gold_words) == 0:
+        mention_ngrams = set(mention.head_lemma for mention in mentions)
+        other_vectors = [FeatureExtractor.get_ngram_vector(mention) for mention in mention_ngrams]
+        other_vectors = filter(lambda x: x is not None, other_vectors)
+        if len(other_vectors) == 0:
             raise EmptyGoldCluster()
-        vectors = vstack(w2v_model.syn0norm[w2v_model.vocab[word].index] for word in gold_words).astype(REAL)
-        mean = matutils.unitvec(vectors.mean(axis=0)).astype(REAL)
+        other_vectors = vstack(other_vectors)
+        mean = matutils.unitvec(other_vectors.mean(axis=0))
         similarity = dot(test_vector, mean)
-        similarities = [dot(matutils.unitvec(x), test_vector) for x in vectors]
+        similarities = [dot(matutils.unitvec(x), test_vector) for x in other_vectors]
         # END: VECTORS
 
         # START: SYNTACTIC
@@ -148,10 +155,10 @@ class FeatureExtractor(object):
         # END: SYNTACTIC
 
 
-        feature_vector = [similarity, min(similarities), max(similarities)]
+        feature_vector = [similarity]#, min(similarities), max(similarities),
                           #min(distances), max(distances), np.mean(distances)]
-        # feature_vector.extend(list(test_vector))
-        # feature_vector.extend(list(mean))
+        #feature_vector.extend(list(test_vector))
+        feature_vector.extend(list(test_vector - mean))
         return feature_vector
 
     def get_features(self):
