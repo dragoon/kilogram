@@ -158,6 +158,7 @@ class FeatureExtractor(object):
         feature_vector = [similarity]#, min(similarities), max(similarities),
                           #min(distances), max(distances), np.mean(distances)]
         #feature_vector.extend(list(test_vector))
+        feature_vector.append(int(any([x for x in test_mention_group.mentions if x.ner_entity != "null"])))
         feature_vector.extend(list(test_vector - mean))
         return feature_vector
 
@@ -183,7 +184,7 @@ class FeatureExtractor(object):
     def _get_features(self, coref_cluster, mention_group):
         feature_vectors = []
         labels = []
-        mention_gold_ids = [mention.gold_coref_id for mention in mention_group.mentions]
+        mention_gold_ids = set([mention.gold_coref_id for mention in mention_group.mentions])
 
         gold_clusters = defaultdict(list)
         # populate gold clusters
@@ -193,9 +194,8 @@ class FeatureExtractor(object):
         # generate features
         for gold_cluster_id, gold_mentions in gold_clusters.items():
             label = int(gold_cluster_id in mention_gold_ids)
-            if label == 1:
-                # exclude mention from gold_values if same cluster
-                gold_mentions = [x for x in gold_mentions if x.head_lemma != mention_group.head_lemma]
+            # exclude mention from gold_values if same cluster
+            gold_mentions = [x for x in gold_mentions if x.head_lemma != mention_group.head_lemma and x.ner_entity == 'null']
             if len(gold_mentions) == 0:
                 self.skipped_empty_cluster += 1
                 continue
@@ -245,7 +245,7 @@ class ClusterReassigner(object):
 
             other_mentions = [mention for x_group in mention_groups
                               for mention in x_group.mentions
-                              if mention.head_lemma != mention_group.head_lemma]
+                              if mention.head_lemma != mention_group.head_lemma and mention.ner_entity == "null"]
             try:
                 features = FeatureExtractor.get_feature_vector(other_mentions, mention_group)
             except:
@@ -306,7 +306,7 @@ class ClusterReassigner(object):
                     for coref_cluster in doc_clusters.values():
                         coref_cluster_mentions = \
                             [mention for x_group in coref_cluster.mention_groups.values()
-                             for mention in x_group.mentions]
+                             for mention in x_group.mentions if mention.ner_entity == 'null']
                         try:
                             features = FeatureExtractor.get_feature_vector(coref_cluster_mentions, mention_group)
                         except:
@@ -342,16 +342,16 @@ print 'Positive Labels:', len(filter(lambda x: x == 1, labels))
 print 'Negative Labels:', len(filter(lambda x: x == 0, labels))
 
 clf_extra_trees = ExtraTreesClassifier(n_estimators=50)
-clf_log_reg = LogisticRegression()
+clf_log_reg = LogisticRegressionCV()
 
 # QUICK EVALUATION
 print cross_val_score(clf_extra_trees, feature_vectors, labels, cv=5)
 print cross_val_score(clf_log_reg, feature_vectors, labels, cv=5)
 
 # Fit before evaluation
-clf_extra_trees.fit(feature_vectors, labels)
+clf_log_reg.fit(feature_vectors, labels)
 
-reassigner = ClusterReassigner(gold_corefs_data, clf_extra_trees)
+reassigner = ClusterReassigner(gold_corefs_data, clf_log_reg)
 print 'Evaluate on Train data:'
 reassigner.evaluate_internal()
 print 'Evaluate on Test data:'
