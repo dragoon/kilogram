@@ -32,7 +32,7 @@ class CorefCluster(object):
             self.mention_groups[mention_group.head_lemma] = mention_group
 
     def add_mention(self, mention):
-        if mention.head_pos in ('PRP', 'PRP$', 'DT'):
+        if mention.head_pos not in ('NN', 'NNS', 'NNP'):
             self.non_noun_groups[mention.head_lemma].add_mention(mention)
         else:
             self.mention_groups[mention.head_lemma].add_mention(mention)
@@ -130,19 +130,42 @@ class FeatureExtractor(object):
     @staticmethod
     def get_feature_vector(mentions, test_mention_group):
 
-        # START: VECTORS
-        test_vector = FeatureExtractor.get_ngram_vector(test_mention_group.head_lemma)
+        test_mention_words = set(' '.join([x.mention for x in test_mention_group.mentions]).lower().split())
+        other_mention_words = set(' '.join([x.mention for x in mentions]).lower().split())
+
+        def get_vectors(ngrams, test_ngram):
+            test_vector = FeatureExtractor.get_ngram_vector(test_ngram)
+            other_vectors = [FeatureExtractor.get_ngram_vector(mention) for mention in ngrams]
+            other_vectors = filter(lambda x: x is not None, other_vectors)
+            if len(other_vectors) > 0:
+                other_vectors = vstack(other_vectors)
+                mean = matutils.unitvec(other_vectors.mean(axis=0))
+                return mean, test_vector
+            return None, test_vector
+
+        mean, test_vector = get_vectors(set(mention.head_lemma for mention in mentions),
+                                        test_mention_group.head_lemma)
+        mean_lower, test_vector_lower = get_vectors(set(mention.head_lemma.lower() for mention in mentions),
+                                                    test_mention_group.head_lemma.lower())
+        if mean is None:
+            mean = mean_lower
+        if mean_lower is None:
+            mean_lower = mean
+        if mean is None:
+            raise EmptyGoldCluster()
+
+        if test_vector is None:
+            test_vector = test_vector_lower
+        if test_vector_lower is None:
+            test_vector_lower = test_vector
         if test_vector is None:
             raise NoWordInVocabularyError()
-        mention_ngrams = set(mention.head_lemma for mention in mentions)
-        other_vectors = [FeatureExtractor.get_ngram_vector(mention) for mention in mention_ngrams]
-        other_vectors = filter(lambda x: x is not None, other_vectors)
-        if len(other_vectors) == 0:
-            raise EmptyGoldCluster()
-        other_vectors = vstack(other_vectors)
-        mean = matutils.unitvec(other_vectors.mean(axis=0))
+
+
+        # START: VECTORS
         similarity = dot(test_vector, mean)
-        similarities = [dot(matutils.unitvec(x), test_vector) for x in other_vectors]
+        similarity_lower = dot(test_vector_lower, mean_lower)
+        #similarities = [dot(matutils.unitvec(x), test_vector) for x in other_vectors]
         # END: VECTORS
 
         # START: SYNTACTIC
@@ -155,10 +178,10 @@ class FeatureExtractor(object):
         # END: SYNTACTIC
 
 
-        feature_vector = [similarity]#, min(similarities), max(similarities),
+        feature_vector = [similarity, len(other_mention_words.intersection(test_mention_words))]#, min(similarities), max(similarities),
                           #min(distances), max(distances), np.mean(distances)]
         #feature_vector.extend(list(test_vector))
-        feature_vector.append(int(any([x for x in test_mention_group.mentions if x.ner_entity != "null"])))
+        #feature_vector.append(int(any([x for x in test_mention_group.mentions if x.ner_entity != "null"])))
         feature_vector.extend(list(test_vector - mean))
         return feature_vector
 
@@ -185,31 +208,30 @@ class FeatureExtractor(object):
         feature_vectors = []
         labels = []
         mention_gold_ids = set([mention.gold_coref_id for mention in mention_group.mentions])
+        other_mentions = [x for x_group in coref_cluster.mention_groups.values()
+                          for x in x_group.mentions if x.head_lemma != mention_group.head_lemma
+                          and x.ner_entity == 'null']
+        other_mention_ids = [x.gold_coref_id for x in other_mentions]
 
-        gold_clusters = defaultdict(list)
-        # populate gold clusters
-        for x_group in coref_cluster.mention_groups.values():
-            for mention in x_group.mentions:
-                gold_clusters[mention.gold_coref_id].append(mention)
         # generate features
-        for gold_cluster_id, gold_mentions in gold_clusters.items():
-            label = int(gold_cluster_id in mention_gold_ids)
-            # exclude mention from gold_values if same cluster
-            gold_mentions = [x for x in gold_mentions if x.head_lemma != mention_group.head_lemma and x.ner_entity == 'null']
-            if len(gold_mentions) == 0:
-                self.skipped_empty_cluster += 1
-                continue
-            try:
-                feature_vector = FeatureExtractor.get_feature_vector(gold_mentions, mention_group)
-            except NoWordInVocabularyError:
-                self.skipped_no_word += 1
-                continue
-            except EmptyGoldCluster:
-                self.skipped_empty_gold += 1
-                continue
-            self.passed += 1
-            labels.append(label)
-            feature_vectors.append(feature_vector)
+        label = int(bool(mention_gold_ids.intersection(other_mention_ids)))
+        # exclude mention from gold_values if same cluster
+        if len(other_mentions) == 0:
+            self.skipped_empty_cluster += 1
+            return feature_vectors, labels
+        try:
+            feature_vector = FeatureExtractor.get_feature_vector(other_mentions, mention_group)
+            #if feature_vector[0] < 0.2 and label == 1:
+            #    print 'LOL'
+        except NoWordInVocabularyError:
+            self.skipped_no_word += 1
+            return feature_vectors, labels
+        except EmptyGoldCluster:
+            self.skipped_empty_gold += 1
+            return feature_vectors, labels
+        self.passed += 1
+        labels.append(label)
+        feature_vectors.append(feature_vector)
         return feature_vectors, labels
 
 
@@ -269,6 +291,8 @@ class ClusterReassigner(object):
                     continue
                 mention_classes = self._get_mention_classes(mention_groups)
                 if not mention_classes:
+                    continue
+                if len(mention_classes) == 1:
                     continue
                 lowest = mention_classes.pop(-1)
                 other_gold_ids = set([y.gold_coref_id for _, mention_group in mention_classes
