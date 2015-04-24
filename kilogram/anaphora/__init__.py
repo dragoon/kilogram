@@ -56,6 +56,13 @@ class MentionGroup(object):
         self.mentions.append(mention)
         self.head_lemma = mention.head_lemma
 
+    @property
+    def entity_type(self):
+        try:
+            return [m.entity_type for m in self.mentions if m.entity_type][0]
+        except:
+            return None
+
 
 class Mention(object):
     mention = None
@@ -68,6 +75,9 @@ class Mention(object):
     ner_type = None
     coref_cluster_id = None
     gold_coref_id = None
+    entity_url = None
+    entity_type = None
+
 
     def __init__(self, date_tuple):
         self.sent_id = date_tuple[2]
@@ -80,6 +90,12 @@ class Mention(object):
         self.head_pos = date_tuple[9]
         self.coref_cluster_id = date_tuple[10]
         self.gold_coref_id = date_tuple[11]
+        if date_tuple[14] != 'None':
+            self.entity_url = date_tuple[14]
+            try:
+                self.entity_type = ['<dbpedia:' + x.rsplit('/')[-1] + '>' for x in date_tuple[15].split()][0]
+            except:
+                pass
 
     def __unicode__(self):
         return self.mention
@@ -96,8 +112,10 @@ class EmptyGoldCluster(Exception):
     pass
 
 
-def parse_corefs_data(filename):
+def parse_corefs_data(filename, entity_filename):
     corefs_data = open(filename).readlines()
+    entity_data = open(entity_filename).readlines()
+    corefs_data = [x.strip() + '\t' + '\t'.join(y.strip().split('\t')[12:14]) for x,y in zip(corefs_data, entity_data)]
     corefs_data = [x.strip().split('\t') for x in corefs_data]
     # remove header
     del corefs_data[0]
@@ -178,10 +196,8 @@ class FeatureExtractor(object):
         # END: SYNTACTIC
 
 
-        feature_vector = [similarity, len(other_mention_words.intersection(test_mention_words))]#, min(similarities), max(similarities),
-                          #min(distances), max(distances), np.mean(distances)]
+        feature_vector = [similarity, len(other_mention_words.intersection(test_mention_words))]
         #feature_vector.extend(list(test_vector))
-        #feature_vector.append(int(any([x for x in test_mention_group.mentions if x.ner_entity != "null"])))
         feature_vector.extend(list(test_vector - mean))
         return feature_vector
 
@@ -353,7 +369,8 @@ from sklearn.linear_model import *
 from sklearn.cross_validation import cross_val_score
 from sklearn.utils import resample
 
-gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt')
+gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions.txt',
+                                     '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions_annotated.txt')
 feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
 feature_vectors_labels = zip(feature_vectors, labels)
@@ -379,11 +396,13 @@ reassigner = ClusterReassigner(gold_corefs_data, clf_log_reg)
 print 'Evaluate on Train data:'
 reassigner.evaluate_internal()
 print 'Evaluate on Test data:'
-reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt')
+reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt',
+                                              '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions_annotated.txt')
 reassigner.evaluate_internal()
 
 print 'Generating External File:'
-reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt')
+reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt',
+                                              '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev_annotated.txt')
 new_coref_clusters = reassigner.generate_external_file()
 
 
