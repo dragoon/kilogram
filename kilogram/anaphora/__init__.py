@@ -32,7 +32,9 @@ class CorefCluster(object):
             self.mention_groups[mention_group.head_lemma] = mention_group
 
     def add_mention(self, mention):
-        if mention.head_pos not in ('NN', 'NNS', 'NNP'):
+        if mention.head_pos not in ('NN', 'NNS', 'NNP') \
+                or mention.mention.lower() in ('my', 'mine', 'i', 'he', 'theirs', 'you', 'itself') \
+                or mention.head_lemma_orig.isupper():
             self.non_noun_groups[mention.head_lemma].add_mention(mention)
         else:
             self.mention_groups[mention.head_lemma].add_mention(mention)
@@ -86,7 +88,8 @@ class Mention(object):
         self.end_i = date_tuple[5]
         self.mention = date_tuple[6]
         self.ner_entity = date_tuple[7]
-        self.head_lemma = date_tuple[8]
+        self.head_lemma_orig = date_tuple[8]
+        self.head_lemma = self.head_lemma_orig.lower()
         self.head_pos = date_tuple[9]
         self.coref_cluster_id = date_tuple[10]
         self.gold_coref_id = date_tuple[11]
@@ -149,7 +152,21 @@ class FeatureExtractor(object):
     def get_feature_vector(mentions, test_mention_group):
 
         test_mention_words = set(' '.join([x.mention for x in test_mention_group.mentions]).lower().split())
-        other_mention_words = set(' '.join([x.mention for x in mentions]).lower().split())
+        other_mention_words = ' '.join([x.mention for x in mentions]).lower().split()
+        other_mention_words_set = set(other_mention_words)
+
+        for x in ('a', 'the', 'that', 'which', "'s"):
+            test_mention_words.discard(x)
+
+        intersect_len = 0
+        for word in test_mention_words:
+            intersect_len += other_mention_words.count(word)
+        intersect_len = intersect_len/len(mentions)/len(test_mention_group.mentions[0].mention.split())
+
+        # exclude mention from gold_values if same cluster
+        mentions = [x for x in mentions if x.head_lemma != test_mention_group.head_lemma and x.ner_entity == 'null']
+        if len(mentions) == 0:
+            raise EmptyGoldCluster()
 
         def get_vectors(ngrams, test_ngram):
             test_vector = FeatureExtractor.get_ngram_vector(test_ngram)
@@ -163,54 +180,29 @@ class FeatureExtractor(object):
 
         mean, test_vector = get_vectors(set(mention.head_lemma for mention in mentions),
                                         test_mention_group.head_lemma)
-        mean_lower, test_vector_lower = get_vectors(set(mention.head_lemma.lower() for mention in mentions),
-                                                    test_mention_group.head_lemma.lower())
-        if mean is None:
-            mean = mean_lower
-        if mean_lower is None:
-            mean_lower = mean
         if mean is None:
             raise EmptyGoldCluster()
 
-        if test_vector is None:
-            test_vector = test_vector_lower
-        if test_vector_lower is None:
-            test_vector_lower = test_vector
         if test_vector is None:
             raise NoWordInVocabularyError()
 
 
         # START: VECTORS
         similarity = dot(test_vector, mean)
-        similarity_lower = dot(test_vector_lower, mean_lower)
         #similarities = [dot(matutils.unitvec(x), test_vector) for x in other_vectors]
         # END: VECTORS
 
-        # START: SYNTACTIC
-        sent_ids = set(int(x.sent_id) for x in mentions)
-        test_sent_ids = set(int(x.sent_id) for x in test_mention_group.mentions)
-        distances = []
-        for sent_id in sent_ids:
-            for test_sent_id in test_sent_ids:
-                distances.append(abs(sent_id - test_sent_id))
-        # END: SYNTACTIC
-
-
-        feature_vector = [similarity, len(other_mention_words.intersection(test_mention_words))]
+        feature_vector = [similarity, len(other_mention_words_set.intersection(test_mention_words)), intersect_len]
         #feature_vector.extend(list(test_vector))
-        feature_vector.extend(list(test_vector - mean))
+        #feature_vector.extend(list(test_vector - mean))
         return feature_vector
 
     def get_features(self):
         feature_vectors = []
         labels = []
         for doc_coref_clusters in self.coref_clusters.values():
-            mention_groups = []
             for coref_cluster in doc_coref_clusters.values():
                 for mention_group in coref_cluster.mention_groups.values():
-                    mention_groups.append(mention_group)
-            for coref_cluster in doc_coref_clusters.values():
-                for mention_group in mention_groups:
                     local_fv, local_lab = self._get_features(coref_cluster, mention_group)
                     feature_vectors.extend(local_fv)
                     labels.extend(local_lab)
@@ -223,31 +215,29 @@ class FeatureExtractor(object):
     def _get_features(self, coref_cluster, mention_group):
         feature_vectors = []
         labels = []
-        mention_gold_ids = set([mention.gold_coref_id for mention in mention_group.mentions])
-        other_mentions = [x for x_group in coref_cluster.mention_groups.values()
-                          for x in x_group.mentions if x.head_lemma != mention_group.head_lemma
-                          and x.ner_entity == 'null']
-        other_mention_ids = [x.gold_coref_id for x in other_mentions]
+        mention_gold_ids = [mention.gold_coref_id for mention in mention_group.mentions]
 
+        gold_clusters = defaultdict(list)
+        # populate gold clusters
+        for x_group in coref_cluster.mention_groups.values():
+            for mention in x_group.mentions:
+                gold_clusters[mention.gold_coref_id].append(mention)
         # generate features
-        label = int(bool(mention_gold_ids.intersection(other_mention_ids)))
-        # exclude mention from gold_values if same cluster
-        if len(other_mentions) == 0:
-            self.skipped_empty_cluster += 1
-            return feature_vectors, labels
-        try:
-            feature_vector = FeatureExtractor.get_feature_vector(other_mentions, mention_group)
-            #if feature_vector[0] < 0.2 and label == 1:
-            #    print 'LOL'
-        except NoWordInVocabularyError:
-            self.skipped_no_word += 1
-            return feature_vectors, labels
-        except EmptyGoldCluster:
-            self.skipped_empty_gold += 1
-            return feature_vectors, labels
-        self.passed += 1
-        labels.append(label)
-        feature_vectors.append(feature_vector)
+        for gold_cluster_id, gold_mentions in gold_clusters.items():
+            label = int(gold_cluster_id in mention_gold_ids)
+            try:
+                feature_vector = FeatureExtractor.get_feature_vector(gold_mentions, mention_group)
+                if feature_vector[0] < 0.3 and label ==1 and feature_vector[1]==0:
+                    print gold_mentions, mention_group, feature_vector[0], gold_clusters
+            except NoWordInVocabularyError:
+                self.skipped_no_word += 1
+                continue
+            except EmptyGoldCluster:
+                self.skipped_empty_cluster += 1
+                continue
+            self.passed += 1
+            labels.append(label)
+            feature_vectors.append(feature_vector)
         return feature_vectors, labels
 
 
@@ -373,11 +363,11 @@ gold_corefs_data = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-f
                                      '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-train-gold-mentions_annotated.txt')
 feature_vectors, labels = FeatureExtractor(gold_corefs_data).get_features()
 
-feature_vectors_labels = zip(feature_vectors, labels)
-positive = [x for x in feature_vectors_labels if x[1] == 1]
-negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive))
-feature_vectors_labels = positive+negative
-feature_vectors, labels = zip(*feature_vectors_labels)
+#feature_vectors_labels = zip(feature_vectors, labels)
+#positive = [x for x in feature_vectors_labels if x[1] == 1]
+#negative = resample([x for x in feature_vectors_labels if x[1] == 0], n_samples=len(positive))
+#feature_vectors_labels = positive+negative
+#feature_vectors, labels = zip(*feature_vectors_labels)
 
 print 'Positive Labels:', len(filter(lambda x: x == 1, labels))
 print 'Negative Labels:', len(filter(lambda x: x == 0, labels))
@@ -390,19 +380,17 @@ print cross_val_score(clf_extra_trees, feature_vectors, labels, cv=5)
 print cross_val_score(clf_log_reg, feature_vectors, labels, cv=5)
 
 # Fit before evaluation
-clf_log_reg.fit(feature_vectors, labels)
+clf_extra_trees.fit(feature_vectors, labels)
 
-reassigner = ClusterReassigner(gold_corefs_data, clf_log_reg)
+reassigner = ClusterReassigner(gold_corefs_data, clf_extra_trees)
 print 'Evaluate on Train data:'
 reassigner.evaluate_internal()
-print 'Evaluate on Test data:'
-reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions.txt',
-                                              '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev-gold-mentions_annotated.txt')
-reassigner.evaluate_internal()
 
-print 'Generating External File:'
 reassigner.coref_clusters = parse_corefs_data('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev.txt',
                                               '/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/corefs-dev_annotated.txt')
+print 'Evaluate on Test data:'
+reassigner.evaluate_internal()
+print 'Generating External File:'
 new_coref_clusters = reassigner.generate_external_file()
 
 
