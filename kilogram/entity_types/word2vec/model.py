@@ -7,13 +7,13 @@ import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-def train_model(num_features=100, min_word_count=40, num_workers=10, context=10, downsampling=1e-3):
+def train_model(source_file, num_features=128, min_word_count=40, num_workers=10, context=10, downsampling=1e-3):
     # LOW DIMENSIONALITY FOR TYPE SIMILARITY
-    text = word2vec.LineSentence('wiki_text_total_spotlight_specific.txt')
+    text = word2vec.LineSentence(source_file)
     model = word2vec.Word2Vec(text, workers=num_workers, size=num_features,
                               min_count=min_word_count, window=context, sample=downsampling, sg=0)
     model.init_sims(replace=True)
-    model.save(str(num_features)+"features"+str(min_word_count)+"minwords"+str(context)+"context"+"_wiki_specific")
+    model.save(str(num_features)+"features"+str(min_word_count)+"minwords"+str(context)+"context"+"_"+source_file)
     return model
 
 
@@ -59,7 +59,7 @@ class TypePredictionModel(object):
             try:
                 score = self.word2vec_model.similarity(ngram, entity_type)
             except KeyError:
-                continue
+                break
             generic_type = self.type_hierarchy.get_parent(entity_type, '<dbpedia:Agent>')
             if not generic_type:
                 generic_type = self.type_hierarchy.get_parent(entity_type, None)
