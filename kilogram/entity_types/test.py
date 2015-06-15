@@ -21,6 +21,7 @@ def get_features(sentence, index):
     return vector
 
 if __name__ == "__main__":
+    print 'Loading word2vec model'
     word2vec_model = word2vec.Word2Vec.load(sys.argv[1])
 
     model = Sequential()
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     model.add(Dense(128, 1))
     model.add(Activation('sigmoid'))
 
+    print 'Compiling LSTM model'
     # try using different optimizers and different optimizer configs
     model.compile(loss='binary_crossentropy', optimizer='adam', class_mode="binary")
 
@@ -40,6 +42,7 @@ if __name__ == "__main__":
     #y_train = np.empty((10000, 128))
     data = open(sys.argv[2])
     entity_index = 0
+    print 'Collecting training samples'
     for line in data:
         if entity_index > NUM_SAMPLES - 1:
             break
@@ -90,6 +93,7 @@ if __name__ == "__main__":
 
         return xs, ys
 
+    print 'Balancing training samples'
     X_train, y_train = balanced_subsample(X_train, y_train)
 
     model.fit(X_train, y_train, batch_size=8, nb_epoch=30, validation_split=0.1, show_accuracy=True)
