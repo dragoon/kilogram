@@ -96,5 +96,5 @@ if __name__ == "__main__":
     print 'Balancing training samples'
     X_train, y_train = balanced_subsample(X_train, y_train)
 
-    model.fit(X_train, y_train, batch_size=8, nb_epoch=30, validation_split=0.1, show_accuracy=True)
+    model.fit(X_train, y_train, batch_size=8, nb_epoch=10, validation_split=0.1, show_accuracy=True)
     model.save_weights('model_lstm.bin')
