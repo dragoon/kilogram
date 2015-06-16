@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # try using different optimizers and different optimizer configs
     model.compile(loss='binary_crossentropy', optimizer='adam', class_mode="binary")
 
-    NUM_SAMPLES = 200000
+    NUM_SAMPLES = 2000000
 
     import numpy as np
     X_train = np.empty((NUM_SAMPLES, 6, 128))
