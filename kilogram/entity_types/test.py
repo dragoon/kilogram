@@ -56,6 +56,8 @@ if __name__ == "__main__":
                 #y_train = np.append(y_train, [true_vector], axis=0)
                 y_train[entity_index] = int(word == '<dbpedia:Person>')
                 entity_index += 1
+                if entity_index > NUM_SAMPLES - 1:
+                    break
     data.close()
 
 
