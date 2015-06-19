@@ -39,7 +39,7 @@ if __name__ == "__main__":
     import numpy as np
     X_train = np.empty((NUM_SAMPLES, 6, 128))
     y_train = np.empty((NUM_SAMPLES,))
-    #y_train = np.empty((10000, 128))
+    #y_train = np.empty((NUM_SAMPLES, 128))
     data = open(sys.argv[2])
     entity_index = 0
     print 'Collecting training samples'
