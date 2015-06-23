@@ -4,12 +4,14 @@ from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.recurrent import LSTM
 from gensim.models import word2vec
 
+CONTEXT_SIZE = 2
+
 
 def get_features(sentence, index):
     vector = np.array([])
     vector = vector.reshape((0, 128))
     # get the context and create a training sample
-    for j in range(index-3, index+4):
+    for j in range(index-CONTEXT_SIZE, index+1+CONTEXT_SIZE):
         if j != index:
             if j > 0 and j < len(sentence):
                 try:
@@ -37,11 +39,12 @@ if __name__ == "__main__":
     NUM_SAMPLES = 2000000
 
     import numpy as np
-    X_train = np.empty((NUM_SAMPLES, 6, 128))
+    X_train = np.empty((NUM_SAMPLES, CONTEXT_SIZE*2, 128))
     y_train = np.empty((NUM_SAMPLES,))
     #y_train = np.empty((NUM_SAMPLES, 128))
     data = open(sys.argv[2])
     entity_index = 0
+    true_label_index = 0
     print 'Collecting training samples'
     for line in data:
         if entity_index > NUM_SAMPLES - 1:
@@ -51,10 +54,15 @@ if __name__ == "__main__":
             if word.startswith('<dbpedia:'):
                 if word not in word2vec_model:
                     continue
-                true_vector = word2vec_model[word]
+                # true_vector = word2vec_model[word]
+                # y_train = np.append(y_train, [true_vector], axis=0)
+                label = int(word == '<dbpedia:Writer>')
+                if label:
+                    true_label_index += 1
+                elif true_label_index*2 < entity_index:
+                    continue
+                y_train[entity_index] = label
                 X_train[entity_index] = get_features(words, i)
-                #y_train = np.append(y_train, [true_vector], axis=0)
-                y_train[entity_index] = int(word == '<dbpedia:Person>')
                 entity_index += 1
                 if entity_index > NUM_SAMPLES - 1:
                     break
@@ -96,7 +104,7 @@ if __name__ == "__main__":
         return xs, ys
 
     print 'Balancing training samples'
-    X_train, y_train = balanced_subsample(X_train, y_train)
+    #X_train, y_train = balanced_subsample(X_train, y_train)
 
     model.fit(X_train, y_train, batch_size=8, nb_epoch=10, validation_split=0.1, show_accuracy=True)
     model.save_weights('model_lstm.bin')
