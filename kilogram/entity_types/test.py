@@ -13,12 +13,9 @@ def get_features(sentence, index):
     # get the context and create a training sample
     for j in range(index-CONTEXT_SIZE, index+1+CONTEXT_SIZE):
         if j != index:
-            if j > 0 and j < len(sentence):
-                try:
-                    vector = np.append(vector, [word2vec_model[sentence[j]]], axis=0)
-                except:
-                    vector = np.append(vector, [[0]*128], axis=0)
-            else:
+            try:
+                vector = np.append(vector, [word2vec_model[sentence[j]]], axis=0)
+            except:
                 vector = np.append(vector, [[0]*128], axis=0)
     return vector
 
@@ -36,7 +33,7 @@ if __name__ == "__main__":
     # try using different optimizers and different optimizer configs
     model.compile(loss='binary_crossentropy', optimizer='adam', class_mode="binary")
 
-    NUM_SAMPLES = 2000000
+    NUM_SAMPLES = 100000
 
     import numpy as np
     X_train = np.empty((NUM_SAMPLES, CONTEXT_SIZE*2, 128))
@@ -46,10 +43,13 @@ if __name__ == "__main__":
     entity_index = 0
     true_label_index = 0
     print 'Collecting training samples'
+    out = open('dbpedia_writier_100K_sample.txt', 'w')
     for line in data:
         if entity_index > NUM_SAMPLES - 1:
             break
         words = line.split()
+        # pad words with the context size
+        words = ['--NONE--']*CONTEXT_SIZE + words + ['--NONE--']*CONTEXT_SIZE
         for i, word in enumerate(words):
             if word.startswith('<dbpedia:'):
                 if word not in word2vec_model:
@@ -61,12 +61,14 @@ if __name__ == "__main__":
                     true_label_index += 1
                 elif true_label_index*2 < entity_index:
                     continue
+                out.write(' '.join(words[i-CONTEXT_SIZE:i+1+CONTEXT_SIZE])+'\n')
                 y_train[entity_index] = label
                 X_train[entity_index] = get_features(words, i)
                 entity_index += 1
                 if entity_index > NUM_SAMPLES - 1:
                     break
     data.close()
+    out.close()
 
 
     def balanced_subsample(x, y, subsample_size=1.0):
