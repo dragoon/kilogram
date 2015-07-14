@@ -22,7 +22,7 @@ TEMPERATURE_RE = re.compile(r'{0}\s?(°C|Celsius|°F|Fahrenheit)'.format(FLOAT_R
 
 _RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_RE),
                 ('<NUM:TEMP>', TEMPERATURE_RE), ('<NUM:PERCENT>', PERCENT_RE),
-                ('<NUM:INT>', INT_RE)]
+                ('<NUM:INT>', INT_RE), ('<NUM:OTHER>', NUM_RE)]
 
 NE_TOKEN = re.compile(r'<[A-Z]+>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+>$')
