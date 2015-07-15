@@ -137,6 +137,8 @@ class NgramService(object):
         for ngram in ngrams:
             subngram = ngram[:-1]
             ngram_count = cls.hbase_count(cls.ngram_table, ' '.join(ngram))
+            if ngram_count == 0:
+                continue
             subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
             prob += math.log10(ngram_count/subngram_count)
         return prob
