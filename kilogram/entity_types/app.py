@@ -12,8 +12,7 @@ app = Flask(__name__)
 dbpedia_ontology = DBPediaOntology('dbpedia_2014.owl')
 ngram_predictor = NgramTypePredictor("ngram_types", dbpedia_ontology,
                           '/home/roman/notebooks/kilogram/mapreduce/dbpedia_types.dbm')
-deep_predictor = TypePredictionModel('/home/roman/berkeleylm/300features_40minwords_10context',
-                                     '/home/roman/notebooks/kilogram/kilogram/entity_types/tests/type_prediction_train.tsv',
+deep_predictor = TypePredictionModel('/home/roman/berkeleylm/128features40minwords10context_wiki_types_train_generic.txt',
                                      type_hierarchy=dbpedia_ontology)
 
 
