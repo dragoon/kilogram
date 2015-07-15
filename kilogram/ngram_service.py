@@ -126,3 +126,17 @@ class NgramService(object):
             else:
                 raise Exception('%d-grams are not supported' % split_len)
         return res
+
+    @classmethod
+    def get_joint_prob(cls, phrase, n):
+        """Get joint probability of a phrase"""
+        import nltk
+        import math
+        prob = 0
+        ngrams = nltk.ngrams(phrase.split(), n)
+        for ngram in ngrams:
+            subngram = ngram[:-1]
+            ngram_count = cls.hbase_count(cls.ngram_table, ' '.join(ngram))
+            subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
+            prob += math.log10(ngram_count/subngram_count)
+        return prob
