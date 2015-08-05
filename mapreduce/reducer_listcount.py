@@ -14,19 +14,19 @@ for line in sys.stdin:
 
     # parse the input we got from mapper.py
     try:
-        ngram, entity_type, count = line.split('\t')
+        ngram, subcount_key, count = line.split('\t')
     except:
         continue
 
     # this IF-switch only works because Hadoop sorts map output
     # by key (here: word) before it is passed to the reducer
     if ngram == current_ngram:
-        cur_counts.append((entity_type, count))
+        cur_counts.append((subcount_key, count))
     else:
         if current_ngram:
             # write result to STDOUT
             print '%s\t%s' % (current_ngram, ListPacker.pack(cur_counts))
-        cur_counts = [(entity_type, count)]
+        cur_counts = [(subcount_key, count)]
         current_ngram = ngram
 
 # do not forget to output the last word if needed!
