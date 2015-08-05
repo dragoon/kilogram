@@ -7,5 +7,6 @@ for line in sys.stdin:
     line = line.strip()
     if not line:
         continue
-    uri_count = line.split('\t')[1]
-    print '%s\t%s' % uri_count.split()
+    uri_counts = line.split('\t')[1]
+    for uri_count in uri_counts.split():
+        print '%s\t%s' % uri_count.split(',')
