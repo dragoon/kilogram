@@ -2,7 +2,7 @@ import re
 from ...lang.tokenize import wiki_tokenize_func
 
 
-ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
+ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
 
 def parse_types_text(text, dbpedia_types):
