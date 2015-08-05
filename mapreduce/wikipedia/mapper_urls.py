@@ -9,4 +9,4 @@ for line in sys.stdin:
         continue
     uri_counts = line.split('\t')[1]
     for uri_count in uri_counts.split():
-        print '%s\t%s' % uri_count.split(',')
+        print '%s\t%s' % tuple(uri_count.split(','))
