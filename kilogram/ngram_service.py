@@ -15,10 +15,10 @@ class ListPacker(object):
     @classmethod
     def pack(cls, list_counts):
         """
-        :type list_counts: list of tuples
+        :type list_counts: list of tuples (str, int) or (str, str)
         :return: str
         """
-        return ' '.join([x[0]+','+x[1] for x in list_counts])
+        return ' '.join([x[0]+','+str(x[1]) for x in list_counts])
 
     @classmethod
     def unpack(cls, list_counts_str):
