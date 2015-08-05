@@ -23,13 +23,13 @@ for line in sys.stdin:
     # this IF-switch only works because Hadoop sorts map output
     # by key (here: word) before it is passed to the reducer
     if ngram == current_ngram:
-        cur_counts[subcount_key] += count
+        cur_counts[subcount_key] += int(count)
     else:
         if current_ngram:
             # write result to STDOUT
             print '%s\t%s' % (current_ngram, ListPacker.pack(cur_counts.items()))
         cur_counts = defaultdict(lambda: 0)
-        cur_counts[subcount_key] += count
+        cur_counts[subcount_key] += int(count)
         current_ngram = ngram
 
 # do not forget to output the last word if needed!
