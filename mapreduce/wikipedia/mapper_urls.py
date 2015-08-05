@@ -8,4 +8,4 @@ for line in sys.stdin:
     if not line:
         continue
     uri_count = line.split('\t')[1]
-    print '%s\t%s' % (uri_count.split())
+    print '%s\t%s' % uri_count.split()
