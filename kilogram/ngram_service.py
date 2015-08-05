@@ -26,7 +26,7 @@ class ListPacker(object):
         :return: list of tuples
         """
         if list_counts_str:
-            return [x.split(',') for x in list_counts_str.split()]
+            return [x.rsplit(',', 1) for x in list_counts_str.split()]
         else:
             return []
 
