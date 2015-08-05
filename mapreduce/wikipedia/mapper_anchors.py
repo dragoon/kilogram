@@ -15,4 +15,4 @@ for line in sys.stdin:
             uri = match.group(1)
             anchor_text = match.group(2).lower()
             anchor_text = anchor_text.replace('_', ' ')
-            print '%s\t%s\t%s' % (anchor_text, uri, "1")
+            print '%s\t%s %s' % (anchor_text, uri, "1")
