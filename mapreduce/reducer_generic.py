@@ -13,7 +13,7 @@ for line in sys.stdin:
 
     # parse the input we got from mapper.py
     try:
-        ngram, w_count = line.split('\t')
+        ngram, w_count = line.rsplit('\t', 1)
     except:
         continue
 
