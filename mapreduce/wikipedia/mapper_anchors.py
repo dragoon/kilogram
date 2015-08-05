@@ -3,7 +3,7 @@
 import sys
 import re
 
-ENTITY_MATCH_RE = re.compile(r'<(.+)\|(.+)>')
+ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
 for line in sys.stdin:
     line = line.strip()
