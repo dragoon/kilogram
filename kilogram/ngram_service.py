@@ -156,5 +156,5 @@ class NgramService(object):
         """Get wiki probability of a phrase"""
         page_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
         anchor_counts = sum([long(x[1]) for x in page_counts])
-        wiki_counts = sum([cls.hbase_count(cls.wiki_urls_table, x[0]) for x in page_counts])
+        wiki_counts = sum([cls.hbase_count(cls.wiki_urls_table, x[0]) for x in page_counts]) + 1
         return anchor_counts/wiki_counts
