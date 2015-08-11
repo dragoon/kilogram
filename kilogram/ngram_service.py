@@ -39,15 +39,21 @@ class NgramService(object):
     substitution_counts = None
     subst_table = None
     ngram_table = None
+    wiki_anchors_table = None
+    wiki_urls_table = None
 
     @staticmethod
     def _is_subst(ngram):
         return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
-    def configure(cls, ngram_table="ngrams", subst_table="ngram_types", hbase_host=None):
+    def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
+                  wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
+                  hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
+        cls.wiki_urls_table = wiki_urls_table
+        cls.wiki_anchors_table = wiki_anchors_table
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -144,3 +150,11 @@ class NgramService(object):
                 subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
             prob += math.log10(ngram_count/subngram_count)
         return prob
+
+    @classmethod
+    def get_wiki_prob(cls, phrase):
+        """Get wiki probability of a phrase"""
+        page_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
+        anchor_counts = sum([long(x[1]) for x in page_counts])
+        wiki_counts = sum([cls.hbase_count(cls.wiki_urls_table, x[0]) for x in page_counts])
+        return anchor_counts/wiki_counts
