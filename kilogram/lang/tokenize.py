@@ -61,7 +61,7 @@ def generate_possible_splits(words, max_seq_len=None):
     if max_seq_len is None:
         max_seq_len = len(words)
     for i in range(1, min(max_seq_len, len(words))):
-        if len(words) - i >= 5:
+        if len(words) - i <= 5:
             yield [words[:i], words[i:]]
         if len(words[i:]) > 1:
             for perm in generate_possible_splits(words[i:], max_seq_len):
