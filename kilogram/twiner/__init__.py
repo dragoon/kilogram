@@ -2,7 +2,7 @@ from __future__ import division
 import functools
 import math
 from .. import NgramService
-from lang.tokenize import generate_possible_splits
+from ..lang.tokenize import generate_possible_splits
 from repoze.lru import lru_cache
 
 
