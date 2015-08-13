@@ -151,7 +151,7 @@ class NgramService(object):
             prob += math.log10(ngram_count/subngram_count)
         if prob != 0:
             return math.pow(10, prob)
-        return prob
+        return 1/369177688671
 
     @classmethod
     def get_wiki_prob(cls, phrase):
