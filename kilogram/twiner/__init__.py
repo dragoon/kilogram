@@ -45,10 +45,14 @@ def stickiness(words):
 
 
 def sum_stickiness(word_lists):
-    return sum([stickiness(x) for x in word_lists])
+    return sum([stickiness(tuple(x)) for x in word_lists])
 
 
 def rank_segments(sentence):
     analysis = [sum_stickiness(x) for x in generate_possible_splits(get_phrase(sentence))]
     analysis.sort(key=lambda x: x[1])
     return analysis
+
+
+def get_phrase(sentence):
+    return sentence.lower().split()
