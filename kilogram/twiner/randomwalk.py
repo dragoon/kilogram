@@ -1,15 +1,6 @@
 from __future__ import division
+from collections import OrderedDict
 import numpy as np
-
-
-def transition_prob_matrix(segments_list):
-    matrix = np.zeros((len(segments_list), len(segments_list)))
-    for i, segment_i in enumerate(segments_list):
-        for j, segment_j in enumerate(segments_list[i+1:]):
-            matrix[i][j] = matrix[j][i] = len(segment_i.tweet_set & segment_j.tweet_set) / \
-                                          len(segment_i.tweet_set | segment_j.tweet_set)
-    return matrix
-
 
 
 class TweetSegmentBlock(object):
@@ -17,15 +8,25 @@ class TweetSegmentBlock(object):
     i = None
 
     def __init__(self):
-        self.segments = {}
+        self.segments = OrderedDict()
         self.i = 0
 
     def feed_tweet_segments(self, segment_list):
         for segment in segment_list:
+            segment = ' '.join(segment)
             if segment not in self.segments:
                 self.segments[segment] = TweetSegment(segment)
             self.segments[segment].tweet_set.add(self.i)
         self.i += 1
+
+    def transition_prob_matrix(self):
+        matrix = np.zeros((len(self.segments), len(self.segments)))
+        for i, segment_i in enumerate(self.segments.values()):
+            for j, segment_j in enumerate(self.segments.values()[i+1:]):
+                intersec_len = len(segment_i.tweet_set & segment_j.tweet_set)
+                if intersec_len > 0:
+                    matrix[i][j+i+1] = matrix[j+i+1][i] = intersec_len / len(segment_i.tweet_set | segment_j.tweet_set)
+        return matrix
 
 
 class TweetSegment(object):
