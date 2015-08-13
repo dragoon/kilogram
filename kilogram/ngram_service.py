@@ -150,7 +150,7 @@ class NgramService(object):
                 subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
             prob += math.log10(ngram_count/subngram_count)
         if prob != 0:
-            return math.pow(prob, 10)
+            return math.pow(10, prob)
         return prob
 
     @classmethod

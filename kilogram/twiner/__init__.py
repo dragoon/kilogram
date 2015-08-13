@@ -50,7 +50,7 @@ def sum_stickiness(word_lists):
 
 def rank_segments(sentence):
     analysis = [(x, sum_stickiness(x)) for x in generate_possible_splits(get_phrase(sentence), 5)]
-    analysis.sort(key=lambda x: x[1])
+    analysis.sort(key=lambda x: x[1], reverse=True)
     return analysis
 
 

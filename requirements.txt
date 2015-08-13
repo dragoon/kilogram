@@ -7,3 +7,4 @@ unicodecsv
 nltk
 pandas
 gensim
+repoze.lru
