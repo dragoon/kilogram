@@ -56,6 +56,7 @@ def default_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT):
         new_tokens.extend(tokens)
     return new_tokens
 
+
 def generate_possible_splits(words, max_seq_len=None):
     if max_seq_len is None:
         max_seq_len = len(words)
