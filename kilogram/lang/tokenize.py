@@ -60,7 +60,7 @@ def default_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT):
 def generate_possible_splits(words, max_seq_len=None):
     if max_seq_len is None:
         max_seq_len = len(words)
-    start = max(1, len(words) - max_seq_len)
+    start = max(1, min(max_seq_len, len(words) - max_seq_len))
     for i in range(start, len(words)):
         yield [words[:i], words[i:]]
         if len(words[i:]) > 1:
