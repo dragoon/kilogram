@@ -144,14 +144,13 @@ class NgramService(object):
             subngram = ngram[:-1]
             ngram_count = cls.hbase_count(cls.ngram_table, ' '.join(ngram))
             if ngram_count == 0:
-                continue
-            subngram_count = 369177688671
+                return 0
             if subngram:
                 subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
-            prob += math.log10(ngram_count/subngram_count)
-        if prob != 0:
-            return math.pow(10, prob)
-        return 1/369177688671
+                prob += math.log10(ngram_count/subngram_count)
+        unigram_count = cls.hbase_count(cls.ngram_table, phrase.split()[0]) + 1
+        prob += math.log10(unigram_count/369177688671)
+        return math.pow(10, prob)
 
     @classmethod
     def get_wiki_prob(cls, phrase):

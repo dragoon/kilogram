@@ -6,6 +6,10 @@ from ..lang.tokenize import generate_possible_splits
 from repoze.lru import lru_cache
 
 
+class InvalidProbability(Exception):
+    pass
+
+
 def _split_segment(words, i):
     return [words[:i+1], words[i+1:]]
 
@@ -18,7 +22,12 @@ def scp(words):
         sum_prob = sum([_prior_prob(x[0]) * _prior_prob(x[1]) for x in sets])
         denom = sum_prob/(len(words) - 1)
         numer = math.pow(_prior_prob(words), 2)
-        return math.log(numer/denom)
+        if denom < numer:
+            print 'PROBABILITY ERROR'
+        try:
+            return math.log(numer/denom)
+        except:
+            raise InvalidProbability
 
 
 @lru_cache(maxsize=1024)
@@ -41,7 +50,10 @@ def _len_preference(words):
 
 @lru_cache(maxsize=1024)
 def stickiness(words):
-    return _len_preference(words) * math.exp(_wiki_prob(words)) * _sigmoid(scp(words))
+    try:
+        return _len_preference(words) * math.exp(_wiki_prob(words)) * _sigmoid(scp(words))
+    except InvalidProbability:
+        return 0
 
 
 def sum_stickiness(word_lists):
