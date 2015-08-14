@@ -23,10 +23,10 @@ class TweetSegmentBlock(object):
         self.i += 1
 
     def transition_prob_matrix(self):
+        total_teleport_prob = 0
         self.teleport_vector = np.zeros(len(self.segments))
         matrix = np.zeros((len(self.segments), len(self.segments)))
         for i, segment_i in enumerate(self.segments.values()):
-            total_teleport_prob = segment_i.teleport_prob
             total_weight = 0
             for j, segment_j in enumerate(self.segments.values()):
                 if i == j:
@@ -34,13 +34,34 @@ class TweetSegmentBlock(object):
                 intersec_len = len(segment_i.tweet_set & segment_j.tweet_set)
                 if intersec_len > 0:
                     matrix[i][j] = intersec_len / len(segment_i.tweet_set | segment_j.tweet_set)
-                    total_teleport_prob += segment_j.teleport_prob
                 total_weight += matrix[i][j]
             for j in range(len(self.segments)):
                 matrix[i][j] /= total_weight
             if segment_i.teleport_prob:
-                self.teleport_vector[i] = segment_i.teleport_prob / (total_teleport_prob)
+                total_teleport_prob += segment_i.teleport_prob
+
+        # normalize teleport probability
+        for i, segment_i in enumerate(self.segments.values()):
+            self.teleport_vector[i] = segment_i.teleport_prob/total_teleport_prob
         self.transition_matrix = matrix
+
+    def learn_eigenvector(self, gamma):
+        pi = np.random.rand(len(self.teleport_vector))
+        prev_norm = 0
+
+        for _ in range(1000):
+            leaning_mat = gamma * np.concatenate([[self.teleport_vector] for _ in range(len(self.teleport_vector))])
+            interim = (1-gamma) * self.transition_matrix.T + leaning_mat
+            pi = interim.dot(pi)
+            cur_norm = np.linalg.norm(pi)
+            pi /= cur_norm
+            if prev_norm and abs(cur_norm - prev_norm) < 0.00001:
+                print 'Converged'
+                break
+            prev_norm = cur_norm
+        print prev_norm
+        print pi
+        return pi
 
 
 class TweetSegment(object):
