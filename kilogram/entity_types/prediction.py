@@ -66,7 +66,6 @@ class NgramTypePredictor(object):
     def predict_types(self, context):
         """Context should always be a 5-element list"""
         bigram_probs = self._get_ngram_probs(context)
-        #bigram_probs = [probs for probs in bigram_probs if entropy(zip(*probs)[1]) < 3]
         type_probs = defaultdict(lambda: 0)
         for probs in bigram_probs:
             for entity_type, prob in probs:
