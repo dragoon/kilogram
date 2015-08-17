@@ -16,12 +16,12 @@ def _split_segment(words, i):
 
 def scp(words):
     if len(words) == 1:
-        return 2 * math.log(_prior_prob(words))
+        return 2 * math.log(_prior_count(words)/369177688671)
     else:
         sets = [_split_segment(words, i) for i in range(len(words) - 1)]
-        sum_prob = sum([_prior_prob(x[0]) * _prior_prob(x[1]) for x in sets])
+        sum_prob = sum([_prior_count(x[0]) * _prior_count(x[1]) for x in sets])
         denom = sum_prob/(len(words) - 1)
-        numer = math.pow(_prior_prob(words), 2)
+        numer = math.pow(_prior_count(words), 2)
         if denom < numer:
             print 'PROBABILITY ERROR'
         try:
@@ -31,8 +31,8 @@ def scp(words):
 
 
 @lru_cache(maxsize=1024)
-def _prior_prob(words):
-    return NgramService.get_joint_prob(" ".join(words), min(3, len(words)))
+def _prior_count(words):
+    return NgramService.hbase_count(NgramService.ngram_table, ' '.join(words))
 
 
 @lru_cache(maxsize=1024)

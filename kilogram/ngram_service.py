@@ -134,25 +134,6 @@ class NgramService(object):
         return res
 
     @classmethod
-    def get_joint_prob(cls, phrase, n):
-        """Get joint probability of a phrase"""
-        import nltk
-        import math
-        prob = 0
-        ngrams = nltk.ngrams(phrase.split(), n)
-        for ngram in ngrams:
-            subngram = ngram[:-1]
-            ngram_count = cls.hbase_count(cls.ngram_table, ' '.join(ngram))
-            if ngram_count == 0:
-                return 0
-            if subngram:
-                subngram_count = cls.hbase_count(cls.ngram_table, ' '.join(subngram))
-                prob += math.log10(ngram_count/subngram_count)
-        unigram_count = cls.hbase_count(cls.ngram_table, phrase.split()[0]) + 1
-        prob += math.log10(unigram_count/369177688671)
-        return math.pow(10, prob)
-
-    @classmethod
     def get_wiki_prob(cls, phrase):
         """Get wiki probability of a phrase"""
         page_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))

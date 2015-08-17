@@ -9,14 +9,13 @@ class TestTwiner(unittest.TestCase):
 
     def test_main(self):
         self.assertSequenceEqual(rank_segments("I live in New York")[0][0],
-                                 [['i', 'live', 'in'], ['new', 'york']])
+                                 [['i'], ['live'], ['in'], ['new', 'york']])
         self.assertSequenceEqual(rank_segments("I live in London")[0][0],
-                                 [['i', 'live', 'in'], ['london']])
+                                 [['i'], ['live'], ['in'], ['london']])
         self.assertSequenceEqual(rank_segments("white house reveals obama summer reading list")[0][0],
-                                 [['white', 'house'], ['reveals'], ['obama'], ['summer', 'reading', 'list']])
+                                 [['white', 'house'], ['reveals'], ['obama'], ['summer'], ['reading', 'list']])
 
-    def test_random_walk(self):
-        tsb = TweetSegmentBlock()
+    def test_splits(self):
         for line in open('fixtures/sample.txt'):
             try:
                 if len(line.split()) > 10:
@@ -25,15 +24,6 @@ class TestTwiner(unittest.TestCase):
             except:
                 continue
             print ranking
-            tsb.feed_tweet_segments(ranking)
-
-        print tsb.segments.values()
-        tsb.transition_prob_matrix()
-        print tsb.transition_matrix
-        print tsb.teleport_vector
-        eig_vec = tsb.learn_eigenvector(0.4)
-        final_vec = eig_vec * tsb.teleport_vector
-        print sorted(zip(list(final_vec), tsb.segments.values()))
 
     def test_random_walk_existing_splits(self):
         tsb = TweetSegmentBlock()
