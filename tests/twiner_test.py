@@ -33,8 +33,8 @@ class TestTwiner(unittest.TestCase):
         tsb.transition_prob_matrix()
         eig_vec = tsb.learn_eigenvector(0.5)
         final_vec = eig_vec * tsb.teleport_vector
-        print sorted(zip(list(tsb.teleport_vector), tsb.segments.values()), reverse=True)
-        print sorted(zip(list(eig_vec), tsb.segments.values()), reverse=True)
+        print 'Teleport:', sorted(zip(list(tsb.teleport_vector), tsb.segments.values()), reverse=True)
+        print 'Eigen vec:', sorted(zip(list(eig_vec), tsb.segments.values()), reverse=True)
         print sorted(zip(list(final_vec), tsb.segments.values()), reverse=True)
 
 
