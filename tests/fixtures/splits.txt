@@ -165,7 +165,6 @@
 [['obama', 'stands'], ['with'], ['terrorists'], ['against', 'terror'], ['victims'], ['frontpage'], ['mag']]
 [['president'], ['pledge'], ['to'], ['veto'], ['the'], ['dark']]
 [['contrary'], ['to'], ['nothing'], ['goes', 'on'], ['at'], ['planned', 'parenthood']]
-[['if', 'you'], ['voted', 'for'], ['and'], ['you', 'are'], ['struggling'], ['blame']]
 [['hi'], ['obama'], ['debt', 'forgiveness'], ['for'], ['student', 'loans']]
 [['thanks'], ['obama']]
 [['gets', 'low', 'marks'], ['for', 'his'], ['handling'], ['of']]
