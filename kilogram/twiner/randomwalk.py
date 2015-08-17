@@ -60,7 +60,6 @@ class TweetSegmentBlock(object):
                 break
             prev_norm = cur_norm
         print prev_norm
-        print pi
         return pi
 
 

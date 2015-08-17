@@ -139,6 +139,8 @@ class NgramService(object):
         page_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
         anchor_counts = sum([long(x[1]) for x in page_counts])
         wiki_counts = sum([cls.hbase_count(cls.wiki_urls_table, x[0].decode('utf-8')) for x in page_counts])
+        if wiki_counts < anchor_counts:
+            print "PROBABILITY ERROR"
         try:
             return anchor_counts/wiki_counts
         except ZeroDivisionError:

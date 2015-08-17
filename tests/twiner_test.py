@@ -30,11 +30,8 @@ class TestTwiner(unittest.TestCase):
         for line in open('fixtures/splits.txt'):
             ranking = eval(line.strip())
             tsb.feed_tweet_segments(ranking)
-        print tsb.segments.values()
         tsb.transition_prob_matrix()
-        print tsb.transition_matrix
-        print tsb.teleport_vector
-        eig_vec = tsb.learn_eigenvector(0.4)
+        eig_vec = tsb.learn_eigenvector(0.5)
         final_vec = eig_vec * tsb.teleport_vector
         print sorted(zip(list(tsb.teleport_vector), tsb.segments.values()), reverse=True)
         print sorted(zip(list(eig_vec), tsb.segments.values()), reverse=True)
