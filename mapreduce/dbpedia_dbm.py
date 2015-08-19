@@ -51,6 +51,8 @@ for line in p.stdout:
         continue
     if 'http://dbpedia.org/ontology/Wikidata' in type_uri:
         continue
+    if 'http://dbpedia.org/ontology/Location' in type_uri:
+        continue
     uri = urllib.unquote(uri.replace('<http://dbpedia.org/resource/', '')[:-1])
     type_uri = type_uri.replace('<http://dbpedia.org/ontology/', '')[:-4]
     if type_uri in EXCLUDES:
