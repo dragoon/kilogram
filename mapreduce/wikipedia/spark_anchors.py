@@ -1,12 +1,10 @@
 import sys
 from pyspark import SparkContext
-from pyspark.streaming import StreamingContext
 
 
 sc = SparkContext(appName="WikipediaAnchors")
-ssc = StreamingContext(sc, 1)
 
-lines = ssc.textFileStream(sys.argv[1])
+lines = sc.textFile(sys.argv[1])
 
 # Split each line into words
 words = lines.flatMap(lambda line: line.split(" "))
@@ -15,4 +13,4 @@ words = lines.flatMap(lambda line: line.split(" "))
 pairs = words.map(lambda word: (word, 1))
 wordCounts = pairs.reduceByKey(lambda x, y: x + y)
 
-wordCounts.saveAsTextFiles(sys.argv[2])
+wordCounts.saveAsTextFile(sys.argv[2])
