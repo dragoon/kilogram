@@ -43,8 +43,8 @@ for line in p.stdout:
         continue
 
     typed_entities[uri].append(type_uri)
-    dbpediadb.write(uri + '\t' + type_uri + '\n')
-    dbpediadb_lower.write(uri.lower() + '\t' + uri + '\n')
+    dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
+    dbpediadb_lower.write(uri.decode('utf-8').lower() + '\t' + uri.decode('utf-8') + '\n')
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -63,8 +63,8 @@ for line in p.stdout:
     if name_canon not in typed_entities:
         continue
     for type_uri in typed_entities[name_canon]:
-        dbpediadb.write(name_redirect + '\t' + type_uri + '\n')
-    dbpediadb_lower.write(name_redirect.lower() + '\t' + name_redirect + '\n')
+        dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
+    dbpediadb_lower.write(name_redirect.decode('utf-8').lower() + '\t' + name_redirect.decode('utf-8') + '\n')
 
 dbpediadb.close()
 dbpediadb_lower.close()
