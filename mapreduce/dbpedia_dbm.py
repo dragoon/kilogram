@@ -1,5 +1,5 @@
 """
-Creates DBPedia labels-types Shelve file of the following format:
+Creates DBPedia labels-types file of the following format:
 
 { LABEL: [Type1, Type2, ...], ...}
 
@@ -8,11 +8,11 @@ For example:
 Tramore:             Town, Settlement, PopulatedPlace, Place
 Tramore,_Ireland:    Town, Settlement, PopulatedPlace, Place
 """
+import codecs
 
 import subprocess
 import urllib
 from collections import defaultdict
-import shelve
 import rdflib
 
 
@@ -32,12 +32,16 @@ while nodes:
     for child in dbpedia_types[node]:
         nodes.append((child, order+1))
 del dbpedia_types
+# sorted(types, key=lambda x: dbpedia_types_order[x], reverse=True)
 
 
 TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
-dbpediadb_types = defaultdict(list)
+dbpediadb = codecs.open('dbpedia_types.txt', 'w', 'utf-8')
+dbpediadb_lower = codecs.open('dbpedia_lowercase2labels.txt', 'w', 'utf-8')
+
+typed_entities = defaultdict(list)
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + TYPES_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -58,19 +62,9 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    dbpediadb_types[uri].append(type_uri)
-
-dbpediadb = shelve.open('dbpedia_types.dbm')
-dbpediadb_lower = shelve.open('dbpedia_lowercase2labels.dbm', writeback=True)
-
-# sort types
-for uri, types in dbpediadb_types.iteritems():
-    dbpediadb_types[uri] = sorted(types, key=lambda x: dbpedia_types_order[x], reverse=True)
-
-# write canonical labels first
-for uri, types in dbpediadb_types.iteritems():
-    dbpediadb[uri] = types
-    dbpediadb_lower[uri.lower()] = [uri]
+    typed_entities[uri].append(type_uri)
+    dbpediadb.write(uri + '\t' + type_uri + '\n')
+    dbpediadb_lower.write(uri.lower() + '\t' + uri + '\n')
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
@@ -86,12 +80,11 @@ for line in p.stdout:
     if '(disambiguation)' in name_redirect:
         continue
     # skip entities that have no types
-    if name_canon not in dbpediadb_types:
+    if name_canon not in typed_entities:
         continue
-    dbpediadb[name_redirect] = dbpediadb_types[name_canon]
-    if name_redirect.lower() in dbpediadb_lower:
-        dbpediadb_lower[name_redirect.lower()].append(name_redirect)
-    else:
-        dbpediadb_lower[name_redirect.lower()] = [name_redirect]
+    for type_uri in typed_entities[name_canon]:
+        dbpediadb.write(name_redirect + '\t' + type_uri + '\n')
+    dbpediadb_lower.write(name_redirect.lower() + '\t' + name_redirect + '\n')
 
 dbpediadb.close()
+dbpediadb_lower.close()
