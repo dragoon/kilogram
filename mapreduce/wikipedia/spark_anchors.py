@@ -1,8 +1,12 @@
 """
-spark-submit --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia_anchors" "/user/roman/wikipedia_anchors_orig"
+spark-submit --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors_orig"
 """
 import sys
 from pyspark import SparkContext
+import re
+from collections import defaultdict
+
+ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
 
 sc = SparkContext(appName="WikipediaAnchors")
@@ -10,29 +14,34 @@ sc = SparkContext(appName="WikipediaAnchors")
 lines = sc.textFile(sys.argv[1])
 
 # Split each line into words
-def unpack_achors(line):
-    ngram, uri_list = line.split('\t')
-    total_count = sum(int(x.rsplit(",", 1)[1]) for x in uri_list.split(" "))
-    return ngram.replace(" ", "_"), total_count
+def unpack_anchors(line):
+    result = []
+    line = line.strip()
+    for word in line.split():
+        match = ENTITY_MATCH_RE.search(word)
+        if match:
+            uri = match.group(1)
+            anchor_text = match.group(2)
+            anchor_text = anchor_text.replace('_', ' ')
+            result.append((anchor_text, (uri, 1)))
+    return result
 
-anchor_counts = lines.filter(lambda line: len(line.split('\t')[1].split(" ")) == 1).map(unpack_achors)
+anchor_counts = lines.flatMap(unpack_anchors)
 
+def seqfunc(u, v):
+    if v[0] in u:
+        u[v[0]] += v[1]
+    else:
+        u[v[0]] = v[1]
+    return u
 
-dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
-dbp_types = dbp_types_file.map(lambda uri_types: (uri_types.split('\t')[0], 1)).distinct()
-dbp_types_lower = dbp_types.map(lambda dbp_type: (dbp_type[0].lower(), dbp_type[0]))
+def combfunc(u1, u2):
+    u1.update(u2)
+    return u1
 
-type_anchors_join = dbp_types.join(anchor_counts)
-types_anchors_lower_join = dbp_types_lower.join(anchor_counts)
+anchor_counts_agg = anchor_counts.aggregateByKey({}, seqfunc, combfunc)
 
+def printer(value):
+    return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
 
-def revert_lower_join(line):
-    uri_lower, uri_count = line
-    return uri_count
-
-
-types_anchors_lower_join = types_anchors_lower_join.map(revert_lower_join)
-type_anchors_join = type_anchors_join.map(lambda line: (line[0], line[1][1]))
-
-type_anchors = type_anchors_join.join(types_anchors_lower_join)
-type_anchors.map(lambda x: x[0]+'\t'+ str(x[1][0])+','+str(x[1][1])).saveAsTextFile(sys.argv[2])
+anchor_counts_agg.map(printer).saveAsTextFile(sys.argv[2])
