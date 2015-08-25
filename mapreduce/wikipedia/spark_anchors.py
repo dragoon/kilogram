@@ -36,7 +36,8 @@ def seqfunc(u, v):
     return u
 
 def combfunc(u1, u2):
-    u1.update(u2)
+    for k, v in u2.iteritems():
+        u1[k] += v
     return u1
 
 anchor_counts_agg = anchor_counts.aggregateByKey({}, seqfunc, combfunc)
