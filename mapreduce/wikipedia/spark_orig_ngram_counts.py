@@ -15,7 +15,16 @@ def unpack_achors(line):
     total_count = sum(int(x.rsplit(",", 1)[1]) for x in uri_list.split(" "))
     return ngram.replace(" ", "_"), total_count
 
-anchor_counts = lines.filter(lambda line: len(line.split('\t')[1].split(" ")) == 1).map(unpack_achors)
+
+def filter_ambiguous(line):
+    ngram, uri_list = line.split('\t')
+    uri_set = set(x.split(',')[0].lower() for x in uri_list.split(' '))
+    if len(uri_set) == 1:
+        return True
+    return False
+
+
+anchor_counts = lines.filter(filter_ambiguous).map(unpack_achors)
 
 
 dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
