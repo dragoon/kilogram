@@ -1,4 +1,5 @@
 import rdflib
+import nltk
 from collections import defaultdict
 
 __author__ = 'Roman Prokofyev'
@@ -44,3 +45,37 @@ class DBPediaOntology:
 
     def get_ordered_types(self, types):
         return sorted(types, key=lambda x: self.dbpedia_types_order[x], reverse=True)
+
+
+class NgramEntityResolver:
+    dbpedia_types = None
+    uri_excludes = None
+    lower_includes = None
+
+    def __init__(self, types_file, uri_excludes, lower_uri_includes):
+        self.dbpedia_types = set()
+
+        for line in open(types_file):
+            entity, _ = line.split('\t')
+            self.dbpedia_types.add(entity)
+
+        self.uri_excludes = set(open(uri_excludes).read().splitlines())
+        self.lower_includes = dict([line.strip().split('\t') for line in open(lower_uri_includes)])
+
+    def resolve_entities(self, words):
+        """Recursive entity resolution"""
+        for i in range(len(words), 0, -1):
+            for j, ngram in enumerate(nltk.ngrams(words, i)):
+                ngram_joined = ' '.join(ngram)
+                label = ngram_joined.replace(' ', '_')
+                if label in self.lower_includes:
+                    label = self.lower_includes[label]
+                if label not in self.uri_excludes and label in self.dbpedia_types:
+                    # check canonical uri
+                    uri = '<dbpedia:'+label+'>'
+                    new_words = []
+                    new_words.extend(self.resolve_entities(words[:j]))
+                    new_words.append(uri)
+                    new_words.extend(self.resolve_entities(words[j+len(ngram):]))
+                    return new_words
+        return words
