@@ -23,4 +23,4 @@ for line in sys.stdin:
         for key in dbpediadb_lower[label]:
             print '%s\t%s|--|%s' % (key, 'lower', num)
 
-dbpediadb.close()
+dbpediadb_lower.close()
