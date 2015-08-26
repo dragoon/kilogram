@@ -9,9 +9,6 @@ for line in sys.stdin:
     # remove leading and trailing whitespace
     line = line.strip()
     # split the line into words
-    orig_ngram, num = line.split('\t')
-    new_words = ner.resolve_entities(orig_ngram.split())
-    new_ngram = ' '.join(new_words)
-
-    if new_ngram != orig_ngram:
-        print '%s\t%s' % (new_ngram.strip(), num)
+    new_words = ner.resolve_entities(line.split())
+    new_line = ' '.join(new_words)
+    print new_line
