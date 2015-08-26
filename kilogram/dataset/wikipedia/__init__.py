@@ -13,6 +13,4 @@ def line_filter(line):
             continue
         if not sentence.endswith('.'):
             sentence += ' .'
-        if sentence[:2] != 'I ':
-            sentence = sentence[0].lower() + sentence[1:]
         yield sentence
