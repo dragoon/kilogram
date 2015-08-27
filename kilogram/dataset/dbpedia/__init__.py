@@ -57,7 +57,7 @@ class NgramEntityResolver:
         self.ontology = DBPediaOntology(owl_filename)
 
         for line in open(types_file):
-            entity, entity_type = line.split('\t')
+            entity, entity_type = line.strip().split('\t')
             self.dbpedia_types[entity].append(entity_type)
 
         self.uri_excludes = set(open(uri_excludes).read().splitlines())
