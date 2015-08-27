@@ -85,6 +85,6 @@ class NgramEntityResolver:
         for word in words:
             if word.startswith('<dbpedia:'):
                 types = self.dbpedia_types[word[9:-1]]
-                yield self.ontology.get_ordered_types(types)[order]
+                yield '<dbpedia:' + self.ontology.get_ordered_types(types)[order] + '>'
             else:
                 yield word
