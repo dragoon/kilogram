@@ -52,12 +52,13 @@ class NgramEntityResolver:
     uri_excludes = None
     lower_includes = None
 
-    def __init__(self, types_file, uri_excludes, lower_uri_includes):
-        self.dbpedia_types = set()
+    def __init__(self, types_file, uri_excludes, lower_uri_includes, owl_filename):
+        self.dbpedia_types = defaultdict(list)
+        self.ontology = DBPediaOntology(owl_filename)
 
         for line in open(types_file):
-            entity, _ = line.split('\t')
-            self.dbpedia_types.add(entity)
+            entity, entity_type = line.split('\t')
+            self.dbpedia_types[entity].append(entity_type)
 
         self.uri_excludes = set(open(uri_excludes).read().splitlines())
         self.lower_includes = dict([line.strip().split('\t') for line in open(lower_uri_includes)])
@@ -79,3 +80,11 @@ class NgramEntityResolver:
                     new_words.extend(self.resolve_entities(words[j+len(ngram):]))
                     return new_words
         return words
+
+    def replace_types(self, words, order=0):
+        for word in words:
+            if word.startswith('<dbpedia:'):
+                types = self.dbpedia_types[word]
+                yield self.ontology.get_ordered_types(types)[order]
+            else:
+                yield word
