@@ -18,9 +18,9 @@ class DBPediaOntology:
             if str(predicate) == 'http://www.w3.org/2000/01/rdf-schema#subClassOf':
                 obj = str(obj)
                 subject = str(subject)
+                dbpedia_types_reverse[obj].append(subject)
                 if 'http://dbpedia.org/ontology/' in obj \
                         and 'http://dbpedia.org/ontology/' in subject:
-                    dbpedia_types_reverse[obj].append(subject)
                     obj = obj.replace('http://dbpedia.org/ontology/', '<dbpedia:') + '>'
                     subject = subject.replace('http://dbpedia.org/ontology/', '<dbpedia:') + '>'
                     self.dbpedia_types[subject] = obj
