@@ -84,7 +84,7 @@ class NgramEntityResolver:
     def replace_types(self, words, order=0):
         for word in words:
             if word.startswith('<dbpedia:'):
-                types = self.dbpedia_types[word]
+                types = self.dbpedia_types[word[9:-1]]
                 yield self.ontology.get_ordered_types(types)[order]
             else:
                 yield word
