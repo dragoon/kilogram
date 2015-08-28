@@ -52,5 +52,5 @@ if __name__ == "__main__":
     data.close()
     out.close()
 
-    model.fit(X_train, y_train, batch_size=8, nb_epoch=10, validation_split=0.1, show_accuracy=True)
+    model.fit(X_train, y_train, batch_size=8, nb_epoch=10)
     model.save_weights('language_model_lstm.bin')
