@@ -11,12 +11,13 @@ for line in sys.stdin:
     if int(num) < 10:
         continue
 
-    type_count = ngram.count('<dbpedia:')
+    type_count = ngram.count('<http://dbpedia.org')
     ngram = ngram.split()
     if type_count > 0:
-        type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
+        type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<http://dbpedia.org')]
         for type_index in type_indexes:
+            subst_ngram = ngram[:]
             entity_type = ngram[type_index]
-            ngram[type_index] = SUBSTITUTION_TOKEN
-            new_ngram = " ".join(ngram)
+            subst_ngram[type_index] = SUBSTITUTION_TOKEN
+            new_ngram = " ".join(subst_ngram)
             print '%s\t%s\t%s' % (new_ngram, entity_type, num)
