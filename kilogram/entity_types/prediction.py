@@ -22,36 +22,19 @@ def parse_counts(filename):
 class NgramTypePredictor(object):
     type_hierarchy = None
     hbase_table = None
-    dbpedia_types_db = None
     type_priors = None
 
-    def __init__(self, hbase_table, type_hierarchy=None, dbpedia_types_db=None):
+    def __init__(self, hbase_table, type_hierarchy=None):
         self.type_hierarchy = type_hierarchy
         self.hbase_table = hbase_table
-        if dbpedia_types_db:
-            self.dbpedia_types_db = shelve.open(dbpedia_types_db, flag='r')
         self.type_priors = {}
         total = sum(NgramService.substitution_counts.values())
         for entity_type, count in NgramService.substitution_counts.items():
             self.type_priors[entity_type] = count/total
 
-    def _resolve_entities(self, context):
-        entity_idx = [i for i, x in enumerate(context) if x.startswith('<URI:')]
-        if len(entity_idx) > 0:
-            for entity_ind in entity_idx:
-                uri = context[entity_ind][5:-1].encode('utf8')
-                if uri in self.dbpedia_types_db:
-                    types = self.dbpedia_types_db[uri]
-                    # most specific
-                    context[entity_ind] = '<dbpedia:' + types[0] + '>'
-                else:
-                    context[entity_ind] = context[entity_ind][5:-1].replace('_', ' ').split()[0]
-        return context
-
     def _get_ngram_probs(self, context):
         # pre, post, mid bigrams
         context[2] = SUBSTITUTION_TOKEN
-        context = self._resolve_entities(context)
         bigrams = [context[:3], context[-3:], context[1:4]]
         types = []
         for bigram in bigrams:
@@ -84,7 +67,6 @@ class NgramTypePredictor(object):
 
     def predict_types_full(self, context):
         """Context should always be a 5-element list
-        :type type_hierarchy: DBPediaOntology
         """
         bigram_probs = self._get_ngram_probs(context)
         return self._hierachical_sum_output(bigram_probs)
