@@ -16,9 +16,9 @@ sc = SparkContext(appName="CandidateEntityLinkings")
 
 def generate_anchor_ngrams(line):
     result = []
-    anchors, uris = line.split('\t')
-    for i in range(1, 6):
-        for ngram in nltk.ngrams(anchors.split(), i):
+    anchor, uris = line.split('\t')
+    for i in range(1, len(anchor)+1):
+        for ngram in nltk.ngrams(anchor.split(), i):
             result.append((' '.join(ngram), uris))
     return result
 
