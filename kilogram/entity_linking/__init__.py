@@ -15,7 +15,7 @@ def _extract_candidates(sentence):
     tokens = default_tokenize_func(sentence)
     prev_res = None
     cand_entities = []
-    while j < len(tokens):
+    while j <= len(tokens):
         ngram = ' '.join(tokens[i:j])
         res = NgramService.hbase_raw(table, ngram, column)
         if res:
