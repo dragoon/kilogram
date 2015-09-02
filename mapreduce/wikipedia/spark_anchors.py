@@ -1,10 +1,9 @@
 """
-spark-submit --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors_orig"
+spark-submit --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors"
 """
 import sys
 from pyspark import SparkContext
 import re
-from collections import defaultdict
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
@@ -23,16 +22,33 @@ def unpack_anchors(line):
             uri = match.group(1)
             anchor_text = match.group(2)
             anchor_text = anchor_text.replace('_', ' ')
-            result.append((anchor_text, (uri, 1)))
+            result.append((uri, anchor_text))
     return result
 
 anchor_counts = lines.flatMap(unpack_anchors)
 
+
+dbp_redirects_file = sc.textFile("/user/roman/redirects_transitive_en.nt.bz2")
+def map_redirects(line):
+    try:
+        uri, _, canon_uri, _ = line.split()
+    except:
+        return None, None
+    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
+    if '/' in uri:
+        return None, None
+    canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
+    return uri, canon_uri
+
+dbp_redirects = dbp_redirects_file.map(map_redirects)
+anchor_counts_join = anchor_counts.join(dbp_redirects).map(lambda x: x[1])
+
+
 def seqfunc(u, v):
-    if v[0] in u:
-        u[v[0]] += v[1]
+    if v in u:
+        u[v] += 1
     else:
-        u[v[0]] = v[1]
+        u[v] = 1
     return u
 
 def combfunc(u1, u2):
@@ -43,7 +59,7 @@ def combfunc(u1, u2):
             u1[k] = v
     return u1
 
-anchor_counts_agg = anchor_counts.aggregateByKey({}, seqfunc, combfunc)
+anchor_counts_agg = anchor_counts_join.aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
