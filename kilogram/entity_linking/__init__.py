@@ -29,6 +29,9 @@ class CandidateEntity:
         candidates = ListPacker.unpack(cand_string)
         return [(uri, long(count)) for uri, count in candidates]
 
+    def __len__(self):
+        return len(self.candidates)
+
 
 def _extract_candidates(pos_tokens):
     """
