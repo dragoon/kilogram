@@ -8,8 +8,8 @@ class TestEntityLinking(unittest.TestCase):
         NgramService.configure(hbase_host=('diufpc304', '9090'))
 
     def test_extract_candidates(self):
-        print _extract_candidates(u"Obama")
-
+        self.assertIsNotNone(_extract_candidates([("Obama", "NNP")]))
+        self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
 
 if __name__ == '__main__':
