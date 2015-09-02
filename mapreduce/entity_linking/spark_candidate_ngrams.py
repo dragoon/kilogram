@@ -46,7 +46,7 @@ def reduce_anchors(v1, v2):
         res[k] += long(v)
     for k, v in ListPacker.unpack(v2):
         res[k] += long(v)
-    return ListPacker.pack(res)
+    return ListPacker.pack(res.items())
 
 
 anchors = sc.textFile(sys.argv[2]).flatMap(generate_anchor_ngrams).reduceByKey(reduce_anchors)
