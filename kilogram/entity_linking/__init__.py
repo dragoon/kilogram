@@ -93,12 +93,7 @@ def link(sentence):
     # resolve via semantic similarity
     linkings = []
     for candidate in candidates:
-        best_uri = None
-        prev_count = 0
-        for candidate_uri in candidate.candidates:
-            overlap_count = NgramService.get_ref_count(most_probable_candidate.first_uri, candidate_uri)
-            if overlap_count > prev_count:
-                best_uri = candidate_uri
-                prev_count = overlap_count
-        linkings.append((candidate.start_i, candidate.end_i, best_uri))
+        best_uri = NgramService.get_ref_count(most_probable_candidate.first_uri, zip(*candidate.candidates)[0])
+        if best_uri:
+            linkings.append((candidate.start_i, candidate.end_i, best_uri))
     return linkings

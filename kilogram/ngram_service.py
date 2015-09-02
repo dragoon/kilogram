@@ -41,6 +41,7 @@ class NgramService(object):
     ngram_table = None
     wiki_anchors_table = None
     wiki_urls_table = None
+    wiki_pagelinks_table = None
 
     @staticmethod
     def _is_subst(ngram):
@@ -49,11 +50,12 @@ class NgramService(object):
     @classmethod
     def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
-                  hbase_host=None):
+                  wiki_pagelinks_table="wiki_pagelinks", hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
         cls.wiki_urls_table = wiki_urls_table
         cls.wiki_anchors_table = wiki_anchors_table
+        cls.wiki_pagelinks_table = wiki_pagelinks_table
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -143,3 +145,12 @@ class NgramService(object):
         if wiki_counts -10 < anchor_counts:
             print "PROBABILITY ERROR"
         return anchor_counts/wiki_counts
+
+    @classmethod
+    def get_ref_count(cls, uri, test_uri_list):
+        test_uri_set = set(test_uri_list)
+        uri_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_table, uri, "ngram:value"))
+        uri_counts = [x for x in uri_counts if x[0] in test_uri_set]
+        if uri_counts:
+            return max(uri_counts, key=lambda x: int(x[1]))[0]
+        return None
