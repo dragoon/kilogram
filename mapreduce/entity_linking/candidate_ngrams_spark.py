@@ -40,3 +40,7 @@ def generate_anchor_ngrams(line):
 
 anchors = sc.textFile(sys.argv[2]).flatMap(generate_anchor_ngrams)
 anchors_join = anchors.join(ngrams)
+def printer(value):
+    return value[0] + '\t' + value[1][0] + ' NULL,'+str(value[1][1])
+
+anchors_join.map(printer).saveAsTextFile(sys.argv[3])
