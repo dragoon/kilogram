@@ -27,7 +27,7 @@ def generate_ngrams(line):
     return result
 
 
-ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2)
+ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x, y: y > 1)
 
 def generate_anchor_ngrams(line):
     result = []
