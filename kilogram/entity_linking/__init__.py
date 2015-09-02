@@ -21,6 +21,10 @@ class CandidateEntity:
         return self.candidates[0][1]
 
     @property
+    def first_uri(self):
+        return self.candidates[0][0]
+
+    @property
     def first_popularity(self):
         return self.first_count/sum(zip(*self.candidates)[1])
 
@@ -78,7 +82,7 @@ def link(sentence):
                 most_probable_candidate = candidate
     prev_popularity = 0
     if not most_probable_candidate:
-        #take most probable, or fail
+        # take most probable, or fail
         for candidate in candidates:
             popularity = candidate.first_popularity
             if popularity > 0.5 and popularity > prev_popularity:
@@ -86,4 +90,15 @@ def link(sentence):
                 prev_popularity = popularity
     if not most_probable_candidate:
         return []
-    return [most_probable_candidate]
+    # resolve via semantic similarity
+    linkings = []
+    for candidate in candidates:
+        best_uri = None
+        prev_count = 0
+        for candidate_uri in candidate.candidates:
+            overlap_count = NgramService.get_ref_count(most_probable_candidate.first_uri, candidate_uri)
+            if overlap_count > prev_count:
+                best_uri = candidate_uri
+                prev_count = overlap_count
+        linkings.append((candidate.start_i, candidate.end_i, best_uri))
+    return linkings
