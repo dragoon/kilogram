@@ -19,7 +19,7 @@ def map_pagelinks(line):
     link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
     if ':' in link:
         return [None]
-    return [(uri, (link, 1)), (link, (uri, 1))]
+    return [(uri, link), (link, uri)]
 
 def seqfunc(u, v):
     if v in u:
