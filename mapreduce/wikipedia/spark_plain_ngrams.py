@@ -4,11 +4,34 @@ spark-submit --num-executors 20 --master yarn-client ./wikipedia/spark_plain_ngr
 import sys
 from pyspark import SparkContext
 import re
+import os
 import nltk
 from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.wikipedia import line_filter
+from kilogram.dataset.wikipedia.entities import parse_types_text
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
+
+N = int(os.environ['NGRAM'])
+if not N:
+    print 'N is not specified'
+    exit(0)
+
+
+def merge_titlecases(tokens):
+    new_tokens = []
+    last_title = False
+    for token in tokens:
+        if token[0].isupper():
+            if last_title:
+                new_tokens[-1] += ' ' + token
+            else:
+                new_tokens.append(token)
+            last_title = True
+        else:
+            new_tokens.append(token)
+            last_title = False
+    return new_tokens
 
 
 sc = SparkContext(appName="CandidateEntityLinkings")
@@ -22,11 +45,14 @@ def generate_ngrams(line):
     result = []
     line = line.strip()
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        entity_indexes = [i for i, word in enumerate(sentence) if ENTITY_MATCH_RE.search(word)]
-        for sublist in partition(line, entity_indexes):
-            for i in range(1, 6):
-                for ngram in nltk.ngrams(sublist, i):
-                    result.append((' '.join(ngram), 1))
+        tokens_types, tokens_plain = parse_types_text(sentence, {})
+
+        # do not split title-case sequences
+        tokens_plain = merge_titlecases(tokens_plain)
+
+        for n in range(1, N+1):
+            for ngram in nltk.ngrams(tokens_plain, n):
+                result.append((' '.join(ngram), 1))
     return result
 
 ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x, y: y > 1)
