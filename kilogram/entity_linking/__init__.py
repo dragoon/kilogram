@@ -20,10 +20,11 @@ def _extract_candidates(sentence):
         res = NgramService.hbase_raw(table, ngram, column)
         if res:
             prev_res = res
+            if j >= len(tokens):
+                j += 1
+                break
             # try further
             j += 1
-            if j == len(tokens):
-                break
         elif prev_res:
             cand_entities.append((i, j-1, prev_res))
             prev_res = None

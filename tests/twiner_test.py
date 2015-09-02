@@ -5,7 +5,7 @@ from kilogram.twiner.randomwalk import TweetSegmentBlock
 
 class TestTwiner(unittest.TestCase):
     def setUp(self):
-        NgramService.configure(ngram_table="3grams", hbase_host=('diufpc301', '9090'))
+        NgramService.configure(ngram_table="3grams", hbase_host=('diufpc304', '9090'))
 
     def test_main(self):
         self.assertSequenceEqual(rank_segments("I live in New York")[0][0],
