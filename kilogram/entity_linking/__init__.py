@@ -6,14 +6,35 @@ from ..lang.tokenize import default_tokenize_func
 __author__ = 'dragoon'
 
 
+class CandidateEntity:
+    candidates = None
+    start_i = 0
+    end_i = 0
+
+    def __init__(self, start_i, end_i, cand_string):
+        self.start_i = start_i
+        self.end_i = end_i
+        self.candidates = sorted(self._parse_candidate(cand_string), key=lambda x: x[1], reverse=True)
+
+    @property
+    def first_count(self):
+        return self.candidates[0][1]
+
+    @property
+    def first_popularity(self):
+        return self.first_count/sum(zip(*self.candidates)[1])
+
+    @staticmethod
+    def _parse_candidate(cand_string):
+        candidates = ListPacker.unpack(cand_string)
+        return [(uri, long(count)) for uri, count in candidates]
+
+
 def _extract_candidates(pos_tokens):
     """
     :param pos_tokens: list of words annotated with POS tags
     :return:
     """
-    def parse_candidate(cand_string):
-        candidates = ListPacker.unpack(cand_string)
-        return [(uri, long(count)) for uri, count in candidates]
 
     table = "wiki_anchor_ngrams"
     column = "ngram:value"
@@ -28,9 +49,9 @@ def _extract_candidates(pos_tokens):
             should_break = []
             for ngram in nltk.ngrams(words[start_i:end_i], n):
                 ngram = ' '.join(ngram)
-                res = parse_candidate(NgramService.hbase_raw(table, ngram, column))
+                res = NgramService.hbase_raw(table, ngram, column)
                 if res:
-                    cand_entities.append((start_i, end_i, res))
+                    cand_entities.append(CandidateEntity(start_i, end_i, res))
                     should_break.append(False)
                 else:
                     should_break.append(True)
@@ -48,16 +69,15 @@ def link(sentence):
     candidates = _extract_candidates(pos_tokens)
     most_probable_candidate = None
     for candidate in candidates:
-        if len(candidate[2]) == 1:
+        if len(candidate.candidates) == 1:
             # if bigger count
-            if most_probable_candidate is None or most_probable_candidate[2][0][1] > candidate[2][0][1]:
+            if most_probable_candidate is None or most_probable_candidate.first_count > candidate.first_count:
                 most_probable_candidate = candidate
     prev_popularity = 0
     if not most_probable_candidate:
         #take most probable, or fail
         for candidate in candidates:
-            uri, popularity = sorted(candidate[2], key=lambda x: x[1], reverse=True)[0]
-            popularity /= sum(zip(*candidate[2])[1])
+            popularity = candidate.first_popularity
             if popularity > 0.5 and popularity > prev_popularity:
                 most_probable_candidate = candidate
                 prev_popularity = popularity
