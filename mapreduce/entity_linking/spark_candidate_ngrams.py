@@ -21,7 +21,7 @@ def generate_ngrams(line):
     line = line.strip().split()
     entity_indexes = [i for i, word in enumerate(line) if ENTITY_MATCH_RE.search(word)]
     for sublist in partition(line, entity_indexes):
-        for i in range(1, 6):
+        for i in range(1, 2):
             for ngram in nltk.ngrams(sublist, i):
                 result.append((' '.join(ngram), 1))
     return result
