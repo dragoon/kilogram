@@ -29,6 +29,8 @@ def _extract_candidates(sentence):
         else:
             i += 1
             j += 1
+    if prev_res:
+        cand_entities.append((i, j-1, prev_res))
     return cand_entities
 
 
