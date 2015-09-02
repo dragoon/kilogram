@@ -152,5 +152,8 @@ class NgramService(object):
         uri_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_table, uri, "ngram:value"))
         uri_counts = [x for x in uri_counts if x[0] in test_uri_set]
         if uri_counts:
-            return max(uri_counts, key=lambda x: int(x[1]))[0]
+            high = max(uri_counts, key=lambda x: int(x[1]))[1]
+            return [x[0] for x in uri_counts if x[1]==high]
+        if uri in test_uri_set:
+            return [uri]
         return None

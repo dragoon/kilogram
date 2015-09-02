@@ -78,7 +78,7 @@ def link(sentence):
     for candidate in candidates:
         if len(candidate.candidates) == 1:
             # if bigger count
-            if most_probable_candidate is None or most_probable_candidate.first_count > candidate.first_count:
+            if most_probable_candidate is None or most_probable_candidate.first_count < candidate.first_count:
                 most_probable_candidate = candidate
     prev_popularity = 0
     if not most_probable_candidate:
