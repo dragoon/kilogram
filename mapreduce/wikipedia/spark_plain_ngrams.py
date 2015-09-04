@@ -34,7 +34,7 @@ def merge_titlecases(tokens):
     return new_tokens
 
 
-sc = SparkContext(appName="CandidateEntityLinkings")
+sc = SparkContext(appName="SparkGenerateNgrams")
 
 lines = sc.textFile(sys.argv[1])
 
@@ -55,7 +55,7 @@ def generate_ngrams(line):
                 result.append((' '.join(ngram), 1))
     return result
 
-ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x, y: y > 1)
+ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x: x[1] > 1)
 
 def printer(value):
     return value[0] + '\t' + value[1]
