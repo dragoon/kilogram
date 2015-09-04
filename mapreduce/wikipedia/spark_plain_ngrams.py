@@ -58,6 +58,6 @@ def generate_ngrams(line):
 ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x: x[1] > 1)
 
 def printer(value):
-    return value[0] + '\t' + value[1]
+    return value[0] + '\t' + str(value[1])
 
 ngrams.map(printer).saveAsTextFile(sys.argv[2])
