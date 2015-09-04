@@ -1,5 +1,5 @@
 """
-spark-submit --num-executors 20 --master yarn-client ./wikipedia/spark_plain_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_ngrams"
+spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_plain_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_ngrams"
 """
 import sys
 from pyspark import SparkContext

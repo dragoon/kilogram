@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client ./wikipedia/spark_lowercase.py "/user/roman/wikipedia_ngrams" "/user/roman/ngram_counts"
+spark-submit --num-executors 20 --master yarn-client ./wikipedia/spark_lowercase.py "/user/roman/wikipedia_ngrams" "/user/roman/ngram_counts"
 """
 import sys
 from pyspark import SparkContext
