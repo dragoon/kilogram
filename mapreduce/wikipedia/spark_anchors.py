@@ -33,10 +33,10 @@ def map_redirects(line):
     try:
         uri, _, canon_uri, _ = line.split()
     except:
-        return None, None
+        return [(None, None)]
     uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     if '/' in uri:
-        return None, None
+        return [(None, None)]
     canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     # we need both redirect and canonical
     return [(uri, canon_uri), (canon_uri, canon_uri)]
