@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client ./entity_linking/spark_wikilinks.py "/user/roman/wikipedia_pagelinks"
+spark-submit --master yarn-client --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/roman/wikipedia_pagelinks"
 """
 import sys
 from pyspark import SparkContext
