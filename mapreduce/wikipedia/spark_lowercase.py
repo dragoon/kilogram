@@ -17,11 +17,12 @@ def label_num(line):
 
 ngram_counts = lines.map(label_num)
 
-dbp_types = sc.textFile("/user/roman/dbpedia_types.txt").map(lambda line: (line.split('\t')[0], 1)).distinct()
-dbp_lowercase = sc.textFile("/user/roman/dbpedia_lowercase2labels.txt").map(lambda line: line.split('\t'))
+dbp_labels = sc.textFile("/user/roman/dbpedia_types.txt").map(lambda line: (line.split('\t')[0], 1)).distinct()
+dbp_labels_lower = dbp_labels.map(lambda dbp_type: (dbp_type[0].lower(), dbp_type[0]))
 
-ngram_counts_join = ngram_counts.join(dbp_types).map(lambda x: (x[0], x[1][0]))
-ngram_counts_lower_join = ngram_counts.join(dbp_lowercase).map(lambda x: (x[1][1], x[1][0]))
+
+ngram_counts_join = ngram_counts.join(dbp_labels).map(lambda x: (x[0], x[1][0]))
+ngram_counts_lower_join = ngram_counts.join(dbp_labels_lower).map(lambda x: (x[1][1], x[1][0]))
 
 result = ngram_counts_join.fullOuterJoin(ngram_counts_lower_join)
 

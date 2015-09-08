@@ -28,20 +28,14 @@ anchor_counts = lines.filter(filter_ambiguous).map(unpack_achors)
 
 
 dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
-dbp_types = dbp_types_file.map(lambda uri_types: (uri_types.split('\t')[0], 1)).distinct()
-dbp_types_lower = dbp_types.map(lambda dbp_type: (dbp_type[0].lower(), dbp_type[0]))
+dbp_labels = dbp_types_file.map(lambda uri_types: (uri_types.split('\t')[0], 1)).distinct()
+dbp_labels_lower = dbp_labels.map(lambda dbp_type: (dbp_type[0].lower(), dbp_type[0]))
 
-type_anchors_join = dbp_types.join(anchor_counts)
-types_anchors_lower_join = dbp_types_lower.join(anchor_counts)
+anchors_join = dbp_labels.join(anchor_counts)
+anchors_lower_join = dbp_labels_lower.join(anchor_counts)
 
+anchors_lower_join = anchors_lower_join.map(lambda x: x[1])
+anchors_join = anchors_join.map(lambda line: (line[0], line[1][1]))
 
-def revert_lower_join(line):
-    uri_lower, uri_count = line
-    return uri_count
-
-
-types_anchors_lower_join = types_anchors_lower_join.map(revert_lower_join)
-type_anchors_join = type_anchors_join.map(lambda line: (line[0], line[1][1]))
-
-type_anchors = type_anchors_join.join(types_anchors_lower_join)
-type_anchors.map(lambda x: x[0]+'\t'+ str(x[1][0])+','+str(x[1][1])).saveAsTextFile(sys.argv[2])
+type_anchors = anchors_join.fullOuterJoin(anchors_lower_join)
+type_anchors.map(lambda x: x[0]+'\t'+ str(x[1][0] or 0)+','+str(x[1][1] or 0)).saveAsTextFile(sys.argv[2])

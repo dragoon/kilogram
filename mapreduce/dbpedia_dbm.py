@@ -19,7 +19,6 @@ TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
 dbpediadb = codecs.open('dbpedia_types.txt', 'w', 'utf-8')
-dbpediadb_lower = codecs.open('dbpedia_lowercase2labels.txt', 'w', 'utf-8')
 
 typed_entities = defaultdict(list)
 # BZ2File module cannot process multi-stream files, so use subprocess
@@ -42,8 +41,6 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    if uri not in typed_entities:
-        dbpediadb_lower.write(uri.decode('utf-8').lower() + '\t' + uri.decode('utf-8') + '\n')
     typed_entities[uri].append(type_uri)
     dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
 
@@ -65,7 +62,5 @@ for line in p.stdout:
         continue
     for type_uri in typed_entities[name_canon]:
         dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
-    dbpediadb_lower.write(name_redirect.decode('utf-8').lower() + '\t' + name_redirect.decode('utf-8') + '\n')
 
 dbpediadb.close()
-dbpediadb_lower.close()
