@@ -23,21 +23,27 @@ dbp_redirects = set(dbp_redirects_file.map(map_redirects).collect())
 
 dbp_pagelinks_file = sc.textFile("/user/roman/page-links_en.nt.bz2")
 def map_pagelinks(line):
+    uri, _, link, _ = line.split()
+    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
+    link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
+    return [(uri, link), (link, uri)]
+
+def filter_pagelins(line):
     if '(disambiguation)' in line:
-        return [None]
+        return False
     try:
         uri, _, link, _ = line.split()
     except:
-        return [None]
+        return False
     uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
     if '/' in uri:
-        return [None]
+        return False
     if ':' in link:
-        return [None]
+        return False
     if uri in dbp_redirects:
-        return [None]
-    return [(uri, link), (link, uri)]
+        return False
+    return True
 
 def seqfunc(u, v):
     if v in u:
@@ -54,7 +60,7 @@ def combfunc(u1, u2):
             u1[k] = v
     return u1
 
-dbp_pagelinks = dbp_pagelinks_file.flatMap(map_pagelinks).filter(lambda x: x is not None).aggregateByKey({}, seqfunc, combfunc)
+dbp_pagelinks = dbp_pagelinks_file.filter(filter_pagelinks).flatMap(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
