@@ -23,6 +23,6 @@ dbp_lowercase = sc.textFile("/user/roman/dbpedia_lowercase2labels.txt").map(lamb
 ngram_counts_join = ngram_counts.join(dbp_types).map(lambda x: (x[0], x[1][0]))
 ngram_counts_lower_join = ngram_counts.join(dbp_lowercase).map(lambda x: (x[1][1], x[1][0]))
 
-result = ngram_counts_lower_join.fullOuterJoin(ngram_counts_join)
+result = ngram_counts_join.fullOuterJoin(ngram_counts_lower_join)
 
 result.map(lambda x: x[0]+'\t'+str(x[1][0] or 0)+','+str(x[1][1] or 0)).saveAsTextFile(sys.argv[2])
