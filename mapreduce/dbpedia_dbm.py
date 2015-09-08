@@ -42,10 +42,10 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    typed_entities[uri].append(type_uri)
-    dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
     if uri not in typed_entities:
         dbpediadb_lower.write(uri.decode('utf-8').lower() + '\t' + uri.decode('utf-8') + '\n')
+    typed_entities[uri].append(type_uri)
+    dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
 
 
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
