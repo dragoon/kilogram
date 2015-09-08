@@ -45,6 +45,7 @@ for line in p.stdout:
     dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
 
 
+dbpedia_redirects = codecs.open('dbpedia_redirects.txt', 'w', 'utf-8')
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
@@ -62,5 +63,7 @@ for line in p.stdout:
         continue
     for type_uri in typed_entities[name_canon]:
         dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
+    dbpedia_redirects.write(name_redirect.decode('utf-8') + '\t' + name_canon.decode('utf-8') +'\n')
 
 dbpediadb.close()
+dbpedia_redirects.close()
