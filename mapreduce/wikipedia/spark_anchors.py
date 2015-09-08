@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors"
+spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors"
 """
 import sys
 from pyspark import SparkContext

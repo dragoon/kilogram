@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client ./entity_linking/spark_candidate_ngrams.py "/user/roman/wikipedia_anchors_orig" "/user/roman/candidate_ngram_links"
+spark-submit --master yarn-client ./entity_linking/spark_candidate_ngrams.py "/user/roman/wikipedia_anchors" "/user/roman/candidate_ngram_links"
 pig -p table=wiki_anchor_ngrams -p path=/user/roman/candidate_ngram_links ./hbase_upload_array.pig
 """
 from collections import defaultdict
