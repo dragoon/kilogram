@@ -28,7 +28,7 @@ def map_pagelinks(line):
     link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
     return [(uri, link), (link, uri)]
 
-def filter_pagelins(line):
+def filter_pagelinks(line):
     if '(disambiguation)' in line:
         return False
     try:
