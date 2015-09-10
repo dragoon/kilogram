@@ -19,8 +19,11 @@ def triangles(elem):
     count = 0
     for elem in common:
         count += int(related1[elem])
-    return entity1+','+entity2+'\t'+str(count)
+    if not common:
+        return None
+    else:
+        return entity1+','+entity2+'\t'+str(count)
 
-selfjoin = pagelinks.cartesian(pagelinks).filter(lambda x: x[0][0] != x[1][0]).map(triangles)
+selfjoin = pagelinks.cartesian(pagelinks).filter(lambda x: x[0][0] != x[1][0]).map(triangles).filter(lambda x: x is not None)
 
 selfjoin.saveAsTextFile(sys.argv[2])
