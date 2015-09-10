@@ -72,8 +72,8 @@ class NgramTypePredictor(object):
     def predict_types_full(self, context):
         """Context should always be a 5-element list
         """
-        bigram_probs = self._get_ngram_probs(context)
-        return self._hierachical_sum_output(bigram_probs)
+        ngram_probs = self._get_ngram_probs(context)
+        return self._hierachical_sum_output(ngram_probs)
 
     def _hierachical_sum_output(self, bigram_probs):
         correct_types = []
