@@ -35,24 +35,28 @@ class NgramTypePredictor(object):
     def _get_ngram_probs(self, context):
         # pre, post, mid bigrams
         context[2] = SUBSTITUTION_TOKEN
-        bigrams = [context[:3], context[-3:], context[1:4]]
+        trigrams = [context[:3], context[-3:], context[1:4]]
+        bigrams = [context[1:3], None, context[2:4]]
+
         types = []
-        for bigram in bigrams:
-            type_values = NgramService.hbase_raw(self.hbase_table, " ".join(bigram), "ngram:value")
+        for bigram, trigram in zip(bigrams, trigrams):
+            type_values = NgramService.hbase_raw(self.hbase_table, " ".join(trigram), "ngram:value")
+            if not type_values and bigram:
+                type_values = NgramService.hbase_raw(self.hbase_table, " ".join(bigram), "ngram:value")
             if type_values:
                 types.append(ListPacker.unpack(type_values))
         totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
-        bigram_probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values]
+        probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values]
                         for i, type_values in enumerate(types)]
-        return bigram_probs
+        return probs
 
     def predict_types(self, context):
         """Context should always be a 5-element list"""
-        bigram_probs = self._get_ngram_probs(context)
+        ngram_probs = self._get_ngram_probs(context)
         type_probs = defaultdict(lambda: 0)
-        for probs in bigram_probs:
+        for probs in ngram_probs:
             for entity_type, prob in probs:
-                type_probs[entity_type] += prob/len(bigram_probs)
+                type_probs[entity_type] += prob/len(ngram_probs)
         try:
             min_prob = min(type_probs.values())
         except ValueError:
