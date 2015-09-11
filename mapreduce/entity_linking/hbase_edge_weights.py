@@ -13,7 +13,8 @@ while True:
     related_uris = set(zip(*ListPacker.unpack(row.columns['ngram:value'].value))[0])
     for related_uri in related_uris:
         count = len(set(zip(*NgramService.get_related_uris(related_uri))[0]).intersection(related_uris))
-        out.write(uri+","+related_uri+'\t'+str(count))
+        if count > 0:
+            out.write(uri+","+related_uri+'\t'+str(count) + '\n')
     if not i % 10000:
         print i
     i += 1
