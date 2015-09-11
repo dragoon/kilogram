@@ -19,11 +19,23 @@ def triangles(elem):
     count = 0
     for elem in common:
         count += int(related1[elem])
-    if not common:
-        return None
-    else:
-        return entity1+','+entity2+'\t'+str(count)
+    return entity1+','+entity2+'\t'+str(count)
 
-selfjoin = pagelinks.cartesian(pagelinks).filter(lambda x: x[0][0] != x[1][0]).map(triangles).filter(lambda x: x is not None)
+
+def filter_triangles(elem):
+    if elem[0][0] == elem[1][0]:
+        return False
+    vertex1, vertex2 = elem
+    entity1, related1 = vertex1
+    entity2, related2 = vertex1
+    related1 = dict(ListPacker.unpack(related1))
+    related2 = dict(ListPacker.unpack(related2))
+    common = len(set(related1.keys()).intersection(related2.keys()))
+    if common == 0:
+        return False
+    return True
+
+
+selfjoin = pagelinks.cartesian(pagelinks).filter(filter_triangles).map(triangles)
 
 selfjoin.saveAsTextFile(sys.argv[2])
