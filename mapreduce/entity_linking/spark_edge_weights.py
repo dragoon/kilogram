@@ -12,7 +12,7 @@ pagelinks = sc.textFile(sys.argv[1]).map(lambda line: line.strip().split('\t'))
 def triangles(elem):
     vertex1, vertex2 = elem
     entity1, related1 = vertex1
-    entity2, related2 = vertex1
+    entity2, related2 = vertex2
     related1 = dict(ListPacker.unpack(related1))
     related2 = dict(ListPacker.unpack(related2))
     common = set(related1.keys()).intersection(related2.keys())
@@ -27,7 +27,7 @@ def filter_triangles(elem):
         return False
     vertex1, vertex2 = elem
     entity1, related1 = vertex1
-    entity2, related2 = vertex1
+    entity2, related2 = vertex2
     related1 = dict(ListPacker.unpack(related1))
     related2 = dict(ListPacker.unpack(related2))
     common = len(set(related1.keys()).intersection(related2.keys()))
