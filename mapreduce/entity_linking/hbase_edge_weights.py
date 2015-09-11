@@ -11,8 +11,10 @@ while True:
     row = NgramService.h_client.scannerGet(scanner)[0]
     uri = row.row
     related_uris = set(zip(*ListPacker.unpack(row.columns['ngram:value'].value))[0])
-    for related_uri in related_uris:
-        count = len(set(zip(*NgramService.get_related_uris(related_uri))[0]).intersection(related_uris))
+    results = NgramService.h_client.getRows("wiki_pagelinks", list(related_uris), None)
+    for related_uri, result in zip(related_uris, results):
+        value = result.columns["ngram:value"].value
+        count = len(set(zip(*ListPacker.unpack(value))[0]).intersection(related_uris))
         if count > 0:
             out.write(uri+","+related_uri+'\t'+str(count) + '\n')
     if not i % 10000:
