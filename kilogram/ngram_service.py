@@ -147,13 +147,5 @@ class NgramService(object):
         return anchor_counts/wiki_counts
 
     @classmethod
-    def get_ref_count(cls, uri, test_uri_list):
-        test_uri_set = set(test_uri_list)
-        uri_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_table, uri, "ngram:value"))
-        uri_counts = [x for x in uri_counts if x[0] in test_uri_set]
-        if uri_counts:
-            high = max(uri_counts, key=lambda x: int(x[1]))[1]
-            return [x[0] for x in uri_counts if x[1]==high]
-        if uri in test_uri_set:
-            return [uri]
-        return None
+    def get_related_uris(cls, uri):
+        return ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_table, uri, "ngram:value"))
