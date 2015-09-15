@@ -1,21 +1,16 @@
 """
-spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_plain_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_ngrams"
+spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_plain_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_ngrams" 3
 """
 import sys
 from pyspark import SparkContext
 import re
-import os
 import nltk
 from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.wikipedia import line_filter
-from kilogram.dataset.wikipedia.entities import parse_types_text
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
-N = int(os.environ['NGRAM'])
-if not N:
-    print 'N is not specified'
-    exit(0)
+N = int(sys.argv[3])
 
 
 def merge_titlecases(tokens):
@@ -43,7 +38,15 @@ def generate_ngrams(line):
     result = []
     line = line.strip()
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        tokens_types, tokens_plain = parse_types_text(sentence, {})
+        tokens_plain = []
+        for word in sentence.split():
+            match = ENTITY_MATCH_RE.match(word)
+            if match:
+                orig_text = match.group(2)
+                orig_text = orig_text.replace('_', ' ')
+                tokens_plain.extend(wiki_tokenize_func(orig_text))
+            else:
+                tokens_plain.append(word)
 
         # do not split title-case sequences
         tokens_plain = merge_titlecases(tokens_plain)

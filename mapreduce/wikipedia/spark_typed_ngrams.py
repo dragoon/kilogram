@@ -7,7 +7,6 @@ import re
 import nltk
 from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.wikipedia import line_filter
-from kilogram.dataset.wikipedia.entities import parse_types_text
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
@@ -39,14 +38,22 @@ def generate_ngrams(line):
     result = []
     line = line.strip()
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        tokens_types, _ = parse_types_text(sentence, {})
+
+        tokens_types = []
+        for word in sentence.split():
+            match = ENTITY_MATCH_RE.match(word)
+            if match:
+                uri = match.group(1)
+                tokens_types.append('<dbpedia:'+uri+'>')
+            else:
+                tokens_types.append(word)
 
         # do not split title-case sequences
         tokens_types = merge_titlecases(tokens_types)
 
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_types, n):
-                type_indexes = [i for i, x in enumerate(ngram) if ENTITY_MATCH_RE.match(x)]
+                type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
                 if len(type_indexes) == 0:
                     continue
                 type_index = type_indexes[0]
