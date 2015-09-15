@@ -10,7 +10,7 @@ from kilogram.dataset.wikipedia import line_filter
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
-N = sys.argv[3]
+N = int(sys.argv[3])
 
 
 def merge_titlecases(tokens):
