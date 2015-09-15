@@ -40,8 +40,6 @@ lines = sc.textFile(sys.argv[1])
 
 # Split each line into words
 def generate_ngrams(line):
-    def partition(alist, indices):
-        return [alist[i+1:j] for i, j in zip([-1]+indices, indices+[None])]
     result = []
     line = line.strip()
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
