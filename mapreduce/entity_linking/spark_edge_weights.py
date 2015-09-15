@@ -19,7 +19,7 @@ def triangles(elem):
     count = 0
     for elem in common:
         count += int(related1[elem])
-    return entity1+','+entity2+'\t'+str(count)
+    return entity1+'|--|'+entity2+'\t'+str(count)
 
 
 def filter_triangles(elem):
