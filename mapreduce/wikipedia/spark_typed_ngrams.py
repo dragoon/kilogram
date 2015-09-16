@@ -43,14 +43,14 @@ def generate_ngrams(line):
             match = ENTITY_MATCH_RE.match(word)
             if match:
                 uri = match.group(1)
-                tokens_types.append('<dbpedia:'+uri+'>')
+                tokens_types.append('<wiki:'+uri+'>')
             else:
                 tokens_types.append(word)
         # do not split title-case sequences
         tokens_types = merge_titlecases(tokens_types)
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_types, n):
-                type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
+                type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<wiki:')]
                 if len(type_indexes) == 0:
                     continue
                 type_index = type_indexes[0]
@@ -60,7 +60,7 @@ def generate_ngrams(line):
 
 def map_ngrams(ngram_count):
     ngram, count = ngram_count
-    type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
+    type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<wiki:')]
     if len(type_indexes) == 0:
         return []
     type_index = type_indexes[0]
@@ -84,5 +84,5 @@ def printer(value):
     return ' '.join(value[0]) + '\t' + str(value[1])
 
 for i in range(N):
-    typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<dbpedia:'))).map(printer).saveAsTextFile(sys.argv[2]+str(i))
+    typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<wiki:'))).map(printer).saveAsTextFile(sys.argv[2]+str(i))
     typed_ngram = typed_ngrams.flatMap(map_ngrams).join(dbp_labels).map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
