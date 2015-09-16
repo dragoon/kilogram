@@ -38,7 +38,6 @@ def generate_ngrams(line):
     result = []
     line = line.strip()
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-
         tokens_types = []
         for word in sentence.split():
             match = ENTITY_MATCH_RE.match(word)
@@ -47,10 +46,8 @@ def generate_ngrams(line):
                 tokens_types.append('<dbpedia:'+uri+'>')
             else:
                 tokens_types.append(word)
-
         # do not split title-case sequences
         tokens_types = merge_titlecases(tokens_types)
-
         for n in range(1, N+1):
             for ngram in nltk.ngrams(tokens_types, n):
                 type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
@@ -67,7 +64,7 @@ def map_ngrams(ngram_count):
     if len(type_indexes) == 0:
         return []
     type_index = type_indexes[0]
-    return [ngram[type_index][9:-1], (type_index, ngram)]
+    return [(ngram[type_index][9:-1], (type_index, ngram))]
 
 
 def map_type_ngram(ngram_tuple):
