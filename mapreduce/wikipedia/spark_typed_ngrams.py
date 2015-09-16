@@ -75,7 +75,7 @@ def map_type_ngram(ngram_tuple):
     type_index, ngram = ngram_tuple[1][0]
     ngram = list(ngram)
     ngram[type_index] = '<dbpedia:' + entity_type + '>'
-    return ngram, 1
+    return tuple(ngram), 1
 
 dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
 dbp_labels = dbp_types_file.map(lambda uri_types: uri_types.strip().split('\t'))
