@@ -85,4 +85,4 @@ def printer(value):
 
 for i in range(N):
     typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<wiki:'))).map(printer).saveAsTextFile(sys.argv[2]+str(i))
-    typed_ngram = typed_ngrams.flatMap(map_ngrams).join(dbp_labels).map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
+    typed_ngrams = typed_ngrams.flatMap(map_ngrams).join(dbp_labels).map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
