@@ -60,20 +60,32 @@ def generate_ngrams(line):
                 result.append((ngram[type_index][9:-1], (type_index, ngram)))
     return result
 
+
+def map_ngrams(ngram_count):
+    ngram, count = ngram_count
+    type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
+    if len(type_indexes) == 0:
+        return []
+    type_index = type_indexes[0]
+    return [ngram[type_index][9:-1], (type_index, ngram)]
+
+
 def map_type_ngram(ngram_tuple):
     entity_type = ngram_tuple[1][1]
     type_index, ngram = ngram_tuple[1][0]
     ngram = list(ngram)
-    ngram[type_index] = entity_type
-    return ' '.join(ngram), 1
+    ngram[type_index] = '<dbpedia:' + entity_type + '>'
+    return ngram, 1
 
 dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
 dbp_labels = dbp_types_file.map(lambda uri_types: uri_types.strip().split('\t'))
 
 ngrams = lines.flatMap(generate_ngrams).join(dbp_labels)
-typed_ngrams = ngrams.map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x: x[1] > 1)
+typed_ngrams = ngrams.map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
 
 def printer(value):
-    return value[0] + '\t' + str(value[1])
+    return ' '.join(value[0]) + '\t' + str(value[1])
 
-typed_ngrams.map(printer).saveAsTextFile(sys.argv[2])
+for i in range(N):
+    typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<dbpedia:'))).map(printer).saveAsTextFile(sys.argv[2]+str(N))
+    typed_ngram = typed_ngrams.flatMap(map_ngrams).join(dbp_labels).map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
