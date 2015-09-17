@@ -43,7 +43,7 @@ def generate_ngrams(line):
             match = ENTITY_MATCH_RE.match(word)
             if match:
                 uri = match.group(1)
-                tokens_types.append('<wiki:'+uri+'>')
+                tokens_types.append('<wiki:'+uri[0].upper()+uri[1:]+'>')
             else:
                 tokens_types.append(word)
         # do not split title-case sequences
