@@ -1,5 +1,5 @@
 """
-spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_typed_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_typed_ngrams" 3
+spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_typed_ngrams.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/dbpedia_types.txt" "/user/roman/wikipedia_typed_ngrams" 3
 """
 import sys
 from pyspark import SparkContext
@@ -74,7 +74,7 @@ def map_type_ngram(ngram_tuple):
     ngram[type_index] = '<dbpedia:' + entity_type + '>'
     return tuple(ngram), 1
 
-dbp_types_file = sc.textFile("/user/roman/dbpedia_types.txt")
+dbp_types_file = sc.textFile(sys.argv[2])
 dbp_labels = dbp_types_file.map(lambda uri_types: uri_types.strip().split('\t'))
 
 ngrams = lines.flatMap(generate_ngrams).join(dbp_labels)
@@ -84,5 +84,5 @@ def printer(value):
     return ' '.join(value[0]) + '\t' + str(value[1])
 
 for i in range(N):
-    typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<wiki:'))).map(printer).saveAsTextFile(sys.argv[2]+str(i))
+    typed_ngrams.filter(lambda x: x[1] > 1 and not any(y for y in x[0] if y.startswith('<wiki:'))).map(printer).saveAsTextFile(sys.argv[3]+str(i))
     typed_ngrams = typed_ngrams.flatMap(map_ngrams).join(dbp_labels).map(map_type_ngram).reduceByKey(lambda n1, n2: n1 + n2)
