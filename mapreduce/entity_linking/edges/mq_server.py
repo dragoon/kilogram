@@ -25,8 +25,9 @@ def uri_map(item):
         neighbor_uris = values[index_map[neighbor]]
         count = len(direct_neighbors.intersection(neighbor_uris))
         if count > 0:
-            res.append(uri+"|--|"+neighbor+'\t'+str(count))
-    return '\n'.join(res)
+            res.append(neighbor+','+str(count))
+
+    return uri+'\t'+' '.join(res)
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
