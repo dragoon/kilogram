@@ -22,5 +22,11 @@ def predict_ngram_from_context():
     return jsonify({'types': ngram_predictor.predict_types(context)})
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
