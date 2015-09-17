@@ -54,7 +54,7 @@ def generate_ngrams(line):
                 if len(type_indexes) == 0:
                     continue
                 type_index = type_indexes[0]
-                result.append((ngram[type_index][9:-1], (type_index, ngram)))
+                result.append((ngram[type_index][6:-1], (type_index, ngram)))
     return result
 
 
