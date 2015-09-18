@@ -3,18 +3,22 @@ from .. import NgramService, ListPacker
 import nltk
 from ..lang.tokenize import default_tokenize_func
 
-__author__ = 'dragoon'
-
 
 class CandidateEntity:
     candidates = None
     start_i = 0
     end_i = 0
+    cand_string = None
 
     def __init__(self, start_i, end_i, cand_string):
+        self.cand_string = cand_string
         self.start_i = start_i
         self.end_i = end_i
-        self.candidates = sorted(self._parse_candidate(cand_string), key=lambda x: x[1], reverse=True)
+        table = "wiki_anchor_ngrams"
+        column = "ngram:value"
+        res = NgramService.hbase_raw(table, cand_string, column)
+        if res:
+            self.candidates = sorted(self._parse_candidate(res), key=lambda x: x[1], reverse=True)
 
     @property
     def first_count(self):
@@ -33,8 +37,15 @@ class CandidateEntity:
         candidates = ListPacker.unpack(cand_string)
         return [(uri, long(count)) for uri, count in candidates]
 
+    def __lt__(self, other):
+        """For priority queue to select max candidates"""
+        return len(self.candidates) > len(other.candidates)
+
     def __len__(self):
         return len(self.candidates)
+
+    def __repr__(self):
+        return self.cand_string
 
 
 def _extract_candidates(pos_tokens):
@@ -43,8 +54,6 @@ def _extract_candidates(pos_tokens):
     :return:
     """
 
-    table = "wiki_anchor_ngrams"
-    column = "ngram:value"
     cand_entities = []
     noun_indexes = [i for i, word_token in enumerate(pos_tokens) if word_token[1].startswith('NN')]
     words = zip(*pos_tokens)[0]
@@ -53,16 +62,14 @@ def _extract_candidates(pos_tokens):
         while True:
             start_i = max(0, noun_index+1-n)
             end_i = min(len(words), noun_index+n)
-            should_break = []
+            # whether to continue to expand noun phrase
+            should_break = True
             for ngram in nltk.ngrams(words[start_i:end_i], n):
-                ngram = ' '.join(ngram)
-                res = NgramService.hbase_raw(table, ngram, column)
-                if res:
-                    cand_entities.append(CandidateEntity(start_i, end_i, res))
-                    should_break.append(False)
-                else:
-                    should_break.append(True)
-            if all(should_break):
+                cand_entity = CandidateEntity(start_i, end_i, ' '.join(ngram))
+                if cand_entity.candidates:
+                    cand_entities.append(cand_entity)
+                    should_break = False
+            if should_break:
                 break
             if start_i == 0 and end_i == len(words)-noun_index:
                 break
