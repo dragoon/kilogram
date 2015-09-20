@@ -53,3 +53,10 @@ class SemanticGraph:
             avg_deg = 2*G_star.number_of_edges()/G_star.number_of_nodes()
             if avg_deg > cur_avg_deg:
                 self.G = G_star
+
+    def do_linking(self):
+        for candidate in self.candidates:
+            scores = self._calculate_scores(candidate)
+            max_uri = max(scores.items(), key=lambda x: x[1])[0]
+            candidate.true_entity = max_uri
+

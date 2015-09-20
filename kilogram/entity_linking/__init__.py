@@ -9,6 +9,7 @@ class CandidateEntity:
     start_i = 0
     end_i = 0
     cand_string = None
+    true_entity = None
 
     def __init__(self, start_i, end_i, cand_string):
         self.cand_string = cand_string
