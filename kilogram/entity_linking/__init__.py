@@ -1,6 +1,7 @@
 from __future__ import division
 from .. import NgramService, ListPacker
 import nltk
+from .densest_subgraph import SemanticGraph
 from ..lang.tokenize import default_tokenize_func
 
 
@@ -66,26 +67,7 @@ def link(sentence):
     tokens = default_tokenize_func(sentence)
     pos_tokens = nltk.pos_tag(tokens)
     candidates = _extract_candidates(pos_tokens)
-    most_probable_candidate = None
-    for candidate in candidates:
-        if len(candidate.candidates) == 1:
-            # if bigger count
-            if most_probable_candidate is None or most_probable_candidate.first_count < candidate.first_count:
-                most_probable_candidate = candidate
-    prev_popularity = 0
-    if not most_probable_candidate:
-        # take most probable, or fail
-        for candidate in candidates:
-            popularity = candidate.first_popularity
-            if popularity > 0.5 and popularity > prev_popularity:
-                most_probable_candidate = candidate
-                prev_popularity = popularity
-    if not most_probable_candidate:
-        return []
-    # resolve via semantic similarity
-    linkings = []
-    for candidate in candidates:
-        best_uri = NgramService.get_ref_count(most_probable_candidate.first_uri, zip(*candidate.candidates)[0])
-        if best_uri:
-            linkings.append((candidate.start_i, candidate.end_i, best_uri))
-    return linkings
+    graph = SemanticGraph(candidates)
+    graph.do_iterative_removal()
+    graph.do_linking()
+    return candidates
