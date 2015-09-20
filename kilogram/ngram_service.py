@@ -41,7 +41,7 @@ class NgramService(object):
     ngram_table = None
     wiki_anchors_table = None
     wiki_urls_table = None
-    wiki_pagelinks_table = None
+    wiki_edges_table = None
 
     @staticmethod
     def _is_subst(ngram):
@@ -50,12 +50,12 @@ class NgramService(object):
     @classmethod
     def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
-                  wiki_pagelinks_table="wiki_pagelinks", hbase_host=None):
+                  wiki_edges_table="wiki_edges", hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
         cls.wiki_urls_table = wiki_urls_table
         cls.wiki_anchors_table = wiki_anchors_table
-        cls.wiki_pagelinks_table = wiki_pagelinks_table
+        cls.wiki_edges_table = wiki_edges_table
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -147,5 +147,8 @@ class NgramService(object):
         return anchor_counts/wiki_counts
 
     @classmethod
-    def get_related_uris(cls, uri):
-        return ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_table, uri, "ngram:value"))
+    def get_wiki_edge_weight(cls, uri1, uri2):
+        res = NgramService.hbase_raw(cls.wiki_edges_table, uri1+'|--|'+uri2, "ngram:value")
+        if res:
+            return int(res)
+        return 0
