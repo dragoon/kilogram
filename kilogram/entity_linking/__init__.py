@@ -20,26 +20,10 @@ class CandidateEntity:
         if res:
             self.candidates = sorted(self._parse_candidate(res), key=lambda x: x[1], reverse=True)
 
-    @property
-    def first_count(self):
-        return self.candidates[0][1]
-
-    @property
-    def first_uri(self):
-        return self.candidates[0][0]
-
-    @property
-    def first_popularity(self):
-        return self.first_count/sum(zip(*self.candidates)[1])
-
     @staticmethod
     def _parse_candidate(cand_string):
         candidates = ListPacker.unpack(cand_string)
         return [(uri, long(count)) for uri, count in candidates]
-
-    def __lt__(self, other):
-        """For priority queue to select max candidates"""
-        return len(self.candidates) > len(other.candidates)
 
     def __len__(self):
         return len(self.candidates)
