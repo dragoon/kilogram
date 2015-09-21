@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/roman/wikipedia_pagelinks"
+spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/roman/SOTA_EL/wikipedia_pagelinks"
 pig -p table=wiki_pagelinks -p path=/user/roman/wikipedia_pagelinks ./hbase_upload_array.pig
 """
 import sys
@@ -15,36 +15,19 @@ def map_redirects(line):
     except:
         return None
     uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
+    canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     if '/' in uri:
         return None
-    return uri
+    return uri, canon_uri
 
-dbp_redirects = set(dbp_redirects_file.map(map_redirects).collect())
+dbp_redirects = dict(dbp_redirects_file.map(map_redirects).collect())
 
 
-dbp_pagelinks_file = sc.textFile("/user/roman/page-links_en.nt.bz2")
+dbp_pagelinks_file = sc.textFile("/user/michael/wikilinks_20150602")
 def map_pagelinks(line):
-    uri, _, link, _ = line.split()
-    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
-    link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
-    return [(uri, link), (link, uri)]
-
-def filter_pagelinks(line):
-    if '(disambiguation)' in line:
-        return False
-    try:
-        uri, _, link, _ = line.split()
-    except:
-        return False
-    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
-    link = link.replace('<http://dbpedia.org/resource/', '')[:-1]
-    if '/' in uri:
-        return False
-    if ':' in link:
-        return False
-    if uri in dbp_redirects:
-        return False
-    return True
+    uri, link = line.strip().split('\t')
+    link = link[0].upper()+link[1:]
+    return uri, dbp_redirects.get(link, link)
 
 def seqfunc(u, v):
     if v in u:
@@ -61,7 +44,7 @@ def combfunc(u1, u2):
             u1[k] = v
     return u1
 
-dbp_pagelinks = dbp_pagelinks_file.filter(filter_pagelinks).flatMap(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
+dbp_pagelinks = dbp_pagelinks_file.flatMap(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
