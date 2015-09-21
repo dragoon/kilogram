@@ -20,7 +20,7 @@ class CandidateEntity:
         column = "ngram:value"
         res = NgramService.hbase_raw(table, cand_string, column)
         if res:
-            self.candidates = sorted(self._parse_candidate(res), key=lambda x: x[1], reverse=True)
+            self.candidates = dict(self._parse_candidate(res))
 
     @staticmethod
     def _parse_candidate(cand_string):
