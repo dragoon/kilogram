@@ -9,6 +9,10 @@ class SemanticGraph:
     candidates = None
     uri_fragment_counts = None
 
+    @staticmethod
+    def avg_deg(G):
+        return 2*G.number_of_edges()/G.number_of_nodes()
+
     def __init__(self, candidates):
         self.G = nx.DiGraph()
         self.candidates = candidates
@@ -46,20 +50,22 @@ class SemanticGraph:
         return scores
 
     def do_iterative_removal(self):
+        best_G = self.G.copy()
         while True:
             candidate = max(self.candidates, key=lambda x: len(x.candidates))
             if len(candidate.candidates) < 10:
                 break
             scores = self._calculate_scores(candidate)
-            min_uri = min(scores.items(), key=lambda x: x[1])[0]
-            cur_avg_deg = 2*self.G.number_of_edges()/self.G.number_of_nodes()
+            current_nodes = [item for item in scores.items() if self.G.has_node(item[0])]
+            if len(current_nodes) <= 10:
+                break
+            min_uri = min(current_nodes, key=lambda x: x[1])[0]
 
-            G_star = self.G.copy()
-            G_star.remove_node(min_uri)
-            avg_deg = 2*G_star.number_of_edges()/G_star.number_of_nodes()
-            if avg_deg > cur_avg_deg:
+            self.G.remove_node(min_uri)
+            if SemanticGraph.avg_deg(self.G) > SemanticGraph.avg_deg(best_G):
                 del candidate.candidates[min_uri]
-                self.G = G_star
+                best_G = self.G.copy()
+        self.G = best_G
 
     def do_linking(self):
         for candidate in self.candidates:
