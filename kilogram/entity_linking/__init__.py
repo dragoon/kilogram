@@ -40,6 +40,7 @@ def _extract_candidates(pos_tokens):
     :return:
     """
 
+    entity_indexes = set()
     cand_entities = []
     noun_indexes = [i for i, word_token in enumerate(pos_tokens) if word_token[1].startswith('NN')]
     words = zip(*pos_tokens)[0]
@@ -50,9 +51,10 @@ def _extract_candidates(pos_tokens):
             end_i = min(len(words), noun_index+n)
             # whether to continue to expand noun phrase
             should_break = True
-            for ngram in nltk.ngrams(words[start_i:end_i], n):
-                cand_entity = CandidateEntity(start_i, end_i, ' '.join(ngram))
-                if cand_entity.candidates:
+            for n_i, ngram in enumerate(nltk.ngrams(words[start_i:end_i], n)):
+                cand_entity = CandidateEntity(start_i+n_i*n, start_i+(n_i+1)*n, ' '.join(ngram))
+                if cand_entity.candidates and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
+                    entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
                     should_break = False
             if should_break:

@@ -19,12 +19,13 @@ class SemanticGraph:
                 if i != j:
                     for uri_i, uri_count_i in cand_i.candidates:
                         for uri_j, uri_count_j in cand_j.candidates:
-                            weight = NgramService.get_wiki_edge_weight(uri_i, uri_j)
-                            if weight > 0:
-                                self.G.add_edge(uri_i, uri_j, {'w': weight})
+                            if not self.G.has_edge(uri_i, uri_j):
+                                weight = NgramService.get_wiki_edge_weight(uri_i, uri_j)
+                                if weight > 0:
+                                    self.G.add_edge(uri_i, uri_j, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)
         for cand in candidates:
-            for uri in cand.candidates:
+            for uri, _ in cand.candidates:
                 self.uri_fragment_counts[uri] += 1
 
     def _calculate_scores(self, candidate):
@@ -41,7 +42,7 @@ class SemanticGraph:
 
     def do_iterative_removal(self):
         while True:
-            candidate = max(self.candidates, lambda x: len(x.candidates))
+            candidate = max(self.candidates, key=lambda x: len(x.candidates))
             if len(candidate.candidates) < 10:
                 break
             scores = self._calculate_scores(candidate)
