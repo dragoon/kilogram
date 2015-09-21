@@ -13,11 +13,11 @@ def map_redirects(line):
     try:
         uri, _, canon_uri, _ = line.split()
     except:
-        return None
+        return None, None
     uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     if '/' in uri:
-        return None
+        return None, None
     return uri, canon_uri
 
 dbp_redirects = dict(dbp_redirects_file.map(map_redirects).collect())
