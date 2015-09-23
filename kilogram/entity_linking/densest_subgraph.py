@@ -16,6 +16,12 @@ class SemanticGraph:
     def __init__(self, candidates):
         self.G = nx.DiGraph()
         self.candidates = candidates
+        neighbors = {}
+
+        for cand in candidates:
+            for uri in cand.candidates.keys():
+                neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+
         for i, cand_i in enumerate(candidates):
             """
             :type cand_i: CandidateEntity
@@ -25,7 +31,7 @@ class SemanticGraph:
                     for uri_i in cand_i.candidates.keys():
                         for uri_j in cand_j.candidates.keys():
                             if not self.G.has_edge(uri_i, uri_j):
-                                weight = NgramService.get_wiki_edge_weight(uri_i, uri_j)
+                                weight = neighbors[uri_i].get(uri_j, 0)
                                 if weight > 0:
                                     self.G.add_edge(uri_i, uri_j, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)

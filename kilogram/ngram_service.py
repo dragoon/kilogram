@@ -147,8 +147,6 @@ class NgramService(object):
         return anchor_counts/wiki_counts
 
     @classmethod
-    def get_wiki_edge_weight(cls, uri1, uri2):
-        res = NgramService.hbase_raw(cls.wiki_edges_table, uri1+'|--|'+uri2, "ngram:value")
-        if res:
-            return int(res)
-        return 0
+    def get_wiki_edge_weights(cls, uri):
+        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_edges_table, uri, "ngram:value")))
+        return res
