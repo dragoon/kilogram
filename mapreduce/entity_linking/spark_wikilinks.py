@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/roman/SOTA_EL/wikipedia_pagelinks"
+spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/michael/plain_wikipedia_pagelinks" "/user/roman/SOTA_EL/wikipedia_pagelinks"
 pig -p table=wiki_pagelinks -p path=/user/roman/wikipedia_pagelinks ./hbase_upload_array.pig
 """
 import sys
@@ -7,27 +7,14 @@ from pyspark import SparkContext
 
 sc = SparkContext(appName="WikipediaPageLinks")
 
-# Redirects to exclude redirect pages
-dbp_redirects_file = sc.textFile("/user/roman/redirects_transitive_en.nt.bz2")
-def map_redirects(line):
-    try:
-        uri, _, canon_uri, _ = line.split()
-    except:
-        return None, None
-    uri = uri.replace('<http://dbpedia.org/resource/', '')[:-1]
-    canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
-    if '/' in uri:
-        return None, None
-    return uri, canon_uri
-
-dbp_redirects = dict(dbp_redirects_file.map(map_redirects).collect())
-
-
-dbp_pagelinks_file = sc.textFile("/user/michael/wikilinks_20150602")
+pagelinks_file = sc.textFile(sys.argv[1])
 def map_pagelinks(line):
-    uri, link = line.strip().split('\t')
+    try:
+        uri, link = line.strip().split('\t')
+    except:
+        return None
     link = link[0].upper()+link[1:]
-    return uri, dbp_redirects.get(link, link)
+    return link, uri
 
 def seqfunc(u, v):
     if v in u:
@@ -44,9 +31,9 @@ def combfunc(u1, u2):
             u1[k] = v
     return u1
 
-dbp_pagelinks = dbp_pagelinks_file.flatMap(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
+pagelinks = pagelinks_file.map(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
 
-dbp_pagelinks.map(printer).saveAsTextFile(sys.argv[1])
+pagelinks.map(printer).saveAsTextFile(sys.argv[2])
