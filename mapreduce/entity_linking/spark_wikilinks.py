@@ -8,13 +8,6 @@ from pyspark import SparkContext
 sc = SparkContext(appName="WikipediaPageLinks")
 
 pagelinks_file = sc.textFile(sys.argv[1])
-def map_pagelinks(line):
-    try:
-        uri, link = line.strip().split('\t')
-    except:
-        return None
-    link = link[0].upper()+link[1:]
-    return link, uri
 
 def seqfunc(u, v):
     if v in u:
@@ -31,7 +24,7 @@ def combfunc(u1, u2):
             u1[k] = v
     return u1
 
-pagelinks = pagelinks_file.map(map_pagelinks).aggregateByKey({}, seqfunc, combfunc)
+pagelinks = pagelinks_file.filter(lambda x: '(disambiguation)' not in x).map(lambda x: x.split('\t')).aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
