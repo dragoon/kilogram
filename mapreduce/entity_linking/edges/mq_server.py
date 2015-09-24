@@ -31,7 +31,7 @@ def uri_map(item):
         if count > 0:
             res.append(neighbor+','+str(count))
 
-    return uri+'\t'+' '.join(res).encode('utf-8')
+    return uri.encode('utf-8')+'\t'+' '.join(res).encode('utf-8')
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
