@@ -30,7 +30,7 @@ if __name__ == "__main__":
     j = 0
     for res in pool.imap_unordered(uri_map, items):
         if res:
-            out.write(res+'\n')
+            out.write(res.decode('utf-8')+'\n')
         if not j % 10000:
             print j
         j += 1
