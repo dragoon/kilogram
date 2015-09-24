@@ -5,8 +5,8 @@ index_map = {}
 values = []
 index = 0
 
-for line in open('labels.txt'):
-    index_map[line.strip()] = index
+for line in open('wikipedia_pagelinks.tsv'):
+    index_map[line.strip().split('\t')[0]] = index
     index += 1
 
 for j, line in enumerate(open('wikipedia_pagelinks.tsv')):

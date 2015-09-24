@@ -18,8 +18,8 @@ def uri_map(item):
     return socket.recv()
 
 if __name__ == "__main__":
-    for line in open('labels.txt'):
-        index_map[line.strip()] = index
+    for line in open('wikipedia_pagelinks.tsv'):
+        index_map[line.strip().split('\t')[0]] = index
         index += 1
     out = codecs.open('edges.txt', 'w', 'utf-8')
     pool = multiprocessing.Pool(10, initializer)
