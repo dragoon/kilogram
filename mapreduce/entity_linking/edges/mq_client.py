@@ -4,8 +4,6 @@ import zmq
 
 socket = None
 
-items = []
-
 def initializer():
     global socket
     context = zmq.Context()
@@ -16,13 +14,16 @@ def uri_map(item):
     socket.send(item.encode('utf-8'))
     return socket.recv()
 
-if __name__ == "__main__":
+def items():
     for line in codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8'):
         try:
             label, value = line.strip().split('\t')
         except:
             continue
-        items.append(label)
+        yield label
+
+
+if __name__ == "__main__":
     out = codecs.open('edges.txt', 'w', 'utf-8')
     pool = multiprocessing.Pool(10, initializer)
 
