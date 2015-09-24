@@ -4,8 +4,9 @@ from kilogram import ListPacker
 
 index_map = {}
 values = []
+j = 0
 
-for j, line in enumerate(codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8')):
+for line in codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8'):
     try:
         label, value = line.strip().split('\t')
     except:
@@ -15,6 +16,7 @@ for j, line in enumerate(codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8')):
     if not j % 10000:
         print j
     j += 1
+
 
 def uri_map(item):
     res = []
