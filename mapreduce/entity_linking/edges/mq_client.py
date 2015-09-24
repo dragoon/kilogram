@@ -28,7 +28,7 @@ if __name__ == "__main__":
     pool = multiprocessing.Pool(10, initializer)
 
     j = 0
-    for res in pool.imap_unordered(uri_map, items):
+    for res in pool.imap_unordered(uri_map, items()):
         if res:
             out.write(res.decode('utf-8')+'\n')
         if not j % 10000:
