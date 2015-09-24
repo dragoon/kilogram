@@ -4,8 +4,7 @@ import zmq
 
 socket = None
 
-index_map = {}
-index = 0
+items = []
 
 def initializer():
     global socket
@@ -14,7 +13,7 @@ def initializer():
     socket.connect("ipc:///tmp/wikipedia_edges")
 
 def uri_map(item):
-    socket.send(item[0]+'|--|'+str(item[1]))
+    socket.send(item.encode('utf-8'))
     return socket.recv()
 
 if __name__ == "__main__":
@@ -23,13 +22,12 @@ if __name__ == "__main__":
             label, value = line.strip().split('\t')
         except:
             continue
-        index_map[label] = index
-        index += 1
+        items.append(label)
     out = codecs.open('edges.txt', 'w', 'utf-8')
     pool = multiprocessing.Pool(10, initializer)
 
     j = 0
-    for res in pool.imap_unordered(uri_map, index_map.iteritems()):
+    for res in pool.imap_unordered(uri_map, items):
         if res:
             out.write(res+'\n')
         if not j % 10000:

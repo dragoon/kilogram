@@ -18,8 +18,8 @@ for j, line in enumerate(codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8')):
 
 def uri_map(item):
     res = []
-    uri, i = item.split('|--|')
-    i = int(i)
+    uri = item.decode('utf-8')
+    i = index_map[uri]
     direct_neighbors = set(values[i])
     for neighbor in direct_neighbors:
         # might be a neighbor that does not exist, since we pre-filter pages
