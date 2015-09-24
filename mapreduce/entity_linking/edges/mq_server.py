@@ -1,15 +1,16 @@
 import zmq
+import codecs
 from kilogram import ListPacker
 
 index_map = {}
 values = []
 index = 0
 
-for line in open('wikipedia_pagelinks.tsv'):
+for line in codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8'):
     index_map[line.strip().split('\t')[0]] = index
     index += 1
 
-for j, line in enumerate(open('wikipedia_pagelinks.tsv')):
+for j, line in enumerate(codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8')):
     label, value = line.strip().split('\t')
     values.append(zip(*ListPacker.unpack(value))[0])
     if not j % 10000:

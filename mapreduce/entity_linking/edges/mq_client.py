@@ -18,7 +18,7 @@ def uri_map(item):
     return socket.recv()
 
 if __name__ == "__main__":
-    for line in open('wikipedia_pagelinks.tsv'):
+    for line in open('wikipedia_pagelinks.tsv', 'r', 'utf-8'):
         index_map[line.strip().split('\t')[0]] = index
         index += 1
     out = codecs.open('edges.txt', 'w', 'utf-8')
