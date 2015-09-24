@@ -38,10 +38,7 @@ class SemanticGraph:
         for cand in candidates:
             # immediately prune nodes without connections
             for uri in cand.candidates.keys():
-                if self.G.has_node(uri):
-                    self.uri_fragment_counts[uri] += 1
-                else:
-                    del cand.candidates[uri]
+                self.uri_fragment_counts[uri] += 1
 
     def _calculate_scores(self, candidate):
         total = 0
@@ -51,8 +48,9 @@ class SemanticGraph:
             w = self.uri_fragment_counts[uri]/(len(self.candidates)-1)
             scores[uri] = (self.G.degree(uri) or 0)*w
             total += scores[uri]
-        for uri in scores.keys():
-            scores[uri] /= total
+        if total > 0:
+            for uri in scores.keys():
+                scores[uri] /= total
         return scores
 
     def do_iterative_removal(self):
