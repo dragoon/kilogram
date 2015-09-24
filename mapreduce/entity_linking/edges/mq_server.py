@@ -4,14 +4,13 @@ from kilogram import ListPacker
 
 index_map = {}
 values = []
-index = 0
-
-for line in codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8'):
-    index_map[line.strip().split('\t')[0]] = index
-    index += 1
 
 for j, line in enumerate(codecs.open('wikipedia_pagelinks.tsv', 'r', 'utf-8')):
-    label, value = line.strip().split('\t')
+    try:
+        label, value = line.strip().split('\t')
+    except:
+        continue
+    index_map[label] = j
     values.append(zip(*ListPacker.unpack(value))[0])
     if not j % 10000:
         print j
