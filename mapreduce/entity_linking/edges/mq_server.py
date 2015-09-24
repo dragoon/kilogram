@@ -22,7 +22,11 @@ def uri_map(item):
     i = int(i)
     direct_neighbors = set(values[i])
     for neighbor in direct_neighbors:
-        neighbor_uris = values[index_map[neighbor]]
+        # might be a neighbor that does not exist, since we pre-filter pages
+        try:
+            neighbor_uris = values[index_map[neighbor]]
+        except KeyError:
+            continue
         count = len(direct_neighbors.intersection(neighbor_uris))
         if count > 0:
             res.append(neighbor+','+str(count))
