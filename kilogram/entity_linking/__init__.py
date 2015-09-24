@@ -31,7 +31,7 @@ class CandidateEntity:
         return len(self.candidates)
 
     def __repr__(self):
-        return self.cand_string + ":" + self.true_entity
+        return self.cand_string + ":" + str(self.true_entity)
 
 
 def _extract_candidates(pos_tokens):
