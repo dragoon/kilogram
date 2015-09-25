@@ -5,6 +5,8 @@ from .densest_subgraph import SemanticGraph
 from ..lang.tokenize import default_tokenize_func
 
 
+PERCENTILE = 0.9
+
 class CandidateEntity:
     candidates = None
     start_i = 0
@@ -20,7 +22,20 @@ class CandidateEntity:
         column = "ngram:value"
         res = NgramService.hbase_raw(table, cand_string, column)
         if res:
-            self.candidates = dict(self._parse_candidate(res))
+            self.candidates = {}
+            # take Xs percentile to remove noisy candidates
+            temp_candidates = self._parse_candidate(res)
+            total_c = sum(zip(*temp_candidates)[1])
+            cur_c = 0
+            for uri, count in sorted(temp_candidates, key=lambda x: x[1], reverse=True):
+                if cur_c/total_c > PERCENTILE:
+                    break
+                cur_c += count
+                self.candidates[uri] = count
+            # also remove all counts = 1
+            for uri in self.candidates.keys():
+                if self.candidates[uri] < 2:
+                    del self.candidates[uri]
 
     @staticmethod
     def _parse_candidate(cand_string):
