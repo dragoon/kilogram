@@ -22,7 +22,7 @@ def unpack_anchors(line):
             uri = match.group(1)
             anchor_text = match.group(2)
             anchor_text = anchor_text.replace('_', ' ')
-            result.append((uri, anchor_text))
+            result.append((uri[0].upper()+uri[1:], anchor_text))
     return result
 
 anchor_counts = lines.flatMap(unpack_anchors)
