@@ -42,7 +42,7 @@ def map_redirects(line):
     return uri, canon_uri
 
 dbp_urls = dbp_redirects_file.map(map_redirects).distinct()
-anchor_counts_join = anchor_counts.leftOuterJoin(dbp_urls).map(lambda x: x[1] if x[1][0] else (x[0], x[1][1]))
+anchor_counts_join = anchor_counts.leftOuterJoin(dbp_urls).map(lambda x: x[1] if x[1][1] else (x[1][0], x[0]))
 
 
 def seqfunc(u, v):
