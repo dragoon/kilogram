@@ -38,11 +38,11 @@ def map_redirects(line):
     if '/' in uri:
         return [(None, None)]
     canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
-    # we need both redirect and canonical
-    return [(uri, canon_uri), (canon_uri, canon_uri)]
+    # return only redirect, we'll do left join later
+    return uri, canon_uri
 
-dbp_urls = dbp_redirects_file.flatMap(map_redirects).distinct()
-anchor_counts_join = anchor_counts.join(dbp_urls).map(lambda x: x[1])
+dbp_urls = dbp_redirects_file.map(map_redirects).distinct()
+anchor_counts_join = anchor_counts.leftJoin(dbp_urls).map(lambda x: x[1] if x[1][0] else (x[0], x[1][1]))
 
 
 def seqfunc(u, v):
