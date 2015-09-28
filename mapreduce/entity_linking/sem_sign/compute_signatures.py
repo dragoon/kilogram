@@ -21,7 +21,7 @@ def build_edges_map():
         total = sum(zip(*values)[1])
         edges_map[uri] = (zip(*values)[0], [x[1]/total for x in values])
         if not j % 10000:
-            print j
+            print "Loading:", j
         j += 1
     edges.close()
     return edges_map
@@ -53,6 +53,6 @@ if __name__ == "__main__":
         weights = semantic_signature(uri, edges_map)
         out.write(uri + '\t' + ' '.join([x[0]+','+str(x[1]) for x in weights]) + '\n')
         if not j % 10000:
-            print j
+            print "Writing:", j
         j += 1
     out.close()
