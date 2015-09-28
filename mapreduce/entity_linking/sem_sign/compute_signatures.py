@@ -10,7 +10,7 @@ ALPHA = 0.85  # restart probability
 
 def build_edges_map():
     edges_map = {}
-    edges = codecs.open('/Users/dragoon/Downloads/edges.txt', 'r', 'utf-8')
+    edges = codecs.open('edges.txt', 'r', 'utf-8')
     j = 0
     for line in edges:
         try:
