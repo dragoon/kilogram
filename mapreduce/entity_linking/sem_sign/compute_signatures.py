@@ -48,7 +48,11 @@ def semantic_signature(orig_uri, edges_map):
 if __name__ == "__main__":
     out = codecs.open('sem_signatures.txt', 'w', 'utf-8')
     edges_map = build_edges_map()
+    j = 0
     for uri in edges_map.iterkeys():
         weights = semantic_signature(uri, edges_map)
         out.write(uri + '\t' + ' '.join([x[0]+','+str(x[1]) for x in weights]) + '\n')
+        if not j % 10000:
+            print j
+        j += 1
     out.close()
