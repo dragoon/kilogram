@@ -54,7 +54,7 @@ class NgramTypePredictor(object):
 
     def predict_types(self, context, filter_types=None):
         """Context should always be a 5-element list"""
-        ngram_probs = self._get_ngram_probs(context, types)
+        ngram_probs = self._get_ngram_probs(context, filter_types)
         type_probs = defaultdict(lambda: 0)
         for probs in ngram_probs:
             for entity_type, prob in probs:
