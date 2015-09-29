@@ -44,10 +44,11 @@ class NgramTypePredictor(object):
             if not type_values and bigram:
                 type_values = NgramService.hbase_raw(self.hbase_table, " ".join(bigram), "ngram:value")
             if type_values:
+                type_values_unpacked = ListPacker.unpack(type_values)
                 if filter_types:
-                    types.append([x for x in ListPacker.unpack(type_values) if x[0] in filter_types])
-                else:
-                    types.append(ListPacker.unpack(type_values))
+                    type_values_unpacked = [x for x in type_values_unpacked if x[0] in filter_types]
+                if type_values_unpacked:
+                    types.append(type_values_unpacked)
         totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
         probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values]
                         for i, type_values in enumerate(types)]
