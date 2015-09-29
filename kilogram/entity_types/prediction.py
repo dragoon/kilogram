@@ -32,7 +32,7 @@ class NgramTypePredictor(object):
         for entity_type, count in NgramService.substitution_counts.items():
             self.type_priors[entity_type] = count/total
 
-    def _get_ngram_probs(self, context):
+    def _get_ngram_probs(self, context, filter_types=None):
         # pre, post, mid bigrams
         context[2] = SUBSTITUTION_TOKEN
         trigrams = [context[:3], context[-3:], context[1:4]]
@@ -45,14 +45,16 @@ class NgramTypePredictor(object):
                 type_values = NgramService.hbase_raw(self.hbase_table, " ".join(bigram), "ngram:value")
             if type_values:
                 types.append(ListPacker.unpack(type_values))
+        if filter_types:
+            types = [x for x in types if x[0] in filter_types]
         totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
         probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values]
                         for i, type_values in enumerate(types)]
         return probs
 
-    def predict_types(self, context):
+    def predict_types(self, context, filter_types=None):
         """Context should always be a 5-element list"""
-        ngram_probs = self._get_ngram_probs(context)
+        ngram_probs = self._get_ngram_probs(context, types)
         type_probs = defaultdict(lambda: 0)
         for probs in ngram_probs:
             for entity_type, prob in probs:
@@ -63,7 +65,7 @@ class NgramTypePredictor(object):
             # empty sequence
             min_prob = 1
         for entity_type, prior in self.type_priors.items():
-            if entity_type not in type_probs:
+            if entity_type not in type_probs and (filter_types and entity_type in filter_types):
                 type_probs[entity_type] = prior*min_prob
 
         result_probs = sorted(type_probs.items(), key=lambda x: x[1], reverse=True)
