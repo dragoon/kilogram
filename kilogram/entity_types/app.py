@@ -19,10 +19,11 @@ ngram_predictor = NgramTypePredictor(sys.argv[1], dbpedia_ontology)
 @app.route('/predict/types/context', methods=['GET'])
 def predict_ngram_from_context():
     context = strip_unicode(request.args.get('context').strip()).split()
+    types = None
     try:
         types = set(request.args.get('types').strip().split(';'))
     except:
-        types = None
+        pass
     return jsonify({'types': ngram_predictor.predict_types(context, types)})
 
 
