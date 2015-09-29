@@ -48,8 +48,6 @@ class NgramTypePredictor(object):
                     types.append([x for x in ListPacker.unpack(type_values) if x[0] in filter_types])
                 else:
                     types.append(ListPacker.unpack(type_values))
-        if filter_types:
-            types = [x for x in types if x[0] in filter_types]
         totals = [sum(int(x) for x in zip(*type_values)[1]) for type_values in types]
         probs = [[(entity_type, int(count)/totals[i]) for entity_type, count in type_values]
                         for i, type_values in enumerate(types)]
