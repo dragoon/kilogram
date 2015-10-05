@@ -1,6 +1,6 @@
 from __future__ import division
 import zmq
-from kilogram.mapreduce.entity_linking.sem_sign.compute_signatures import SemSignature
+from kilogram.entity_linking.compute_signatures import SemSignature
 
 
 s = SemSignature('/home/roman/notebooks/kilogram/mapreduce/edges.txt')
