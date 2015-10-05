@@ -12,7 +12,8 @@ class TestEntityLinking(unittest.TestCase):
         self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
     def test_entity_linking(self):
-        print link("Barack Obama and Michelle visited us today.")
+        print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
+        print link("Barack and Michelle visited us today.")
         print link("GitHub experienced a massive DDoS attack yesterday evening.")
 
 
