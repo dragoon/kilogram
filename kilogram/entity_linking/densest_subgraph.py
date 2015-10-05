@@ -52,7 +52,7 @@ class SemanticGraph:
         # pre-compute numerators and denominator
         for uri in candidate.candidates.keys():
             w = self.uri_fragment_counts[uri]/(len(self.candidates)-1)
-            scores[uri] = (self.G.degree(uri) or 0)*w
+            scores[uri] = (self.G.degree(uri, weight='w') or 0)*w
             total += scores[uri]
         if total > 0:
             for uri in scores.keys():
