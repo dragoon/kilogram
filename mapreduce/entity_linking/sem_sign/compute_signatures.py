@@ -6,11 +6,12 @@ from numpy.random import choice, rand
 from scipy.sparse import csr_matrix
 from kilogram import ListPacker
 
-NUM_STEPS = 10**5
+NUM_STEPS = 10**6
 ALPHA = 0.85  # restart probability
+MIN_PROB = 100/(10**6)
 
 
-class SemSeignature:
+class SemSignature:
     prob_matrix = None
     uri_list = []
 
@@ -65,7 +66,7 @@ class SemSeignature:
         pi = np.random.rand(teleport_vector.shape[0])
         prev_norm = 0
 
-        for _ in range(NUM_STEPS):
+        for _ in range(1000):
             pi = self.prob_matrix.dot(pi) + teleport_vector
             cur_norm = np.linalg.norm(pi)
             pi /= cur_norm
@@ -74,13 +75,10 @@ class SemSeignature:
             prev_norm = cur_norm
         return pi
 
-    def _select_max(self, vector, topk):
-        topk_ind = np.argpartition(vector, -topk)[-topk:]
-        counts = vector[topk_ind] * NUM_STEPS
-        return [(self.uri_list[i], int(count)) for i, count in zip(topk_ind, counts)]
-
-    def semsign(self, i, topk=1000):
-        return self._select_max(self._learn_eigenvector(i), topk)
+    def semsign(self, i):
+        vector = self._learn_eigenvector(i)
+        normalized_prob = 1.0 - vector[i]
+        return [(self.uri_list[i], int(x*NUM_STEPS/normalized_prob)) for i, x in enumerate(vector) if x/normalized_prob > MIN_PROB]
 
 
 def build_edges_map():
