@@ -56,7 +56,7 @@ class SemSeignature:
         print 'Finish loading data...'
 
         # transpose immediately
-        self.prob_marix = ALPHA*csr_matrix((data, (col_ind, row_ind)), shape=(len(index_map), len(index_map)))
+        self.prob_matrix = ALPHA*csr_matrix((data, (col_ind, row_ind)), shape=(len(index_map), len(index_map)))
 
     def _learn_eigenvector(self, i):
         teleport_vector = np.zeros(self.prob_matrix.shape[0], dtype=np.float64)
