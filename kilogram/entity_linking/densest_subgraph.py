@@ -1,7 +1,8 @@
 from __future__ import division
 from collections import defaultdict
 import networkx as nx
-from kilogram import NgramService
+from kilogram import ListPacker
+import zmq
 
 
 class SemanticGraph:
@@ -14,13 +15,18 @@ class SemanticGraph:
         return 2*G.number_of_edges()/G.number_of_nodes()
 
     def __init__(self, candidates):
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("ipc:///tmp/wikipedia_signatures")
         self.G = nx.DiGraph()
         self.candidates = candidates
         neighbors = {}
 
         for cand in candidates:
             for uri in cand.candidates.keys():
-                neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+                socket.send(uri.encode('utf-8'))
+                neighbors[uri] = dict(ListPacker.unpack(socket.recv().decode('utf-8')))
+                # neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
 
         for i, cand_i in enumerate(candidates):
             """
@@ -31,7 +37,7 @@ class SemanticGraph:
                     for uri_i in cand_i.candidates.keys():
                         for uri_j in cand_j.candidates.keys():
                             if not self.G.has_edge(uri_i, uri_j):
-                                weight = neighbors[uri_i].get(uri_j, 0)
+                                weight = int(neighbors[uri_i].get(uri_j, 0))
                                 if weight > 0:
                                     self.G.add_edge(uri_i, uri_j, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)
@@ -74,6 +80,7 @@ class SemanticGraph:
     def do_linking(self):
         for candidate in self.candidates:
             scores = self._calculate_scores(candidate)
-            max_uri = max(scores.items(), key=lambda x: x[1])[0]
-            candidate.true_entity = max_uri
+            max_uri, score = max(scores.items(), key=lambda x: x[1])
+            if score > 0.8:
+                candidate.true_entity = max_uri
 
