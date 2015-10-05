@@ -7,7 +7,7 @@ from scipy.sparse import csr_matrix
 from kilogram import ListPacker
 
 NUM_STEPS = 10**5
-ALPHA = 0.15  # restart probability
+ALPHA = 0.85  # restart probability
 
 
 class SemSeignature:
@@ -56,11 +56,11 @@ class SemSeignature:
         print 'Finish loading data...'
 
         # transpose immediately
-        self.prob_matrix = ALPHA*csr_matrix((data, (col_ind, row_ind)), shape=(len(index_map), len(index_map)))
+        self.prob_matrix = (1-ALPHA)*csr_matrix((data, (col_ind, row_ind)), shape=(len(index_map), len(index_map)))
 
     def _learn_eigenvector(self, i):
         teleport_vector = np.zeros(self.prob_matrix.shape[0], dtype=np.float64)
-        teleport_vector[i] = 1 - ALPHA
+        teleport_vector[i] = ALPHA
 
         pi = np.random.rand(teleport_vector.shape[0])
         prev_norm = 0
