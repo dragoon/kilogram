@@ -7,7 +7,7 @@ from scipy.sparse import csr_matrix
 from kilogram import ListPacker
 
 NUM_STEPS = 10**5
-ALPHA = 0.85  # restart probability
+ALPHA = 0.15  # restart probability
 
 
 class SemSeignature:
@@ -74,13 +74,13 @@ class SemSeignature:
             prev_norm = cur_norm
         return pi
 
-    def _select_max(self, vector, topk=1000):
+    def _select_max(self, vector, topk):
         topk_ind = np.argpartition(vector, -topk)[-topk:]
         counts = vector[topk_ind] * NUM_STEPS
         return [(self.uri_list[i], int(count)) for i, count in zip(topk_ind, counts)]
 
-    def semsign(self, i):
-        return self._select_max(self._learn_eigenvector(i))
+    def semsign(self, i, topk=1000):
+        return self._select_max(self._learn_eigenvector(i), topk)
 
 
 def build_edges_map():
