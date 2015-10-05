@@ -77,8 +77,7 @@ class SemSignature:
 
     def semsign(self, i):
         vector = self._learn_eigenvector(i)
-        vector /= sum(vector)
-        normalized_prob = 1.0 - vector[i]
+        normalized_prob = (1.0 - vector[i]/sum(vector))*sum(vector)
         return [(self.uri_list[j], int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j!=i]
 
 
