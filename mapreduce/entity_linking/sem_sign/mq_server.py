@@ -5,8 +5,9 @@ from kilogram.mapreduce.entity_linking.sem_sign.compute_signatures import SemSig
 
 s = SemSignature('/home/roman/notebooks/kilogram/mapreduce/edges.txt')
 
-def uri_map(i):
-    return ' '.join([x[0].encode('utf-8') + ','+ str(x[1]) for x in s.semsign(int(i))])
+def uri_map(uri):
+    uri = uri.decode('utf-8')
+    return ' '.join([x[0].encode('utf-8') + ',' + str(x[1]) for x in s.semsign(uri)])
 
 
 context = zmq.Context()

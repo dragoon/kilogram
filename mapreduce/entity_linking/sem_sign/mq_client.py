@@ -10,18 +10,19 @@ def initializer():
     socket = context.socket(zmq.REQ)
     socket.connect("ipc:///tmp/wikipedia_signatures")
 
-def uri_map(item):
-    uri, i = item
-    socket.send(str(i))
+
+def uri_map(uri):
+    socket.send(uri.encode('utf-8'))
     return uri + '\t' + socket.recv().decode('utf-8')
 
+
 def items():
-    for i, line in enumerate(codecs.open('/home/roman/notebooks/kilogram/mapreduce/edges.txt', 'r', 'utf-8')):
+    for line in codecs.open('/home/roman/notebooks/kilogram/mapreduce/edges.txt', 'r', 'utf-8'):
         try:
             uri, value = line.strip().split('\t')
         except:
             continue
-        yield uri, i
+        yield uri
 
 
 if __name__ == "__main__":

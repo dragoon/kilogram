@@ -13,18 +13,17 @@ MIN_PROB = 100/(10**6)
 
 class SemSignature:
     prob_matrix = None
-    uri_list = []
+    index_map = None
 
     def __init__(self, edges_file):
-        index_map = {}
+        self.index_map = {}
         edges = codecs.open(edges_file, 'r', 'utf-8')
         j = 0
         print 'Building index map...'
         for line in edges:
             try:
                 uri = line.strip().split('\t')[0]
-                index_map[uri] = j
-                self.uri_list.append(uri)
+                self.index_map[uri] = j
             except:
                 j += 1
                 continue
@@ -45,9 +44,9 @@ class SemSignature:
             except ValueError:
                 j += 1
                 continue
-            values = [(x[0], int(x[1])) for x in ListPacker.unpack(neighbors) if x[0] in index_map]
+            values = [(x[0], int(x[1])) for x in ListPacker.unpack(neighbors) if x[0] in self.index_map]
             row_ind.extend([j]*len(values))
-            col_ind.extend([index_map[x[0]] for x in values])
+            col_ind.extend([self.index_map[x[0]] for x in values])
             total = sum(zip(*values)[1])
 
             data.extend([x[1]/total for x in values])
@@ -57,7 +56,8 @@ class SemSignature:
         print 'Finish loading data...'
 
         # transpose immediately
-        self.prob_matrix = (1-ALPHA)*csr_matrix((data, (col_ind, row_ind)), shape=(len(index_map), len(index_map)))
+        shape = len(self.index_map)
+        self.prob_matrix = (1-ALPHA)*csr_matrix((data, (col_ind, row_ind)), shape=(shape, shape))
 
     def _learn_eigenvector(self, i):
         teleport_vector = np.zeros(self.prob_matrix.shape[0], dtype=np.float64)
@@ -75,10 +75,11 @@ class SemSignature:
             prev_norm = cur_norm
         return pi
 
-    def semsign(self, i):
+    def semsign(self, uri):
+        i = self.index_map[uri]
         vector = self._learn_eigenvector(i)
         normalized_prob = (1.0 - vector[i]/sum(vector))*sum(vector)
-        return [(self.uri_list[j], int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j!=i]
+        return [(uri, int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j != i]
 
 
 def build_edges_map():
