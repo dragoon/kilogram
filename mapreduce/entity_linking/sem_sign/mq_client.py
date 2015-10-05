@@ -13,7 +13,7 @@ def initializer():
 def uri_map(item):
     uri, i = item
     socket.send(str(i))
-    return uri + '\t' + socket.recv()
+    return uri + '\t' + socket.recv().decode('utf-8')
 
 def items():
     for i, line in enumerate(codecs.open('/home/roman/notebooks/kilogram/mapreduce/edges.txt', 'r', 'utf-8')):
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     j = 0
     for res in pool.imap_unordered(uri_map, items()):
         if res:
-            out.write(res.decode('utf-8')+'\n')
+            out.write(res+'\n')
         if not j % 10000:
             print j
         j += 1
