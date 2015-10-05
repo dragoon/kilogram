@@ -14,9 +14,9 @@ class SemSeignature:
     prob_matrix = None
     uri_list = []
 
-    def __init__(self):
+    def __init__(self, edges_file):
         index_map = {}
-        edges = codecs.open('/Users/dragoon/Downloads/edges.txt', 'r', 'utf-8')
+        edges = codecs.open(edges_file, 'r', 'utf-8')
         j = 0
         print 'Building index map...'
         for line in edges:
@@ -37,7 +37,7 @@ class SemSeignature:
         row_ind = []
         col_ind = []
         print 'Building sparse probability matrix...'
-        edges = codecs.open('/Users/dragoon/Downloads/edges.txt', 'r', 'utf-8')
+        edges = codecs.open(edges_file, 'r', 'utf-8')
         for line in edges:
             try:
                 uri, neighbors = line.strip().split('\t')
