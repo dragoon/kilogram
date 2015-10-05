@@ -77,8 +77,9 @@ class SemSignature:
 
     def semsign(self, i):
         vector = self._learn_eigenvector(i)
+        vector /= sum(vector)
         normalized_prob = 1.0 - vector[i]
-        return [(self.uri_list[i], int(x*NUM_STEPS/normalized_prob)) for i, x in enumerate(vector) if x/normalized_prob > MIN_PROB]
+        return [(self.uri_list[j], int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j!=i]
 
 
 def build_edges_map():
