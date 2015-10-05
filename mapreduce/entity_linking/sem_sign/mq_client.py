@@ -10,7 +10,8 @@ def initializer():
     socket = context.socket(zmq.REQ)
     socket.connect("ipc:///tmp/wikipedia_signatures")
 
-def uri_map(uri, i):
+def uri_map(item):
+    uri, i = item
     socket.send(str(i))
     return uri + '\t' + socket.recv()
 
