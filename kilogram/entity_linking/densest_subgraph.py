@@ -97,5 +97,5 @@ class SemanticGraph:
             candidate.true_entity = uri_score[0]
             # delete other entities
             for uri in candidate.uri_counts.keys():
-                if uri != uri_score[0]:
+                if uri != uri_score[0] and self.G.has_node(uri):
                     self.G.remove_node(uri)
