@@ -11,13 +11,15 @@ class CandidateEntity:
     candidates = None
     start_i = 0
     end_i = 0
+    noun_index = 0
     cand_string = None
     true_entity = None
 
-    def __init__(self, start_i, end_i, cand_string):
+    def __init__(self, start_i, end_i, noun_index, cand_string):
         self.cand_string = cand_string
         self.start_i = start_i
         self.end_i = end_i
+        self.noun_index = noun_index
         table = "wiki_anchor_ngrams"
         column = "ngram:value"
         res = NgramService.hbase_raw(table, cand_string, column)
@@ -67,7 +69,7 @@ def _extract_candidates(pos_tokens):
             # whether to continue to expand noun phrase
             should_break = True
             for n_i, ngram in enumerate(nltk.ngrams(words[start_i:end_i], n)):
-                cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, ' '.join(ngram))
+                cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, noun_index, ' '.join(ngram))
                 # TODO: what to do with lower-case things?
                 if not cand_entity.cand_string[0].isupper():
                     continue

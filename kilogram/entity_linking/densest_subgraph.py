@@ -1,7 +1,7 @@
 from __future__ import division
 from collections import defaultdict
 import networkx as nx
-from kilogram import ListPacker
+from kilogram import ListPacker, NgramService
 import zmq
 
 
@@ -24,22 +24,24 @@ class SemanticGraph:
 
         for cand in candidates:
             for uri in cand.candidates.keys():
-                socket.send(uri.encode('utf-8'))
-                neighbors[uri] = dict(ListPacker.unpack(socket.recv().decode('utf-8')))
-                # neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+                #socket.send(uri.encode('utf-8'))
+                #neighbors[uri] = dict(ListPacker.unpack(socket.recv().decode('utf-8')))
+                neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
 
-        for i, cand_i in enumerate(candidates):
+        for cand_i in candidates:
             """
             :type cand_i: CandidateEntity
             """
-            for j, cand_j in enumerate(candidates):
-                if i != j:
-                    for uri_i in cand_i.candidates.keys():
-                        for uri_j in cand_j.candidates.keys():
-                            if not self.G.has_edge(uri_i, uri_j):
-                                weight = int(neighbors[uri_i].get(uri_j, 0))
-                                if weight > 0:
-                                    self.G.add_edge(uri_i, uri_j, {'w': weight})
+            for cand_j in candidates:
+                # skip edges between candidates originating from the same noun
+                if cand_j.noun_index == cand_i.noun_index:
+                    continue
+                for uri_i in cand_i.candidates.keys():
+                    for uri_j in cand_j.candidates.keys():
+                        if not self.G.has_edge(uri_i, uri_j):
+                            weight = int(neighbors[uri_i].get(uri_j, 0))
+                            if weight > 0:
+                                self.G.add_edge(uri_i, uri_j, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)
         for cand in candidates:
             # immediately prune nodes without connections
@@ -81,6 +83,5 @@ class SemanticGraph:
         for candidate in self.candidates:
             scores = self._calculate_scores(candidate)
             max_uri, score = max(scores.items(), key=lambda x: x[1])
-            if score > 0.8:
-                candidate.true_entity = max_uri
+            candidate.true_entity = max_uri
 
