@@ -46,7 +46,10 @@ class SemanticGraph:
         for cand in candidates:
             # immediately prune nodes without connections
             for uri in cand.candidates.keys():
-                self.uri_fragment_counts[uri] += 1
+                if self.G.has_node(uri):
+                    self.uri_fragment_counts[uri] += 1
+                else:
+                    del cand.candidates[uri]
 
     def _calculate_scores(self, candidate):
         total = 0
