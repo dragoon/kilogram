@@ -23,7 +23,7 @@ class SemanticGraph:
         neighbors = {}
 
         for cand in candidates:
-            for uri in cand.candidates.keys():
+            for uri in cand.uri_counts.keys():
                 #socket.send(uri.encode('utf-8'))
                 #neighbors[uri] = dict(ListPacker.unpack(socket.recv().decode('utf-8')))
                 neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
@@ -36,8 +36,8 @@ class SemanticGraph:
                 # skip edges between candidates originating from the same noun
                 if cand_j.noun_index == cand_i.noun_index:
                     continue
-                for uri_i in cand_i.candidates.keys():
-                    for uri_j in cand_j.candidates.keys():
+                for uri_i in cand_i.uri_counts.keys():
+                    for uri_j in cand_j.uri_counts.keys():
                         if not self.G.has_edge(uri_i, uri_j):
                             weight = int(neighbors[uri_i].get(uri_j, 0))
                             if weight > 0:
@@ -45,17 +45,17 @@ class SemanticGraph:
         self.uri_fragment_counts = defaultdict(lambda: 0)
         for cand in candidates:
             # immediately prune nodes without connections
-            for uri in cand.candidates.keys():
+            for uri in cand.uri_counts.keys():
                 if self.G.has_node(uri):
                     self.uri_fragment_counts[uri] += 1
                 else:
-                    del cand.candidates[uri]
+                    del cand.uri_counts[uri]
 
     def _calculate_scores(self, candidate):
         total = 0
         scores = {}
         # pre-compute numerators and denominator
-        for uri in candidate.candidates.keys():
+        for uri in candidate.uri_counts.keys():
             w = self.uri_fragment_counts[uri]/(len(self.candidates)-1)
             scores[uri] = (self.G.degree(uri, weight='w') or 0)*w
             total += scores[uri]
@@ -67,8 +67,8 @@ class SemanticGraph:
     def do_iterative_removal(self):
         best_G = self.G.copy()
         while True:
-            candidate = max(self.candidates, key=lambda x: len(x.candidates))
-            if len(candidate.candidates) < 10:
+            candidate = max(self.candidates, key=lambda x: len(x))
+            if len(candidate) < 10:
                 break
             scores = self._calculate_scores(candidate)
             current_nodes = [item for item in scores.items() if self.G.has_node(item[0])]
@@ -78,14 +78,18 @@ class SemanticGraph:
 
             self.G.remove_node(min_uri)
             if SemanticGraph.avg_deg(self.G) > SemanticGraph.avg_deg(best_G):
-                del candidate.candidates[min_uri]
+                del candidate.uri_counts[min_uri]
                 best_G = self.G.copy()
         self.G = best_G
 
     def do_linking(self):
-        for candidate in self.candidates:
-            scores = self._calculate_scores(candidate)
-            if scores:
-                max_uri, score = max(scores.items(), key=lambda x: x[1])
-                candidate.true_entity = max_uri
-
+        # link starting from max possible candidate, remove other candidates
+        while True:
+            scores = [(candidate, max(self._calculate_scores(candidate).items(), key=lambda x: x[1]))
+                      for candidate in self.candidates
+                      if candidate.uri_counts and not candidate.true_entity]
+            if not scores:
+                break
+            candidate, uri_score = max(scores, key=lambda x: x[1][1])
+            candidate.true_entity = uri_score[0]
+            # delete other entities

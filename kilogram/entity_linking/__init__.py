@@ -8,7 +8,7 @@ from ..lang.tokenize import default_tokenize_func
 PERCENTILE = 0.9
 
 class CandidateEntity:
-    candidates = None
+    uri_counts = None
     start_i = 0
     end_i = 0
     noun_index = 0
@@ -24,7 +24,7 @@ class CandidateEntity:
         column = "ngram:value"
         res = NgramService.hbase_raw(table, cand_string, column)
         if res:
-            self.candidates = {}
+            self.uri_counts = {}
             # take Xs percentile to remove noisy candidates
             temp_candidates = self._parse_candidate(res)
             total_c = sum(zip(*temp_candidates)[1])
@@ -33,11 +33,11 @@ class CandidateEntity:
                 if cur_c/total_c > PERCENTILE:
                     break
                 cur_c += count
-                self.candidates[uri] = count
+                self.uri_counts[uri] = count
             # also remove all counts = 1
-            for uri in self.candidates.keys():
-                if self.candidates[uri] < 2:
-                    del self.candidates[uri]
+            for uri in self.uri_counts.keys():
+                if self.uri_counts[uri] < 2:
+                    del self.uri_counts[uri]
 
     @staticmethod
     def _parse_candidate(cand_string):
@@ -45,7 +45,7 @@ class CandidateEntity:
         return [(uri, long(count)) for uri, count in candidates]
 
     def __len__(self):
-        return len(self.candidates)
+        return len(self.uri_counts)
 
     def __repr__(self):
         return self.cand_string + ":" + str(self.true_entity)
@@ -73,7 +73,7 @@ def _extract_candidates(pos_tokens):
                 # TODO: what to do with lower-case things?
                 if not cand_entity.cand_string[0].isupper():
                     continue
-                if cand_entity.candidates and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
+                if cand_entity.uri_counts and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
                     entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
                     should_break = False
