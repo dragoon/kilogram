@@ -68,6 +68,9 @@ def _extract_candidates(pos_tokens):
             should_break = True
             for n_i, ngram in enumerate(nltk.ngrams(words[start_i:end_i], n)):
                 cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, ' '.join(ngram))
+                # TODO: what to do with lower-case things?
+                if not cand_entity.cand_string[0].isupper():
+                    continue
                 if cand_entity.candidates and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
                     entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
