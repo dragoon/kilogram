@@ -15,6 +15,8 @@ class TestEntityLinking(unittest.TestCase):
         print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
         print link("Barack and Michelle visited us today.")
         print link("GitHub experienced a massive DDoS attack yesterday evening.")
+        print link("Saban, previously a head coach of NFL's Miami, is now coaching Crimson Tide. "
+                   "His achievements include leading LSU to the BCS National Championship once and Alabama three times.")
 
 
 if __name__ == '__main__':
