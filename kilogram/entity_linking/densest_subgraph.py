@@ -85,6 +85,7 @@ class SemanticGraph:
     def do_linking(self):
         for candidate in self.candidates:
             scores = self._calculate_scores(candidate)
-            max_uri, score = max(scores.items(), key=lambda x: x[1])
-            candidate.true_entity = max_uri
+            if scores:
+                max_uri, score = max(scores.items(), key=lambda x: x[1])
+                candidate.true_entity = max_uri
 
