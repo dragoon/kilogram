@@ -43,6 +43,9 @@ class SemanticGraph:
                             if weight > 0:
                                 self.G.add_edge(uri_i, uri_j, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)
+        # TODO: do not prune if no nodes?
+        if self.G.number_of_nodes() == 0:
+            return
         for cand in candidates:
             # immediately prune nodes without connections
             for uri in cand.uri_counts.keys():
@@ -93,3 +96,6 @@ class SemanticGraph:
             candidate, uri_score = max(scores, key=lambda x: x[1][1])
             candidate.true_entity = uri_score[0]
             # delete other entities
+            for uri in candidate.uri_counts.keys():
+                if uri != uri_score[0]:
+                    self.G.remove_node(uri)
