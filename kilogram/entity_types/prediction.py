@@ -54,6 +54,29 @@ class NgramTypePredictor(object):
                         for i, type_values in enumerate(types)]
         return probs
 
+    def _get_full_ngram_probs(self, context):
+        # pre, post, mid bigrams
+        context[2] = SUBSTITUTION_TOKEN
+        trigrams = [context[:3], context[-3:], context[1:4]]
+        bigrams = [context[1:3], 'NONE', context[2:4]]
+
+        types = {2: [], 3: []}
+        for bigram, trigram in zip(bigrams, trigrams):
+            for ngram, order in zip((bigram, trigram), (2, 3)):
+                type_values = NgramService.hbase_raw(self.hbase_table, " ".join(ngram), "ngram:value") or []
+                type_values_unpacked = ListPacker.unpack(type_values)
+                try:
+                    total = sum(int(x) for x in zip(*type_values_unpacked)[1])
+                    types[order].append([{'name': e_type, 'count': int(count), 'prob': int(count)/total} for e_type, count in type_values_unpacked])
+                except:
+                    types[order].append([])
+        return types
+
+    def predict_types_features(self, context):
+        """Context should always be a 5-element list"""
+        ngram_probs = self._get_full_ngram_probs(context)
+        return ngram_probs
+
     def predict_types(self, context, filter_types=None):
         """Context should always be a 5-element list"""
         ngram_probs = self._get_ngram_probs(context, filter_types)
