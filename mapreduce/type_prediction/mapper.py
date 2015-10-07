@@ -11,10 +11,10 @@ for line in sys.stdin:
     if int(num) < 10:
         continue
 
-    type_count = ngram.count('<http://dbpedia.org')
+    type_count = ngram.count('<dbpedia:')
     ngram = ngram.split()
     if type_count > 0:
-        type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<http://dbpedia.org')]
+        type_indexes = [i for i, x in enumerate(ngram) if x.startswith('<dbpedia:')]
         for type_index in type_indexes:
             subst_ngram = ngram[:]
             entity_type = ngram[type_index]

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+from collections import defaultdict
 import sys
 from kilogram.ngram_service import ListPacker
 
 current_ngram = None
 ngram = None
-cur_counts = []
+cur_counts = defaultdict(lambda: 0)
 
 # input comes from STDIN
 for line in sys.stdin:
@@ -21,14 +22,15 @@ for line in sys.stdin:
     # this IF-switch only works because Hadoop sorts map output
     # by key (here: word) before it is passed to the reducer
     if ngram == current_ngram:
-        cur_counts.append((subcount_key, count))
+        cur_counts[subcount_key] += int(count)
     else:
         if current_ngram:
             # write result to STDOUT
-            print '%s\t%s' % (current_ngram, ListPacker.pack(cur_counts))
-        cur_counts = [(subcount_key, count)]
+            print '%s\t%s' % (current_ngram, ListPacker.pack(cur_counts.items()))
+        cur_counts = defaultdict(lambda: 0)
+        cur_counts[subcount_key] += int(count)
         current_ngram = ngram
 
 # do not forget to output the last word if needed!
 if ngram and current_ngram == ngram:
-    print '%s\t%s' % (ngram, ListPacker.pack(cur_counts))
+    print '%s\t%s' % (ngram, ListPacker.pack(cur_counts.items()))
