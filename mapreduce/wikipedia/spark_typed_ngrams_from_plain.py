@@ -16,8 +16,11 @@ ner = NgramEntityResolver("dbpedia_types.txt", "dbpedia_uri_excludes.txt",
 
 def map_types(line):
     ngram, count = line.strip().split('\t')
-    return ' '.join(ner.replace_types(ner.resolve_entities(ngram.split()), order=-1)) + '\t' + count
+    new_ngram = ' '.join(ner.replace_types(ner.resolve_entities(ngram.split()), order=-1))
+    if len(new_ngram.split()) > len(ngram.split()):
+        return None
+    return new_ngram + '\t' + count
 
-typed_ngrams = ngram_lines.map(map_types).filter(lambda x: '<dbpedia:' in x)
+typed_ngrams = ngram_lines.map(map_types).filter(lambda x: x is not None and '<dbpedia:' in x)
 
 typed_ngrams.saveAsTextFile(sys.argv[2])
