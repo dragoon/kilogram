@@ -24,7 +24,7 @@ def predict_ngram_from_context():
         types = set(request.args.get('types').strip().split(';'))
     except:
         pass
-    return jsonify({'types': ngram_predictor.predict_types(context, types)})
+    return jsonify({'types': ngram_predictor.predict_types_features(context, types)})
 
 
 @app.after_request
