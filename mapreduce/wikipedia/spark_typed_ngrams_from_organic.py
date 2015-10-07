@@ -1,5 +1,5 @@
 """
-spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_typed_ngrams_from_organic.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/dbpedia_types.txt" "/user/roman/wikipedia_typed_ngrams" 3
+spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_typed_ngrams_from_organic.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/dbpedia_types.txt" "/user/roman/wikipedia_typed_ngrams_organic" 3
 """
 import sys
 from pyspark import SparkContext
