@@ -61,14 +61,6 @@ class NgramTypePredictor(object):
         for probs in ngram_probs:
             for entity_type, prob in probs:
                 type_probs[entity_type] += prob/len(ngram_probs)
-        try:
-            min_prob = min(type_probs.values())
-        except ValueError:
-            # empty sequence
-            min_prob = 1
-        for entity_type, prior in self.type_priors.items():
-            if entity_type not in type_probs and (filter_types and entity_type in filter_types):
-                type_probs[entity_type] = prior*min_prob
 
         result_probs = sorted(type_probs.items(), key=lambda x: x[1], reverse=True)
         return result_probs
