@@ -14,3 +14,4 @@ class TestTyping(unittest.TestCase):
 
     def test_main(self):
         print self.ngram_predictor.predict_types("I went NONE NONE NONE".split())
+        print self.ngram_predictor.predict_types_features("I went NONE NONE NONE".split())
