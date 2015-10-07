@@ -20,6 +20,6 @@ def map_types(line):
     return ' '.join(ner.replace_types(ner.resolve_entities(ngram.split()), order=-1)), int(count)
 
 typed_ngrams = ngram_lines.map(map_types).filter(lambda x: '<dbpedia:' in x[0] and len(x[0].split()) <= N)
-typed_ngrams = typed_ngrams.reduceByKey(lambda n1, n2: n1+n2)
+#typed_ngrams = typed_ngrams.reduceByKey(lambda n1, n2: n1+n2)
 
 typed_ngrams.map(lambda x: x[0]+'\t'+str(x[1])).saveAsTextFile(sys.argv[2])
