@@ -60,19 +60,20 @@ class NgramTypePredictor(object):
         trigrams = [context[:3], context[-3:], context[1:4]]
         bigrams = [context[1:3], 'NONE', context[2:4]]
 
-        types = {2: {'values': []}, 3: {'values': []}}
+        types = {2: [], 3: []}
         for bigram, trigram in zip(bigrams, trigrams):
             for ngram, order in zip((bigram, trigram), (2, 3)):
                 type_values = NgramService.hbase_raw(self.hbase_table, " ".join(ngram), "ngram:value") or []
                 type_values_unpacked = ListPacker.unpack(type_values)
-                types[order]['ngram'] = ' '.join(ngram)
+                type_dict = {'ngram': ' '.join(ngram)}
                 try:
                     total = sum(int(x) for x in zip(*type_values_unpacked)[1])
                     features = [{'name': e_type, 'count': int(count), 'prob': int(count)/total} for e_type, count in type_values_unpacked]
                     features.sort(key=lambda x: x['count'], reverse=True)
-                    types[order]['values'].append(features)
+                    type_dict['values'] = features
                 except:
-                    types[order]['values'].append([])
+                    type_dict['values'] = []
+                types[order].append(type_dict)
         return types
 
     def predict_types_features(self, context):
