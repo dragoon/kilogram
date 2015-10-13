@@ -68,8 +68,9 @@ class NgramTypePredictor(object):
                 type_dict = {'ngram': ' '.join(ngram)}
                 try:
                     total = sum(int(x) for x in zip(*type_values_unpacked)[1])
-                    features = [{'name': e_type, 'count': int(count), 'prob': int(count)/total} for e_type, count in type_values_unpacked]
-                    features.sort(key=lambda x: x['count'], reverse=True)
+                    features = [{'name': e_type, 'count': int(count), 'prob': int(count)/total,
+                                 'pmi': int(count)/total/self.type_priors[e_type]} for e_type, count in type_values_unpacked]
+                    features.sort(key=lambda x: x['pmi'], reverse=True)
                     type_dict['values'] = features
                 except:
                     type_dict['values'] = []
