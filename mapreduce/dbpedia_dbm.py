@@ -30,6 +30,8 @@ for line in p.stdout:
         uri, predicate, type_uri = line.split(' ', 2)
     except:
         continue
+    if '<http://schema.org/Person>' in type_uri:
+        type_uri = '<http://dbpedia.org/ontology/Person>'
     if 'http://dbpedia.org/ontology/' not in type_uri:
         continue
     if 'http://dbpedia.org/ontology/Wikidata' in type_uri:
