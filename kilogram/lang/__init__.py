@@ -24,8 +24,8 @@ _RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_
                 ('<NUM:TEMP>', TEMPERATURE_RE), ('<NUM:PERCENT>', PERCENT_RE),
                 ('<NUM:INT>', INT_RE), ('<NUM:OTHER>', NUM_RE)]
 
-NE_TOKEN = re.compile(r'<[A-Z]+>')
-NE_END_TOKEN = re.compile(r'</[A-Z]+>$')
+NE_TOKEN = re.compile(r'<[A-Z]+?>')
+NE_END_TOKEN = re.compile(r'</[A-Z]+?>$')
 
 
 def number_replace(sentence):
@@ -125,3 +125,33 @@ def replace_ne(sentence):
         if not is_ne:
             typed_tokens.append(ne_token)
     return ' '.join(typed_tokens)
+
+
+def ne_dict(sentence):
+    """
+    /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
+    """
+    from .. import NER_HOSTNAME, NER_PORT
+    ne_tokens = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
+    ne_dict = {}
+    is_ne = False
+    cur_words = []
+    cur_type = None
+    for ne_token in ne_tokens.split():
+        match_start = NE_TOKEN.match(ne_token)
+        match_end = NE_END_TOKEN.search(ne_token)
+        if match_start:
+            is_ne = True
+            cur_type = match_start.group(0)
+            cur_words.append(ne_token.split('>')[1].split('<')[0])
+        if match_end:
+            is_ne = False
+            if not match_start:
+                cur_words.append(ne_token.split('<')[0])
+            ne_dict[' '.join(cur_words)] = cur_type
+            cur_type = None
+            cur_words = []
+            continue
+        if is_ne and not match_start:
+            cur_words.append(ne_token)
+    return ne_dict
