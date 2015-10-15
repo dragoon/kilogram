@@ -107,7 +107,7 @@ def pos_tag(sentence):
 
 def replace_ne(sentence):
     """
-    /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-ner.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML -loadClassifier classifiers/english.muc.7class.distsim.crf.ser.gz &
+    /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
     """
     from .. import NER_HOSTNAME, NER_PORT
     ne_tokens = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
