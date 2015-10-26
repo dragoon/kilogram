@@ -84,9 +84,16 @@ class NgramEntityResolver:
         return words
 
     def replace_types(self, words, order=0):
+        """
+        :param order: 0 - most specific, -1 - most generic
+        :return: type of an entity
+        """
         for word in words:
             if word.startswith('<dbpedia:'):
-                types = self.dbpedia_types[word[9:-1]]
-                yield '<dbpedia:' + self.ontology.get_ordered_types(types)[order] + '>'
+                yield '<dbpedia:' + self.get_type(word[9:-1], order) + '>'
             else:
                 yield word
+
+    def get_type(self, word, order):
+        types = self.dbpedia_types[word]
+        return self.ontology.get_ordered_types(types)[order]
