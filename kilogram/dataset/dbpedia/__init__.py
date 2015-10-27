@@ -90,10 +90,10 @@ class NgramEntityResolver:
         """
         for word in words:
             if word.startswith('<dbpedia:'):
-                yield '<dbpedia:' + self.get_type(word[9:-1], order) + '>'
+                yield self.get_type(word[9:-1], order)
             else:
                 yield word
 
     def get_type(self, word, order):
         types = self.dbpedia_types[word]
-        return self.ontology.get_ordered_types(types)[order]
+        return '<dbpedia:' + self.ontology.get_ordered_types(types)[order] + '>'
