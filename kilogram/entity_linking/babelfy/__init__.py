@@ -2,7 +2,8 @@ from __future__ import division
 
 import nltk
 from .densest_subgraph import SemanticGraph
-from kilogram import NgramService, ListPacker
+from entity_linking import parse_candidate
+from kilogram import NgramService
 from lang.tokenize import default_tokenize_func
 
 PERCENTILE = 0.9
@@ -26,7 +27,7 @@ class CandidateEntity:
         if res:
             self.uri_counts = {}
             # take Xs percentile to remove noisy candidates
-            temp_candidates = self._parse_candidate(res)
+            temp_candidates = parse_candidate(res)
             total_c = sum(zip(*temp_candidates)[1])
             cur_c = 0
             for uri, count in sorted(temp_candidates, key=lambda x: x[1], reverse=True):
@@ -38,11 +39,6 @@ class CandidateEntity:
             for uri in self.uri_counts.keys():
                 if self.uri_counts[uri] < 2:
                     del self.uri_counts[uri]
-
-    @staticmethod
-    def _parse_candidate(cand_string):
-        candidates = ListPacker.unpack(cand_string)
-        return [(uri, long(count)) for uri, count in candidates]
 
     def __len__(self):
         return len(self.uri_counts)
