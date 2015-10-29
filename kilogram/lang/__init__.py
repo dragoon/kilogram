@@ -2,6 +2,7 @@
 import re
 import socket
 import time
+from .tokenize import wiki_tokenize_func
 
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
 PUNCT_SET = set('[!(),.:;?/[\\]^`{|}]')
@@ -125,6 +126,29 @@ def replace_ne(sentence):
         if not is_ne:
             typed_tokens.append(ne_token)
     return ' '.join(typed_tokens)
+
+
+def get_context(start, text, match):
+    end = match.end() + start
+    spaces = [i for i, c in enumerate(text) if c == ' ']
+    try:
+        prev_space = [i for i in spaces if i < start][-3]
+    except IndexError:
+        prev_space = 0
+    try:
+        next_space = [i for i in spaces if i >= end][2]
+    except IndexError:
+        next_space = len(text)
+
+    prev_ngrams = wiki_tokenize_func(text[prev_space+1:start])[-2:]
+    while len(prev_ngrams) < 2:
+        prev_ngrams.insert(0, 'NONE')
+
+    next_ngrams = wiki_tokenize_func(text[end:next_space])[:2]
+    while len(next_ngrams) < 2:
+        next_ngrams.append('NONE')
+
+    return ' '.join(prev_ngrams) + ' NONE ' + ' '.join(next_ngrams)
 
 
 def ne_dict(sentence):
