@@ -70,7 +70,7 @@ def parse_data(data_dir, ner):
                     end_i = i + len(uri_text)
                     data[filename.split('.')[0]][(i - offset, end_i - offset)] = \
                         {'text': uri_text, 'uri': ner.redirects_file.get(uri, uri),
-                         'ner': ner_dict.get(uri_text, 'NONE'),
+                         'ner': ner_dict.get(uri_text, None),
                          'context': get_context(i, text, match, ner)}
                     offset += (len(uri) + 3)
     return data
