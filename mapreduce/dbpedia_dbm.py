@@ -61,10 +61,9 @@ for line in p.stdout:
     if '(disambiguation)' in name_redirect:
         continue
     # skip entities that have no types
-    if name_canon not in typed_entities:
-        continue
-    for type_uri in typed_entities[name_canon]:
-        dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
+    if name_canon in typed_entities:
+        for type_uri in typed_entities[name_canon]:
+            dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
     dbpedia_redirects.write(name_redirect.decode('utf-8') + '\t' + name_canon.decode('utf-8') +'\n')
 
 dbpediadb.close()
