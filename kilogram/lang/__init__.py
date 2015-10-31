@@ -134,7 +134,7 @@ def get_context(start, text, match):
     try:
         prev_space = [i for i in spaces if i < start][-3]
     except IndexError:
-        prev_space = 0
+        prev_space = -1
     try:
         next_space = [i for i in spaces if i >= end][2]
     except IndexError:
@@ -151,31 +151,33 @@ def get_context(start, text, match):
     return ' '.join(prev_ngrams) + ' NONE ' + ' '.join(next_ngrams)
 
 
-def ne_dict(sentence):
+def parse_entities(sentence):
     """
     /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
     """
+    ENTITY_MATCH_RE = re.compile(r'(<[A-Z]+>)(.+?)</[A-Z]+>')
+
+    def dbp_type(ner_type):
+        if ner_type == '<LOCATION>':
+            return '<dbpedia:Place>'
+        elif ner_type == '<PERSON>':
+            return '<dbpedia:Person>'
+        elif ner_type in ('<ORGANISATION>', '<ORGANIZATION>'):
+            return '<dbpedia:Organisation>'
+
+    def replace_types(context):
+        return ENTITY_MATCH_RE.sub(lambda m: dbp_type(m.group(1)), context)
+
     from .. import NER_HOSTNAME, NER_PORT
-    ne_tokens = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
-    ne_dict = {}
-    is_ne = False
-    cur_words = []
-    cur_type = None
-    for ne_token in ne_tokens.split():
-        match_start = NE_TOKEN.match(ne_token)
-        match_end = NE_END_TOKEN.search(ne_token)
-        if match_start:
-            is_ne = True
-            cur_type = match_start.group(0)
-            cur_words.append(ne_token.split('>')[1].split('<')[0])
-        if match_end:
-            is_ne = False
-            if not match_start:
-                cur_words.append(ne_token.split('<')[0])
-            ne_dict[' '.join(cur_words)] = cur_type
-            cur_type = None
-            cur_words = []
-            continue
-        if is_ne and not match_start:
-            cur_words.append(ne_token)
-    return ne_dict
+    text = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
+    ne_list = []
+    for i, c in enumerate(text):
+        if c == '<':
+            # check end
+            match = ENTITY_MATCH_RE.match(text[i:])
+            if match:
+                uri_text = match.group(2)
+                e_type = dbp_type(match.group(1))
+                ne_list.append({'text': uri_text, 'type': e_type,
+                                'context': replace_types(get_context(i, text, match))})
+    return ne_list
