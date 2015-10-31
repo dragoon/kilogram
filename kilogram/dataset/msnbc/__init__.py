@@ -17,18 +17,19 @@ def _parse_truth_data(truth_file, ner):
             pass
         else:
             values = line.strip().split('\t')
-            # entity is not in Wikipedia
-            if values[-1] == '---':
-                uri = values[1].replace(' ', '_')
-                uri = ner.redirects_file.get(uri, uri)
-                truth_data[filename][values[0]] = {'uri': uri, 'exists': False}
+
             # entity is weird
-            elif values[-1] == '!!!':
+            if values[-1] == '!!!':
                 continue
-            else:
-                uri = values[1].replace(' ', '_')
-                uri = ner.redirects_file.get(uri, uri)
-                truth_data[filename][values[0]] = {'uri': uri, 'exists': True}
+
+            uri = values[1].replace(' ', '_')
+            uri = ner.redirects_file.get(uri, uri)
+
+            truth_data[filename][values[0]] = {'uri': uri, 'exists': True}
+            if values[-1] == '---':
+                # entity is not in Wikipedia
+                truth_data[filename][values[0]]['exists'] = False
+
     return truth_data
 
 
