@@ -19,13 +19,15 @@ def _parse_truth_data(truth_file, ner):
             values = line.strip().split('\t')
             # entity is not in Wikipedia
             if values[-1] == '---':
-                uri = ner.redirects_file.get(values[1], values[1])
+                uri = values[1].replace(' ', '_')
+                uri = ner.redirects_file.get(uri, uri)
                 truth_data[filename][values[0]] = {'uri': uri, 'exists': False}
             # entity is weird
             elif values[-1] == '!!!':
                 continue
             else:
-                uri = ner.redirects_file.get(values[1], values[1])
+                uri = values[1].replace(' ', '_')
+                uri = ner.redirects_file.get(uri, uri)
                 truth_data[filename][values[0]] = {'uri': uri, 'exists': True}
     return truth_data
 
@@ -39,7 +41,12 @@ def parse_data(data_dir, truth_file, ner):
         text = re.sub(r'\s+', ' ', text)
         text = re.sub(r'\'s\b', '', text)
         ner_list = parse_entities(ENTITY_MATCH_RE.sub('\g<2>', text).replace('_', ' ').decode('utf-8'))
+        visited = set()
         for values in ner_list:
-            values['uri'] = truth_data[filename].get(values['text'])
+            values['uri'] = truth_data[filename].get(values['text'], {'uri': None})
             data[filename].append(values)
+            visited.add(values['text'])
+        for text, uri in truth_data[filename].iteritems():
+            if text not in visited:
+                data[filename].append({'text': text, 'context': None, 'type': None, 'uri': uri})
     return data
