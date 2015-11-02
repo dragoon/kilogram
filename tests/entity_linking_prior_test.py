@@ -49,7 +49,7 @@ class Metrics(object):
 class TestEntityLinking(unittest.TestCase):
 
     def test_prior_prob_d2kb(self):
-        print 'Prior prob'
+        print 'Prior prob, D2KB'
         metric = Metrics()
         for filename, values in msnbc_data.iteritems():
             for line_dict in values:
@@ -63,14 +63,43 @@ class TestEntityLinking(unittest.TestCase):
                 metric.evaluate(true_uri, uri)
         metric.print_metrics()
 
+    def test_prior_prob_a2kb(self):
+        print 'Prior prob, A2KB'
+        metric = Metrics()
+        for filename, values in msnbc_data.iteritems():
+            for line_dict in values:
+                true_uri = line_dict['true_uri']
+                text = line_dict['text']
+                uri = get_max_uri(text)
+
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
+
     def test_prior_prob_d2kb_typed(self):
-        print 'Prior prob + type improvements'
+        print 'Prior prob + type improvements, D2KB'
         metric = Metrics()
         for filename, values in msnbc_data.iteritems():
             for line_dict in values:
                 # D2KB
                 if line_dict['true_uri']['uri'] is None:
                     continue
+                true_uri = line_dict['true_uri']
+                text = line_dict['text']
+
+                e_type = line_dict['type']
+                if e_type is not None:
+                    uri = get_max_typed_uri(text, e_type, ner)
+                else:
+                    uri = get_max_uri(text)
+
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
+
+    def test_prior_prob_a2kb_typed(self):
+        print 'Prior prob + type improvements, A2KB'
+        metric = Metrics()
+        for filename, values in msnbc_data.iteritems():
+            for line_dict in values:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
 
