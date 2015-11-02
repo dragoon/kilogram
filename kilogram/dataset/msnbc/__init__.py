@@ -44,10 +44,10 @@ def parse_data(data_dir, truth_file, ner):
         ner_list = parse_entities(ENTITY_MATCH_RE.sub('\g<2>', text).replace('_', ' ').decode('utf-8'))
         visited = set()
         for values in ner_list:
-            values['uri'] = truth_data[filename].get(values['text'], {'uri': None})
+            values['true_uri'] = truth_data[filename].get(values['text'], {'uri': None})
             data[filename].append(values)
             visited.add(values['text'])
         for text, uri in truth_data[filename].iteritems():
             if text not in visited:
-                data[filename].append({'text': text, 'context': None, 'type': None, 'uri': uri})
+                data[filename].append({'text': text, 'context': None, 'type': None, 'true_uri': uri})
     return data

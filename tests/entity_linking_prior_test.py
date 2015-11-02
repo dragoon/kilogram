@@ -7,71 +7,81 @@ from entity_linking.priorprob import get_max_uri, get_max_typed_uri
 from kilogram import NgramService
 import kilogram
 
+NgramService.configure(hbase_host=('diufpc304', '9090'))
+kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
+ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_types.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_redirects.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
+msnbc_data = parse_data('../extra/data/msnbc/texts/',
+                        '../extra/data/msnbc/msnbc_truth.txt', ner)
+
+
+class Metrics(object):
+    fp = None
+    tp = None
+    fn = None
+    tn = None
+
+    def __init__(self):
+        self.tp = 0
+        self.fp = 0
+        self.fn = 0
+        self.tn = 0
+
+    def evaluate(self, true_uri, uri):
+        if uri == true_uri['uri']:
+            self.tp += 1
+        elif uri is None and true_uri['uri'] is not None:
+            if true_uri['exists']:
+                self.fn += 1
+        else:
+            self.fp += 1
+
+    def print_metrics(self):
+        precision = self.tp / (self.tp+self.fp)
+        recall = self.tp / (self.tp+self.fn)
+        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
+        print self.tp, self.fp, self.fn, self.tn
+
 
 class TestEntityLinking(unittest.TestCase):
-    ner = None
-    msnbc_data = None
-
-    def setUp(self):
-        NgramService.configure(hbase_host=('diufpc304', '9090'))
-        kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
-        self.ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_types.txt",
-                                  "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
-                                  "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
-                                  "/Users/dragoon/Downloads/dbpedia/dbpedia_redirects.txt",
-                                  "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
-        self.msnbc_data = parse_data('../extra/data/msnbc/', self.ner)
 
     def test_prior_prob_d2kb(self):
         print 'Prior prob'
-        tp = fp = fn = tn = 0
-        for filename, values in self.msnbc_data.iteritems():
-            for index_tuple, line_dict in values.iteritems():
-                true_uri = line_dict['uri']
+        metric = Metrics()
+        for filename, values in msnbc_data.iteritems():
+            for line_dict in values:
+                # D2KB condition
+                if line_dict['true_uri']['uri'] is None:
+                    continue
+                true_uri = line_dict['true_uri']
                 text = line_dict['text']
                 uri = get_max_uri(text)
 
-                if uri == true_uri:
-                    tp += 1
-                elif uri is None and true_uri != 'NONE':
-                    fn += 1
-                else:
-                    fp += 1
-        precision = tp / (tp+fp)
-        recall = tp / (tp+fn)
-        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
-        print tp, fp, fn, tn
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
 
     def test_prior_prob_d2kb_typed(self):
         print 'Prior prob + type improvements'
-        tp = fp = fn = tn = 0
-        for filename, values in self.msnbc_data.iteritems():
-            for index_tuple, line_dict in values.iteritems():
-                true_uri = line_dict['uri']
+        metric = Metrics()
+        for filename, values in msnbc_data.iteritems():
+            for line_dict in values:
+                # D2KB
+                if line_dict['true_uri']['uri'] is None:
+                    continue
+                true_uri = line_dict['true_uri']
                 text = line_dict['text']
 
-                e_type = line_dict['ner']
-                if e_type == '<LOCATION>':
-                    e_type = '<dbpedia:Place>'
-                elif e_type == '<PERSON>':
-                    e_type = '<dbpedia:Person>'
-                elif e_type in ('<ORGANISATION>', '<ORGANIZATION>'):
-                    e_type = '<dbpedia:Organisation>'
+                e_type = line_dict['type']
                 if e_type is not None:
-                    uri = get_max_typed_uri(text, e_type, self.ner)
+                    uri = get_max_typed_uri(text, e_type, ner)
                 else:
                     uri = get_max_uri(text)
 
-                if uri == true_uri:
-                    tp += 1
-                elif uri is None and true_uri != 'NONE':
-                    fn += 1
-                else:
-                    fp += 1
-        precision = tp / (tp+fp)
-        recall = tp / (tp+fn)
-        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
-        print tp, fp, fn, tn
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
 
 
 if __name__ == '__main__':
