@@ -38,6 +38,8 @@ for line in p.stdout:
         continue
     uri = urllib.unquote(uri.replace('<http://dbpedia.org/resource/', '')[:-1])
     type_uri = type_uri.replace('<http://dbpedia.org/ontology/', '')[:-4]
+    if '(disambiguation)' in uri:
+        continue
     if type_uri in EXCLUDES:
         continue
 
