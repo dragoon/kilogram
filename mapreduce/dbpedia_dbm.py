@@ -18,9 +18,7 @@ from collections import defaultdict
 TYPES_FILE = 'instance_types_en.nt.bz2'
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
-dbpediadb = codecs.open('dbpedia_types.txt', 'w', 'utf-8')
-
-typed_entities = defaultdict(list)
+typed_entities = defaultdict(lambda: {'types': [], 'redirects': []})
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + TYPES_FILE, shell=True, stdout=subprocess.PIPE)
 for line in p.stdout:
@@ -43,11 +41,10 @@ for line in p.stdout:
     if type_uri in EXCLUDES:
         continue
 
-    typed_entities[uri].append(type_uri)
-    dbpediadb.write(uri.decode('utf-8') + '\t' + type_uri + '\n')
+    uri = uri.decode('utf-8')
+    typed_entities[uri]['types'].append(type_uri)
 
 
-dbpedia_redirects = codecs.open('dbpedia_redirects.txt', 'w', 'utf-8')
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
@@ -60,11 +57,12 @@ for line in p.stdout:
     name_canon = urllib.unquote(uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4])
     if '(disambiguation)' in name_redirect:
         continue
-    # skip entities that have no types
-    if name_canon in typed_entities:
-        for type_uri in typed_entities[name_canon]:
-            dbpediadb.write(name_redirect.decode('utf-8') + '\t' + type_uri + '\n')
-    dbpedia_redirects.write(name_redirect.decode('utf-8') + '\t' + name_canon.decode('utf-8') +'\n')
 
-dbpediadb.close()
-dbpedia_redirects.close()
+    typed_entities[name_canon.decode('utf-8')]['redirects'].append(name_redirect.decode('utf-8'))
+
+dbpedia_data = codecs.open('dbpedia_data.txt', 'w', 'utf-8')
+
+for uri, value_dict in typed_entities.iteritems():
+    dbpedia_data.write(uri+'\t'+' '.join(value_dict['types'])+'\t'+' '.join(value_dict['redirects'])+'\n')
+
+dbpedia_data.close()
