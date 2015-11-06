@@ -59,9 +59,10 @@ class NgramEntityResolver:
         self.ontology = DBPediaOntology(owl_filename)
 
         for line in open(dbp_file):
-            entity, entity_types, redirects = line.strip().split('\t')
-            self.dbpedia_types[entity] = entity_types.split()
-            for redirect in redirects:
+            entity, entity_types, redirects = line.split('\t')
+            if len(entity_types.strip()):
+                self.dbpedia_types[entity] = entity_types.split()
+            for redirect in redirects.strip().split():
                 self.redirects_file[redirect] = entity
 
         self.uri_excludes = set(open(uri_excludes).read().splitlines())

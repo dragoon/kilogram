@@ -12,6 +12,7 @@ class DataSet(object):
     ner = None
     truth_data = None
     data = None
+    texts = None
 
     def __init__(self, data_dir, truth_file, ner):
         self.data_dir = data_dir
@@ -19,6 +20,7 @@ class DataSet(object):
         self.ner = ner
         self.truth_data = self._parse_truth_data(ner)
         self.data = self._parse_data()
+        self.texts = {}
 
     def _parse_truth_data(self, ner):
         filename = None
@@ -56,6 +58,7 @@ class DataSet(object):
             text = re.sub(r'\s+', ' ', text)
             text = re.sub(r'\'s\b', '', text)
             text = ENTITY_MATCH_RE.sub('\g<2>', text).replace('_', ' ').decode('utf-8')
+            self.texts[filename] = text
             ner_list = parse_entities(text)
             visited = set()
             for values in ner_list:
