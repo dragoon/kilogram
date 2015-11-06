@@ -105,10 +105,10 @@ def printer(value):
         return label + '\t' + ListPacker.pack(uri_counts_anchors)
     elif uri_counts_anchors is None:
         return label + '\t' + ListPacker.pack(uri_count_labels)
-    uri_counts_anchors_dict = dict(uri_counts_anchors)
-    for uri, count in uri_count_labels:
-        if uri not in uri_counts_anchors_dict:
-            uri_counts_anchors_dict[uri] = count
-    return label + '\t' + ListPacker.pack(uri_counts_anchors_dict.items())
+    uri_count_labels_dict = dict(uri_count_labels)
+    for uri, count in uri_counts_anchors:
+        if uri not in uri_count_labels_dict:
+            uri_count_labels_dict[uri] = count
+    return label + '\t' + ListPacker.pack(uri_count_labels_dict.items())
 
 join.map(printer).saveAsTextFile(sys.argv[3])
