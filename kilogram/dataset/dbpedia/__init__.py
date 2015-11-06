@@ -53,17 +53,19 @@ class NgramEntityResolver:
     lower_includes = None
     redirects_file = None
 
-    def __init__(self, types_file, uri_excludes, lower_uri_includes, redirects_file, owl_filename):
-        self.dbpedia_types = defaultdict(list)
+    def __init__(self, dbp_file, uri_excludes, lower_uri_includes, owl_filename):
+        self.dbpedia_types = {}
+        self.redirects_file = {}
         self.ontology = DBPediaOntology(owl_filename)
 
-        for line in open(types_file):
-            entity, entity_type = line.strip().split('\t')
-            self.dbpedia_types[entity].append(entity_type)
+        for line in open(dbp_file):
+            entity, entity_types, redirects = line.strip().split('\t')
+            self.dbpedia_types[entity] = entity_types.split()
+            for redirect in redirects:
+                self.redirects_file[redirect] = entity
 
         self.uri_excludes = set(open(uri_excludes).read().splitlines())
         self.lower_includes = dict([line.strip().split('\t') for line in open(lower_uri_includes)])
-        self.redirects_file = dict([line.strip().split('\t') for line in open(redirects_file)])
 
     def resolve_entities(self, words):
         """Recursive entity resolution"""
