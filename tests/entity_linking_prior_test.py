@@ -2,7 +2,7 @@ from __future__ import division
 import unittest
 
 from dataset.dbpedia import NgramEntityResolver
-from dataset.msnbc import parse_data
+from dataset.msnbc import DataSet
 from entity_linking.evaluation import Metrics
 from entity_linking.priorprob import get_max_uri, get_max_typed_uri
 from kilogram import NgramService
@@ -15,7 +15,7 @@ ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_types.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_redirects.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
-msnbc_data = parse_data('../extra/data/msnbc/texts/',
+msnbc_data = DataSet('../extra/data/msnbc/texts/',
                         '../extra/data/msnbc/msnbc_truth.txt', ner)
 
 
@@ -24,7 +24,7 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_d2kb(self):
         print 'Prior prob, D2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.iteritems():
+        for filename, values in msnbc_data.data.iteritems():
             for line_dict in values:
                 # D2KB condition
                 if line_dict['true_uri']['uri'] is None:
@@ -39,7 +39,7 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.iteritems():
+        for filename, values in msnbc_data.data.iteritems():
             for line_dict in values:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
@@ -51,7 +51,7 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_d2kb_typed(self):
         print 'Prior prob + type improvements, D2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.iteritems():
+        for filename, values in msnbc_data.data.iteritems():
             for line_dict in values:
                 # D2KB
                 if line_dict['true_uri']['uri'] is None:
@@ -71,7 +71,7 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_a2kb_typed(self):
         print 'Prior prob + type improvements, A2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.iteritems():
+        for filename, values in msnbc_data.data.iteritems():
             for line_dict in values:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
