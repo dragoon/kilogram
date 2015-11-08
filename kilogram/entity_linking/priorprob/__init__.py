@@ -20,7 +20,7 @@ def get_max_typed_uri(text, e_type, ner, table="wiki_anchor_ngrams"):
                 cand_type = ner.get_type(cand_uri, -1)
                 if cand_type == e_type:
                     return cand_uri
-            except IndexError:
+            except KeyError:
                 return cand_uri
     return None
 
