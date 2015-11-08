@@ -1,7 +1,8 @@
 from __future__ import division
 from collections import defaultdict
 import networkx as nx
-from kilogram import ListPacker, NgramService
+from entity_linking.priorprob import get_max_uri
+from kilogram import NgramService
 import zmq
 
 
@@ -94,8 +95,12 @@ class SemanticGraph:
             if not scores:
                 break
             candidate, uri_score = max(scores, key=lambda x: x[1][1])
-            candidate.true_entity = uri_score[0]
+            if uri_score[1] > 0:
+                candidate.true_entity = uri_score[0]
+            else:
+                # resort to max prob
+                candidate.true_entity = get_max_uri(candidate.cand_string)
             # delete other entities
             for uri in candidate.uri_counts.keys():
-                if uri != uri_score[0] and self.G.has_node(uri):
+                if uri != candidate.true_entity and self.G.has_node(uri):
                     self.G.remove_node(uri)
