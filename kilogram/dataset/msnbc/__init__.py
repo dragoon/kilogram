@@ -15,12 +15,12 @@ class DataSet(object):
     texts = None
 
     def __init__(self, data_dir, truth_file, ner):
+        self.texts = {}
         self.data_dir = data_dir
         self.truth_file = truth_file
         self.ner = ner
         self.truth_data = self._parse_truth_data(ner)
         self.data = self._parse_data()
-        self.texts = {}
 
     def _parse_truth_data(self, ner):
         filename = None

@@ -1,12 +1,23 @@
 import unittest
+from dataset.dbpedia import NgramEntityResolver
+from dataset.msnbc import DataSet
 
-from entity_linking.babelfy import _extract_candidates, link
+from entity_linking.babelfy import _extract_candidates, link, CandidateEntity, SemanticGraph
+from entity_linking.evaluation import Metrics
 from kilogram import NgramService
+import kilogram
+
+NgramService.configure(hbase_host=('diufpc304', '9090'))
+kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
+ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
+                          "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
+msnbc_data = DataSet('../extra/data/msnbc/texts/',
+                        '../extra/data/msnbc/msnbc_truth.txt', ner)
 
 
 class TestEntityLinking(unittest.TestCase):
-    def setUp(self):
-        NgramService.configure(hbase_host=('diufpc304', '9090'))
 
     def test_extract_candidates(self):
         self.assertIsNotNone(_extract_candidates([("Obama", "NNP")]))
@@ -18,6 +29,29 @@ class TestEntityLinking(unittest.TestCase):
         print link("GitHub experienced a massive DDoS attack yesterday evening.")
         print link("Saban, previously a head coach of NFL's Miami, is now coaching Crimson Tide. "
                    "His achievements include leading LSU to the BCS National Championship once and Alabama three times.")
+
+    def test_prior_prob_a2kb(self):
+        print 'Prior prob, A2KB'
+        metric = Metrics()
+        for filename, values in msnbc_data.data.iteritems():
+            candidates = []
+            for line_dict in values:
+                text = line_dict['text']
+                cand = CandidateEntity(0, 0, 0, text)
+                if cand.uri_counts:
+                    line_dict['cand'] = cand
+                    candidates.append(cand)
+            # resolve
+            graph = SemanticGraph(candidates)
+            graph.do_iterative_removal()
+            graph.do_linking()
+            for line_dict in values:
+                true_uri = line_dict['true_uri']
+                uri = None
+                if 'cand' in line_dict:
+                    uri = line_dict['cand'].true_entity
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
 
 
 if __name__ == '__main__':
