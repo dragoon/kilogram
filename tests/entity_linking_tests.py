@@ -53,6 +53,33 @@ class TestEntityLinking(unittest.TestCase):
                 metric.evaluate(true_uri, uri)
         metric.print_metrics()
 
+    def test_prior_prob_d2kb(self):
+        print 'Prior prob, D2KB'
+        metric = Metrics()
+        for filename, values in msnbc_data.data.iteritems():
+            candidates = []
+            for line_dict in values:
+                if line_dict['true_uri']['uri'] is None:
+                    continue
+                text = line_dict['text']
+                cand = CandidateEntity(0, 0, 0, text)
+                if cand.uri_counts:
+                    line_dict['cand'] = cand
+                    candidates.append(cand)
+            # resolve
+            graph = SemanticGraph(candidates)
+            graph.do_iterative_removal()
+            graph.do_linking()
+            for line_dict in values:
+                if line_dict['true_uri']['uri'] is None:
+                    continue
+                true_uri = line_dict['true_uri']
+                uri = None
+                if 'cand' in line_dict:
+                    uri = line_dict['cand'].true_entity
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
+
 
 if __name__ == '__main__':
     print('Test Entity Linkings')
