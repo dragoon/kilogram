@@ -23,6 +23,11 @@ class TestEntityLinking(unittest.TestCase):
         self.assertIsNotNone(_extract_candidates([("Obama", "NNP")]))
         self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
+    def test_twitter(self):
+        for line in open('/Users/dragoon/Downloads/en_tweets.txt'):
+            text = line.strip().split('\t')[1]
+            print link(text)
+
     def test_entity_linking(self):
         print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
         print link("Barack and Michelle visited us today.")
@@ -35,9 +40,10 @@ class TestEntityLinking(unittest.TestCase):
         metric = Metrics()
         for filename, values in msnbc_data.data.iteritems():
             candidates = []
-            for line_dict in values:
+            for i, line_dict in enumerate(values):
                 text = line_dict['text']
-                cand = CandidateEntity(0, 0, 0, text)
+                # i ensures different nouns
+                cand = CandidateEntity(0, 0, i, text)
                 if cand.uri_counts:
                     line_dict['cand'] = cand
                     candidates.append(cand)
@@ -58,11 +64,11 @@ class TestEntityLinking(unittest.TestCase):
         metric = Metrics()
         for filename, values in msnbc_data.data.iteritems():
             candidates = []
-            for line_dict in values:
+            for i, line_dict in enumerate(values):
                 if line_dict['true_uri']['uri'] is None:
                     continue
                 text = line_dict['text']
-                cand = CandidateEntity(0, 0, 0, text)
+                cand = CandidateEntity(0, 0, i, text)
                 if cand.uri_counts:
                     line_dict['cand'] = cand
                     candidates.append(cand)
