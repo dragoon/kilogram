@@ -23,17 +23,15 @@ class TestEntityLinking(unittest.TestCase):
         self.assertIsNotNone(_extract_candidates([("Obama", "NNP")]))
         self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
-    def test_twitter(self):
-        for line in open('fixtures/sample.txt'):
-            text = line.strip()
-            print text, [x for x in link(text) if x.true_entity]
-
     def test_entity_linking(self):
         print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
         print link("Barack and Michelle visited us today.")
         print link("GitHub experienced a massive DDoS attack yesterday evening.")
         print link("Saban, previously a head coach of NFL's Miami, is now coaching Crimson Tide. "
                    "His achievements include leading LSU to the BCS National Championship once and Alabama three times.")
+
+
+class TestEntityLinkingKB(unittest.TestCase):
 
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
