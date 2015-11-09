@@ -86,8 +86,8 @@ def _extract_candidates(pos_tokens):
                 ngram = ' '.join(ngram)
                 cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, noun_index, ngram)
                 # TODO: what to do with lower-case things?
-                if not cand_entity.cand_string[0].isupper():
-                    continue
+                #if not cand_entity.cand_string[0].isupper():
+                #    continue
                 if cand_entity.uri_counts and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
                     entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
@@ -115,7 +115,8 @@ def link(sentence):
     tokens = default_tokenize_func(sentence)
     pos_tokens = nltk.pos_tag(tokens)
     candidates = _extract_candidates(pos_tokens)
-    graph = SemanticGraph(candidates)
-    graph.do_iterative_removal()
-    graph.do_linking()
+    if len(candidates) > 0:
+        graph = SemanticGraph(candidates)
+        graph.do_iterative_removal()
+        graph.do_linking()
     return candidates
