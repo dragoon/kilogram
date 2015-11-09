@@ -59,6 +59,8 @@ for line in p.stdout:
     name_redirect = urllib.unquote(uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1])
     name_canon = urllib.unquote(uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4])
     if '(disambiguation)' in name_redirect:
+        # delete other references if exist
+        del typed_entities[name_canon.decode('utf-8')]
         continue
 
     typed_entities[name_canon.decode('utf-8')]['redirects'].append(name_redirect.decode('utf-8'))
