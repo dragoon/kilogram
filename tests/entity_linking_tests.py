@@ -24,9 +24,9 @@ class TestEntityLinking(unittest.TestCase):
         self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
     def test_twitter(self):
-        for line in open('/Users/dragoon/Downloads/en_tweets.txt'):
-            text = line.strip().split('\t')[1]
-            print link(text)
+        for line in open('fixtures/sample.txt'):
+            text = line.strip()
+            print text, [x for x in link(text) if x.true_entity]
 
     def test_entity_linking(self):
         print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
@@ -44,6 +44,31 @@ class TestEntityLinking(unittest.TestCase):
                 text = line_dict['text']
                 # i ensures different nouns
                 cand = CandidateEntity(0, 0, i, text)
+                if cand.uri_counts:
+                    line_dict['cand'] = cand
+                    candidates.append(cand)
+            # resolve
+            graph = SemanticGraph(candidates)
+            graph.do_iterative_removal()
+            graph.do_linking()
+            for line_dict in values:
+                true_uri = line_dict['true_uri']
+                uri = None
+                if 'cand' in line_dict:
+                    uri = line_dict['cand'].true_entity
+                metric.evaluate(true_uri, uri)
+        metric.print_metrics()
+
+    def test_prior_prob_a2kb_typed(self):
+        print 'Prior prob, A2KB + Types'
+        metric = Metrics()
+        for filename, values in msnbc_data.data.iteritems():
+            candidates = []
+            for i, line_dict in enumerate(values):
+                text = line_dict['text']
+                # i ensures different nouns
+                cand = CandidateEntity(0, 0, i, text)
+                cand.prune_types(line_dict['type'], ner)
                 if cand.uri_counts:
                     line_dict['cand'] = cand
                     candidates.append(cand)

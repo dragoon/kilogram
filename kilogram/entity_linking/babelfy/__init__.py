@@ -43,8 +43,15 @@ class CandidateEntity:
                 if self.uri_counts[uri] < 2:
                     del self.uri_counts[uri]
 
-    def set_type(self, e_type):
-        self.e_type = e_type
+    def prune_types(self, e_type, ner):
+        if self.uri_counts and e_type:
+            for uri in self.uri_counts.keys():
+                try:
+                    uri_type = ner.get_type(uri, -1)
+                    if uri_type != e_type:
+                        del self.uri_counts[uri]
+                except KeyError:
+                    pass
 
     def __len__(self):
         return len(self.uri_counts)
