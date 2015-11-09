@@ -15,6 +15,7 @@ class CandidateEntity:
     noun_index = 0
     cand_string = None
     true_entity = None
+    e_type = None
 
     def __init__(self, start_i, end_i, noun_index, cand_string):
         self.cand_string = cand_string
@@ -41,6 +42,9 @@ class CandidateEntity:
             for uri in self.uri_counts.keys():
                 if self.uri_counts[uri] < 2:
                     del self.uri_counts[uri]
+
+    def set_type(self, e_type):
+        self.e_type = e_type
 
     def __len__(self):
         return len(self.uri_counts)
@@ -86,8 +90,8 @@ def _extract_candidates(pos_tokens):
                 ngram = ' '.join(ngram)
                 cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, noun_index, ngram)
                 # TODO: what to do with lower-case things?
-                #if not cand_entity.cand_string[0].isupper():
-                #    continue
+                if not cand_entity.cand_string[0].isupper():
+                    continue
                 if cand_entity.uri_counts and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
                     entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
