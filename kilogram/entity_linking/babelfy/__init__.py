@@ -43,6 +43,15 @@ class CandidateEntity:
                 if self.uri_counts[uri] < 2:
                     del self.uri_counts[uri]
 
+    def keep_only_types(self, ner, types_to_keep):
+        for uri in self.uri_counts.keys():
+            try:
+                uri_type = ner.get_type(uri, -1)
+                if uri_type not in types_to_keep:
+                    del self.uri_counts[uri]
+            except KeyError:
+                del self.uri_counts[uri]
+
     def prune_types(self, e_type, ner):
         if self.uri_counts and e_type:
             for uri in self.uri_counts.keys():
