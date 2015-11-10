@@ -98,9 +98,18 @@ class SemanticGraph:
             if uri_score[1] > 0:
                 candidate.true_entity = uri_score[0]
             else:
-                # resort to max prob
-                candidate.true_entity = get_max_uri(candidate.cand_string)
+                # max is 0, break and resort to max prob
+                break
             # delete other entities
             for uri in candidate.uri_counts.keys():
                 if uri != candidate.true_entity and self.G.has_node(uri):
                     self.G.remove_node(uri)
+
+        # max prob
+        for candidate in self.candidates:
+            if candidate.true_entity:
+                continue
+            true_entity = get_max_uri(candidate.cand_string)
+            # makes sure max probable uri is not removed by type pruning
+            if true_entity in candidate.uri_counts:
+                candidate.true_entity = true_entity
