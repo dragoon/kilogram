@@ -1,8 +1,5 @@
 from collections import defaultdict
-import pickle
-import nltk
 import itertools
-yago_labels = pickle.load(open('/Users/dragoon/Projects/stanford-corenlp-full-2015-01-30/CoreNLP/label_type.pi'))
 
 class CorefCluster(object):
     # groups of mentions, can be headword or some other grouping
@@ -130,23 +127,6 @@ class Mention(object):
                 self.entity_type = ['<dbpedia:' + x.rsplit('/', 1)[1] + '>' for x in date_tuple[15].split()][0]
             except:
                 pass
-        if self.mention.lower() in yago_labels and len(yago_labels[self.mention.lower()]) > 0:
-           self.entity_type = yago_labels[self.mention.lower()][0]
-           self.entity_url = self.entity_type
-        else:
-            full_ngram = self.mention.lower().split()
-            # generate n-grams
-            for k in range(len(full_ngram)-1, 0, -1):
-                matching_ngrams = set()
-                for ngram in nltk.ngrams(full_ngram, k):
-                    if self.head_lemma not in ngram:
-                        continue
-                    ngram = ' '.join(ngram)
-                    if ngram in yago_labels:
-                        matching_ngrams.add(yago_labels[ngram][0])
-                if matching_ngrams:
-                    self.entity_type = self.entity_url = list(matching_ngrams)[0]
-                    break
 
     def __unicode__(self):
         return self.mention
