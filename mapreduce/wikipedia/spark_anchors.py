@@ -1,6 +1,7 @@
 """
-spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors"
-pig -p table=wiki_anchors -p path=/user/roman/wikipedia_anchors ./hbase_upload_array.pig
+spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wiki_anchors" "/user/roman/wiki_urls"
+pig -p table=wiki_anchors -p path=/user/roman/wiki_anchors ./hbase_upload_array.pig
+pig -p table=wiki_urls -p path=/user/roman/wiki_urls ./hbase_upload_array.pig
 """
 import sys
 from pyspark import SparkContext
@@ -45,7 +46,10 @@ def map_redirects(line):
     return uri, canon_uri
 
 dbp_urls = dbp_redirects_file.map(map_redirects).distinct()
-anchor_counts_join = anchor_counts.leftOuterJoin(dbp_urls).map(lambda x: x[1] if x[1][1] else (x[1][0], x[0]))
+dbp_anchor_join = anchor_counts.leftOuterJoin(dbp_urls)
+
+anchor_counts_join = dbp_anchor_join.map(lambda x: x[1] if x[1][1] else (x[1][0], x[0]))
+uri_counts_join = dbp_anchor_join.map(lambda x: (x[1][1], x[1][0]) if x[1][1] else (x[0], x[1][0]))
 
 
 def seqfunc(u, v):
@@ -64,8 +68,10 @@ def combfunc(u1, u2):
     return u1
 
 anchor_counts_agg = anchor_counts_join.aggregateByKey({}, seqfunc, combfunc)
+uri_counts_agg = uri_counts_join.aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
 
 anchor_counts_agg.map(printer).saveAsTextFile(sys.argv[2])
+uri_counts_agg.map(printer).saveAsTextFile(sys.argv[3])
