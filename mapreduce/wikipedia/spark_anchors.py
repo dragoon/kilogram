@@ -1,5 +1,6 @@
 """
 spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_anchors"
+pig -p table=wiki_anchors -p path=/user/roman/wikipedia_anchors ./hbase_upload_array.pig
 """
 import sys
 from pyspark import SparkContext
