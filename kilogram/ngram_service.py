@@ -138,13 +138,19 @@ class NgramService(object):
     @classmethod
     def get_wiki_prob(cls, phrase):
         """Get wiki probability of a phrase"""
-        page_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
-        anchor_counts = sum([long(x[1]) for x in page_counts])
+        anchor_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
+        anchor_count = sum([long(x[1]) for x in anchor_counts])
         # add 10 to compensate for small counts
-        wiki_counts = sum([cls.hbase_count(cls.wiki_urls_table, x[0].decode('utf-8')) for x in page_counts]) + 10
-        if wiki_counts -10 < anchor_counts:
+
+        wiki_counts = 10
+        for url, _ in anchor_counts:
+            url_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_urls_table, url.decode('utf-8'), "ngram:value"))
+            url_count = sum([long(x[1]) for x in url_counts])
+            wiki_counts += url_count
+
+        if wiki_counts - 10 < anchor_count:
             print "PROBABILITY ERROR"
-        return anchor_counts/wiki_counts
+        return anchor_count/wiki_counts
 
     @classmethod
     def get_wiki_edge_weights(cls, uri):
