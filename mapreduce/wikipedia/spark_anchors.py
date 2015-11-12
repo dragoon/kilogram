@@ -71,7 +71,7 @@ anchor_counts_agg = anchor_counts_join.aggregateByKey({}, seqfunc, combfunc)
 uri_counts_agg = uri_counts_join.aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
-    return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
+    return value[0] + '\t' + ' '.join([x.replace(' ', '_')+","+str(y) for x, y in value[1].items()])
 
 anchor_counts_agg.map(printer).saveAsTextFile(sys.argv[2])
 uri_counts_agg.map(printer).saveAsTextFile(sys.argv[3])
