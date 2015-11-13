@@ -12,6 +12,16 @@ def get_max_uri(text, table="wiki_anchor_ngrams"):
         return None
 
 
+def get_max_uris(text, table="wiki_anchor_ngrams"):
+    try:
+        candidates = parse_candidate(NgramService.hbase_raw(table, text, "ngram:value"))
+        if not candidates:
+            candidates = parse_candidate(NgramService.hbase_raw(table, text.title(), "ngram:value"))
+        return sorted(candidates, key=lambda x: x[1], reverse=True)
+    except:
+        return None
+
+
 def get_max_typed_uri(text, e_type, ner, table="wiki_anchor_ngrams"):
     for mention in (text, text.title()):
         candidates = parse_candidate(NgramService.hbase_raw(table, mention, "ngram:value"))
