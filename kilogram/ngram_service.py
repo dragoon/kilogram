@@ -136,17 +136,26 @@ class NgramService(object):
         return res
 
     @classmethod
+    def get_uri_counts(cls, uri):
+        return cls._get_counts(uri, cls.wiki_urls_table)
+
+    @classmethod
+    def get_anchor_counts(cls, uri):
+        return cls._get_counts(uri, cls.wiki_anchors_table)
+
+    @classmethod
+    def _get_counts(cls, key, table):
+        counts = ListPacker.unpack(
+            NgramService.hbase_raw(table, key.decode('utf-8'), "ngram:value"))
+        return [long(x[1]) for x in counts]
+
+    @classmethod
     def get_wiki_prob(cls, phrase):
         """Get wiki probability of a phrase"""
-        anchor_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_anchors_table, phrase, "ngram:value"))
-        anchor_count = sum([long(x[1]) for x in anchor_counts])
+        anchor_counts = cls.get_anchor_counts(phrase)
+        anchor_count = sum(anchor_counts)
         # add 10 to compensate for small counts
-
-        wiki_counts = 10
-        for url, _ in anchor_counts:
-            url_counts = ListPacker.unpack(NgramService.hbase_raw(cls.wiki_urls_table, url.decode('utf-8'), "ngram:value"))
-            url_count = sum([long(x[1]) for x in url_counts])
-            wiki_counts += url_count
+        wiki_counts = sum([sum(cls.get_uri_counts(uri)) for uri, _ in anchor_counts]) + 10
 
         if wiki_counts - 10 < anchor_count:
             print "PROBABILITY ERROR"
