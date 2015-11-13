@@ -41,7 +41,11 @@ class TestEntityLinking(unittest.TestCase):
             for line_dict in values:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
-                uri = get_max_uri(text)
+
+                uri = None
+                # A2KB condition
+                if line_dict['context'] is not None:
+                    uri = get_max_uri(text)
 
                 metric.evaluate(true_uri, uri)
         metric.print_metrics()
@@ -75,10 +79,13 @@ class TestEntityLinking(unittest.TestCase):
                 text = line_dict['text']
 
                 e_type = line_dict['type']
-                if e_type is not None:
-                    uri = get_max_typed_uri(text, e_type, ner)
-                else:
-                    uri = get_max_uri(text)
+                uri = None
+                # A2KB condition
+                if line_dict['context'] is not None:
+                    if e_type is not None:
+                        uri = get_max_typed_uri(text, e_type, ner)
+                    else:
+                        uri = get_max_uri(text)
 
                 metric.evaluate(true_uri, uri)
         metric.print_metrics()
