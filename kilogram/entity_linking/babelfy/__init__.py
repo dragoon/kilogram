@@ -2,71 +2,8 @@ from __future__ import division
 
 import nltk
 from .densest_subgraph import SemanticGraph
-from entity_linking import parse_candidate
-from kilogram import NgramService
+from entity_linking import CandidateEntity
 from lang.tokenize import default_tokenize_func
-
-PERCENTILE = 0.9
-
-class CandidateEntity:
-    uri_counts = None
-    start_i = 0
-    end_i = 0
-    noun_index = 0
-    cand_string = None
-    true_entity = None
-    e_type = None
-
-    def __init__(self, start_i, end_i, noun_index, cand_string):
-        self.cand_string = cand_string
-        self.start_i = start_i
-        self.end_i = end_i
-        self.noun_index = noun_index
-        table = "wiki_anchor_ngrams"
-        column = "ngram:value"
-        res = NgramService.hbase_raw(table, cand_string, column)
-        if not res:
-            res = NgramService.hbase_raw(table, cand_string.title(), column)
-        if res:
-            self.uri_counts = {}
-            # take Xs percentile to remove noisy candidates
-            temp_candidates = parse_candidate(res)
-            total_c = sum(zip(*temp_candidates)[1])
-            cur_c = 0
-            for uri, count in sorted(temp_candidates, key=lambda x: x[1], reverse=True):
-                if cur_c/total_c > PERCENTILE:
-                    break
-                cur_c += count
-                self.uri_counts[uri] = count
-            # also remove all counts = 1
-            for uri in self.uri_counts.keys():
-                if self.uri_counts[uri] < 2:
-                    del self.uri_counts[uri]
-
-    def keep_only_types(self, ner, types_to_keep):
-        for uri in self.uri_counts.keys():
-            try:
-                uri_type = ner.get_type(uri, -1)
-                if uri_type not in types_to_keep:
-                    del self.uri_counts[uri]
-            except KeyError:
-                del self.uri_counts[uri]
-
-    def prune_types(self, e_type, ner):
-        if self.uri_counts and e_type:
-            for uri in self.uri_counts.keys():
-                try:
-                    uri_type = ner.get_type(uri, -1)
-                    if uri_type != e_type:
-                        del self.uri_counts[uri]
-                except KeyError:
-                    pass
-
-    def __len__(self):
-        return len(self.uri_counts)
-
-    def __repr__(self):
-        return self.cand_string + ":" + str(self.true_entity)
 
 
 def _extract_candidates(pos_tokens):
@@ -104,7 +41,8 @@ def _extract_candidates(pos_tokens):
             prev_len = len(cand_entities)
             for n_i, ngram in enumerate(nltk.ngrams(words[start_i:end_i], n)):
                 ngram = ' '.join(ngram)
-                cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, noun_index, ngram)
+                cand_entity = CandidateEntity(start_i+n_i, start_i+n_i+n, ngram,
+                                              noun_index=noun_index)
                 # TODO: what to do with lower-case things?
                 if not cand_entity.cand_string[0].isupper():
                     continue
@@ -117,7 +55,8 @@ def _extract_candidates(pos_tokens):
                     ngram = ngram.split()
                     for i in range(len(ngram)-1, 0, -1):
                         for subngram in nltk.ngrams(ngram, i):
-                            cand_entity = CandidateEntity(start_i, start_i+1, noun_index, ' '.join(subngram))
+                            cand_entity = CandidateEntity(start_i, start_i+1, ' '.join(subngram),
+                                                          noun_index=noun_index)
                             if cand_entity.uri_counts:
                                 cand_entities.append(cand_entity)
                         if len(cand_entities) > prev_len:

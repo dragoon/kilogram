@@ -35,7 +35,8 @@ class SemanticGraph:
             """
             for cand_j in candidates:
                 # skip edges between candidates originating from the same noun
-                if cand_j.noun_index == cand_i.noun_index:
+                if cand_j.noun_index is not None and cand_i.noun_index is not None \
+                        and cand_j.noun_index == cand_i.noun_index:
                     continue
                 for uri_i in cand_i.uri_counts.keys():
                     for uri_j in cand_j.uri_counts.keys():
@@ -91,25 +92,25 @@ class SemanticGraph:
         while True:
             scores = [(candidate, max(self._calculate_scores(candidate).items(), key=lambda x: x[1]))
                       for candidate in self.candidates
-                      if candidate.uri_counts and not candidate.true_entity]
+                      if candidate.uri_counts and not candidate.resolved_true_entity]
             if not scores:
                 break
             candidate, uri_score = max(scores, key=lambda x: x[1][1])
             if uri_score[1] > 0:
-                candidate.true_entity = uri_score[0]
+                candidate.resolved_true_entity = uri_score[0]
             else:
                 # max is 0, break and resort to max prob
                 break
             # delete other entities
             for uri in candidate.uri_counts.keys():
-                if uri != candidate.true_entity and self.G.has_node(uri):
+                if uri != candidate.resolved_true_entity and self.G.has_node(uri):
                     self.G.remove_node(uri)
 
         # max prob
         for candidate in self.candidates:
-            if candidate.true_entity:
+            if candidate.resolved_true_entity:
                 continue
             true_entity = get_max_uri(candidate.cand_string)
             # makes sure max probable uri is not removed by type pruning
             if true_entity in candidate.uri_counts:
-                candidate.true_entity = true_entity
+                candidate.resolved_true_entity = true_entity

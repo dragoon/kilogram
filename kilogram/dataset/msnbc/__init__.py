@@ -1,6 +1,7 @@
 from __future__ import division
 import os
 import re
+from entity_linking import CandidateEntity
 from kilogram.lang import parse_entities
 
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>(\'s)?')
@@ -8,22 +9,20 @@ ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>(\'s)?')
 
 class DataSet(object):
     data_dir = None
-    truth_file = None
     ner = None
     truth_data = None
     data = None
 
     def __init__(self, data_dir, truth_file, ner):
         self.data_dir = data_dir
-        self.truth_file = truth_file
         self.ner = ner
-        self.truth_data = self._parse_truth_data(ner)
+        self.truth_data = self._parse_truth_data(truth_file, ner)
         self.data = self._parse_data()
 
-    def _parse_truth_data(self, ner):
+    def _parse_truth_data(self, truth_file, ner):
         filename = None
         truth_data = {}
-        for line in open(self.truth_file):
+        for line in open(truth_file):
             if line.startswith("~~~ "):
                 filename = line.strip().split()[-1]
                 truth_data[filename] = {}
@@ -59,28 +58,30 @@ class DataSet(object):
             ner_list = parse_entities(text)
             visited = set()
             for values in ner_list:
-                values['true_uri'] = self.truth_data[filename].get(values['text'], {'uri': None})
-                datafile.add(values)
+                candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
+                                            context=values['context'])
+                candidate.truth_data = self.truth_data[filename].get(values['text'], {'uri': None})
+                datafile.candidates.append(candidate)
                 visited.add(values['text'])
             for text, uri in self.truth_data[filename].iteritems():
                 if text not in visited:
-                    datafile.add({'text': text, 'context': None, 'type': None, 'true_uri': uri})
+                    candidate = CandidateEntity(0, 0, text)
+                    candidate.truth_data = uri
+                    datafile.candidates.append(candidate)
+            data.append(datafile)
         return data
 
 
 class DataFile(object):
     filename = None
-    _data = None
+    candidates = None
     text = None
 
     def __init__(self, filename, text):
         self.filename = filename
-        self._data = []
+        self.candidates = []
         self.text = text
 
-    def add(self, value):
-        self._data.append(value)
-
     def __iter__(self):
-        for elem in self._data:
+        for elem in self.candidates:
             yield elem
