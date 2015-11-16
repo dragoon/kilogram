@@ -3,7 +3,7 @@ import unittest
 from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
 from entity_linking.evaluation import Metrics
-from entity_linking.priorprob import get_max_uri, get_max_typed_uri
+from entity_linking.priorprob import get_max_uri, get_max_typed_uri, get_max_uris
 from kilogram import NgramService
 import kilogram
 
@@ -22,8 +22,8 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_d2kb(self):
         print 'Prior prob, D2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            for line_dict in values:
+        for datafile in msnbc_data.data:
+            for line_dict in datafile:
                 # D2KB condition
                 if line_dict['true_uri']['uri'] is None:
                     continue
@@ -37,8 +37,8 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            for line_dict in values:
+        for datafile in msnbc_data.data:
+            for line_dict in datafile:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
 
@@ -53,8 +53,8 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_d2kb_typed(self):
         print 'Prior prob + type improvements, D2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            for line_dict in values:
+        for datafile in msnbc_data.data:
+            for line_dict in datafile:
                 # D2KB
                 if line_dict['true_uri']['uri'] is None:
                     continue
@@ -73,8 +73,8 @@ class TestEntityLinking(unittest.TestCase):
     def test_prior_prob_a2kb_typed(self):
         print 'Prior prob + type improvements, A2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            for line_dict in values:
+        for datafile in msnbc_data.data:
+            for line_dict in datafile:
                 true_uri = line_dict['true_uri']
                 text = line_dict['text']
 

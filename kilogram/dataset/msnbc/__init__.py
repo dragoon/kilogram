@@ -80,3 +80,7 @@ class DataFile(object):
 
     def add(self, value):
         self._data.append(value)
+
+    def __iter__(self):
+        for elem in self._data:
+            yield elem
