@@ -12,10 +12,8 @@ class DataSet(object):
     ner = None
     truth_data = None
     data = None
-    texts = None
 
     def __init__(self, data_dir, truth_file, ner):
-        self.texts = {}
         self.data_dir = data_dir
         self.truth_file = truth_file
         self.ner = ner
@@ -51,21 +49,34 @@ class DataSet(object):
         return truth_data
 
     def _parse_data(self):
-        data = {}
+        data = []
         for filename in os.listdir(self.data_dir):
-            data[filename] = []
             text = ' '.join(open(self.data_dir+filename).readlines()).replace('\n', ' ')
             text = re.sub(r'\s+', ' ', text)
             text = re.sub(r'\'s\b', '', text)
             text = ENTITY_MATCH_RE.sub('\g<2>', text).replace('_', ' ').decode('utf-8')
-            self.texts[filename] = text
+            datafile = DataFile(filename, text)
             ner_list = parse_entities(text)
             visited = set()
             for values in ner_list:
                 values['true_uri'] = self.truth_data[filename].get(values['text'], {'uri': None})
-                data[filename].append(values)
+                datafile.add(values)
                 visited.add(values['text'])
             for text, uri in self.truth_data[filename].iteritems():
                 if text not in visited:
-                    data[filename].append({'text': text, 'context': None, 'type': None, 'true_uri': uri})
+                    datafile.add({'text': text, 'context': None, 'type': None, 'true_uri': uri})
         return data
+
+
+class DataFile(object):
+    filename = None
+    _data = None
+    text = None
+
+    def __init__(self, filename, text):
+        self.filename = filename
+        self._data = []
+        self.text = text
+
+    def add(self, value):
+        self._data.append(value)
