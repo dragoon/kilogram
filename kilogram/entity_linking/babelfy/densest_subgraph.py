@@ -24,9 +24,12 @@ class SemanticGraph:
 
         for cand in candidates:
             for uri in cand.uri_counts.keys():
-                #socket.send(uri.encode('utf-8'))
-                #neighbors[uri] = dict(ListPacker.unpack(socket.recv().decode('utf-8')))
                 neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+                # delete self
+                try:
+                    del neighbors[uri][uri]
+                except KeyError:
+                    pass
 
         for cand_i in candidates:
             """
