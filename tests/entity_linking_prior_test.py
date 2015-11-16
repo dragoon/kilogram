@@ -3,7 +3,6 @@ import unittest
 from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
 from entity_linking.evaluation import Metrics
-from entity_linking.priorprob import get_max_uri, get_max_typed_uri, get_max_uris
 from kilogram import NgramService
 import kilogram
 
@@ -23,71 +22,55 @@ class TestEntityLinking(unittest.TestCase):
         print 'Prior prob, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
-            for line_dict in datafile:
+            for candidate in datafile:
                 # D2KB condition
-                if line_dict['true_uri']['uri'] is None:
+                if candidate.truth_data['uri'] is None:
                     continue
-                true_uri = line_dict['true_uri']
-                text = line_dict['text']
-                uri = get_max_uri(text)
-
-                metric.evaluate(true_uri, uri)
+                metric.evaluate(candidate.truth_data, candidate.get_max_uri())
         metric.print_metrics()
 
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
-            for line_dict in datafile:
-                true_uri = line_dict['true_uri']
-                text = line_dict['text']
-
+            for candidate in datafile:
                 uri = None
                 # A2KB condition
-                if line_dict['context'] is not None:
-                    uri = get_max_uri(text)
-
-                metric.evaluate(true_uri, uri)
+                if candidate.context is not None:
+                    uri = candidate.get_max_uri()
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
     def test_prior_prob_d2kb_typed(self):
         print 'Prior prob + type improvements, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
-            for line_dict in datafile:
+            for candidate in datafile:
                 # D2KB
-                if line_dict['true_uri']['uri'] is None:
+                if candidate.truth_data['uri'] is None:
                     continue
-                true_uri = line_dict['true_uri']
-                text = line_dict['text']
-
-                e_type = line_dict['type']
-                if e_type is not None:
-                    uri = get_max_typed_uri(text, e_type, ner)
+                if candidate.e_type is not None:
+                    uri = candidate.get_max_typed_uri(ner)
                 else:
-                    uri = get_max_uri(text)
+                    uri = candidate.get_max_uri()
 
-                metric.evaluate(true_uri, uri)
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
     def test_prior_prob_a2kb_typed(self):
         print 'Prior prob + type improvements, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
-            for line_dict in datafile:
-                true_uri = line_dict['true_uri']
-                text = line_dict['text']
-
-                e_type = line_dict['type']
+            for candidate in datafile:
                 uri = None
                 # A2KB condition
-                if line_dict['context'] is not None:
-                    if e_type is not None:
-                        uri = get_max_typed_uri(text, e_type, ner)
+                if candidate.context is not None:
+                    if candidate.e_type is not None:
+                        uri = candidate.get_max_typed_uri(ner)
                     else:
-                        uri = get_max_uri(text)
+                        uri = candidate.get_max_uri()
 
-                metric.evaluate(true_uri, uri)
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
 
