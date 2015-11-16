@@ -1,7 +1,6 @@
 from __future__ import division
 from collections import defaultdict
 import networkx as nx
-from entity_linking.priorprob import get_max_uri
 from kilogram import NgramService
 import zmq
 
@@ -110,7 +109,7 @@ class SemanticGraph:
         for candidate in self.candidates:
             if candidate.resolved_true_entity:
                 continue
-            true_entity = get_max_uri(candidate.cand_string)
+            true_entity = candidate.get_max_uri()
             # makes sure max probable uri is not removed by type pruning
             if true_entity in candidate.uri_counts:
                 candidate.resolved_true_entity = true_entity

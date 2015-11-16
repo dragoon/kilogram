@@ -1,7 +1,6 @@
 import unittest
 from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
-from entity_linking import CandidateEntity
 
 from entity_linking.babelfy import _extract_candidates, link, SemanticGraph
 from entity_linking.evaluation import Metrics
@@ -37,77 +36,40 @@ class TestEntityLinkingKB(unittest.TestCase):
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            candidates = []
-            for i, line_dict in enumerate(values):
-                text = line_dict['text']
-                # i ensures different nouns
-                cand = CandidateEntity(0, 0, i, text)
-                if cand.uri_counts:
-                    line_dict['cand'] = cand
-                    candidates.append(cand)
-            # resolve
-            graph = SemanticGraph(candidates)
+        for datafile in msnbc_data.data:
+            graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()
-            for line_dict in values:
-                true_uri = line_dict['true_uri']
-                uri = None
-                if 'cand' in line_dict:
-                    uri = line_dict['cand'].true_entity
-                metric.evaluate(true_uri, uri)
+            for candidate in datafile:
+                uri = candidate.resolved_true_entity
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
     def test_prior_prob_a2kb_typed(self):
         print 'Prior prob, A2KB + Types'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            candidates = []
-            for i, line_dict in enumerate(values):
-                text = line_dict['text']
-                # i ensures different nouns
-                cand = CandidateEntity(0, 0, i, text)
-                cand.prune_types(line_dict['type'], ner)
-                if cand.uri_counts:
-                    line_dict['cand'] = cand
-                    candidates.append(cand)
-            # resolve
-            graph = SemanticGraph(candidates)
+        for datafile in msnbc_data.data:
+            graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()
-            for line_dict in values:
-                true_uri = line_dict['true_uri']
-                uri = None
-                if 'cand' in line_dict:
-                    uri = line_dict['cand'].true_entity
-                metric.evaluate(true_uri, uri)
+            for candidate in datafile:
+                uri = candidate.resolved_true_entity
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
     def test_prior_prob_d2kb(self):
         print 'Prior prob, D2KB'
         metric = Metrics()
-        for filename, values in msnbc_data.data.iteritems():
-            candidates = []
-            for i, line_dict in enumerate(values):
-                if line_dict['true_uri']['uri'] is None:
-                    continue
-                text = line_dict['text']
-                cand = CandidateEntity(0, 0, i, text)
-                if cand.uri_counts:
-                    line_dict['cand'] = cand
-                    candidates.append(cand)
-            # resolve
-            graph = SemanticGraph(candidates)
+        for datafile in msnbc_data.data:
+            graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()
-            for line_dict in values:
-                if line_dict['true_uri']['uri'] is None:
+            for candidate in datafile:
+                # D2KB condition
+                if candidate.truth_data['uri'] is None:
                     continue
-                true_uri = line_dict['true_uri']
-                uri = None
-                if 'cand' in line_dict:
-                    uri = line_dict['cand'].true_entity
-                metric.evaluate(true_uri, uri)
+                uri = candidate.resolved_true_entity
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
 
