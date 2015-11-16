@@ -33,8 +33,8 @@ class TestEntityLinking(unittest.TestCase):
 
 class TestEntityLinkingKB(unittest.TestCase):
 
-    def test_prior_prob_a2kb(self):
-        print 'Prior prob, A2KB'
+    def test_sem_a2kb(self):
+        print 'Semantic prob, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
             graph = SemanticGraph(datafile.candidates)
@@ -45,8 +45,8 @@ class TestEntityLinkingKB(unittest.TestCase):
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
-    def test_prior_prob_a2kb_typed(self):
-        print 'Prior prob, A2KB + Types'
+    def test_sem_prob_a2kb_typed(self):
+        print 'Semantic prob, A2KB + Types'
         metric = Metrics()
         for datafile in msnbc_data.data:
             graph = SemanticGraph(datafile.candidates)
@@ -57,8 +57,8 @@ class TestEntityLinkingKB(unittest.TestCase):
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
-    def test_prior_prob_d2kb(self):
-        print 'Prior prob, D2KB'
+    def test_sem_prob_d2kb(self):
+        print 'Semantic prob, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
             graph = SemanticGraph(datafile.candidates)
