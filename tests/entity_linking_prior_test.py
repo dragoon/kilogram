@@ -28,6 +28,7 @@ class TestEntityLinking(unittest.TestCase):
                     continue
                 metric.evaluate(candidate.truth_data, candidate.get_max_uri())
         metric.print_metrics()
+        print
 
     def test_prior_prob_a2kb(self):
         print 'Prior prob, A2KB'
@@ -40,6 +41,7 @@ class TestEntityLinking(unittest.TestCase):
                     uri = candidate.get_max_uri()
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
+        print
 
     def test_prior_prob_d2kb_typed(self):
         print 'Prior prob + type improvements, D2KB'
@@ -56,6 +58,7 @@ class TestEntityLinking(unittest.TestCase):
 
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
+        print
 
     def test_prior_prob_a2kb_typed(self):
         print 'Prior prob + type improvements, A2KB'
@@ -72,6 +75,7 @@ class TestEntityLinking(unittest.TestCase):
 
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
+        print
 
 
 if __name__ == '__main__':
