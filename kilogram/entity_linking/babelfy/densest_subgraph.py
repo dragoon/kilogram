@@ -36,6 +36,9 @@ class SemanticGraph:
             :type cand_i: CandidateEntity
             """
             for cand_j in candidates:
+                # do not link same candidates
+                if cand_i == cand_j:
+                    continue
                 # skip edges between candidates originating from the same noun
                 if cand_j.noun_index is not None and cand_i.noun_index is not None \
                         and cand_j.noun_index == cand_i.noun_index:
