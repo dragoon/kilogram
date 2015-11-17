@@ -14,9 +14,11 @@ MIN_PROB = 100/(10**6)
 class SemSignature:
     prob_matrix = None
     index_map = None
+    reverse_index_map = None
 
     def __init__(self, edges_file):
         self.index_map = {}
+        self.reverse_index_map = {}
         edges = codecs.open(edges_file, 'r', 'utf-8')
         j = 0
         print 'Building index map...'
@@ -24,6 +26,7 @@ class SemSignature:
             try:
                 uri = line.strip().split('\t')[0]
                 self.index_map[uri] = j
+                self.reverse_index_map[j] = uri
             except:
                 j += 1
                 continue
@@ -79,7 +82,7 @@ class SemSignature:
         i = self.index_map[uri]
         vector = self._learn_eigenvector(i)
         normalized_prob = (1.0 - vector[i]/sum(vector))*sum(vector)
-        return [(uri, int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j != i]
+        return [(self.reverse_index_map[j], int(x*NUM_STEPS/normalized_prob)) for j, x in enumerate(vector) if x/normalized_prob > MIN_PROB and j != i]
 
 
 def build_edges_map():
