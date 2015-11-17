@@ -2,6 +2,7 @@ import unittest
 
 from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
+from entity_linking import syntactic_subsumption
 from entity_linking.evaluation import Metrics
 from kilogram import NgramService
 import kilogram
@@ -22,6 +23,7 @@ class TestEntityLinking(unittest.TestCase):
         print 'Prior prob, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 # D2KB condition
                 if candidate.truth_data['uri'] is None:
@@ -34,6 +36,7 @@ class TestEntityLinking(unittest.TestCase):
         print 'Prior prob, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 uri = None
                 # A2KB condition
@@ -47,6 +50,7 @@ class TestEntityLinking(unittest.TestCase):
         print 'Prior prob + type improvements, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 # D2KB
                 if candidate.truth_data['uri'] is None:
@@ -64,6 +68,7 @@ class TestEntityLinking(unittest.TestCase):
         print 'Prior prob + type improvements, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 uri = None
                 # A2KB condition

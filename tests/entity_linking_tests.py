@@ -1,6 +1,7 @@
 import unittest
 from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
+from entity_linking import syntactic_subsumption
 
 from entity_linking.babelfy import _extract_candidates, link, SemanticGraph
 from entity_linking.evaluation import Metrics
@@ -37,6 +38,7 @@ class TestEntityLinkingKB(unittest.TestCase):
         print 'Semantic prob, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()
@@ -49,6 +51,7 @@ class TestEntityLinkingKB(unittest.TestCase):
         print 'Semantic prob, A2KB + Types'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()
@@ -61,6 +64,7 @@ class TestEntityLinkingKB(unittest.TestCase):
         print 'Semantic prob, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
+            syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
             graph.do_iterative_removal()
             graph.do_linking()

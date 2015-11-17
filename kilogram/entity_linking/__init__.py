@@ -98,7 +98,8 @@ def syntactic_subsumption(candidates):
     def get_super_candidate(candidate):
         for cand_string in cand_dict.keys():
             if candidate.cand_string != cand_string and candidate.cand_string in cand_string:
-                return cand_dict[cand_string]
+                if cand_dict[cand_string].e_type == '<dbpedia:Person>':
+                    return cand_dict[cand_string]
         return None
     for candidate in candidates:
         super_candidate = get_super_candidate(candidate)
