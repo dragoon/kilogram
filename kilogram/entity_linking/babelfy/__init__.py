@@ -2,8 +2,8 @@ from __future__ import division
 
 import nltk
 from .densest_subgraph import SemanticGraph
-from entity_linking import CandidateEntity
-from lang.tokenize import default_tokenize_func
+from .. import CandidateEntity
+from ...lang.tokenize import default_tokenize_func
 
 
 def _extract_candidates(pos_tokens):

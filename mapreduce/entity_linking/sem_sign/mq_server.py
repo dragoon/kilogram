@@ -1,7 +1,7 @@
 from __future__ import division
 
 import zmq
-from entity_linking.babelfy.compute_signatures import SemSignature
+from kilogram.entity_linking.babelfy.compute_signatures import SemSignature
 
 s = SemSignature('/home/roman/notebooks/kilogram/mapreduce/edges.txt')
 
