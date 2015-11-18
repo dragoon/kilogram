@@ -21,7 +21,7 @@ def _candidate_filter(candidates):
         return sorted(candidate_.uri_counts.items(), key=lambda x: x[1], reverse=True)[:topn]
 
     for candidate in candidates:
-        candidate.uri_counts = top_prior(candidate) + string_similar(candidate)
+        candidate.uri_counts = dict(top_prior(candidate) + string_similar(candidate))
 
 
 ALPHA = 0.85  # restart probability
@@ -35,10 +35,11 @@ class SemanticGraph:
     index_map = None
 
     def __init__(self, candidates):
-        self.G = nx.DiGraph()
+        self.G = nx.Graph()
         _candidate_filter(candidates)
         self.candidates = candidates
         neighbors = {}
+        self.index_map = {}
 
         candidate_uris = set()
         for cand in candidates:
@@ -60,15 +61,17 @@ class SemanticGraph:
                     if self.G.has_edge(uri, neighbor):
                         continue
                     self.G.add_edge(uri, neighbor, {'w': weight})
+                # always add candidates
+                self.G.add_node(uri)
 
         # prune 1-degree edges except original candidates
         to_remove = set()
         for node, degree in self.G.degree_iter():
             if degree <= 1:
                 to_remove.add(node)
-        to_remove.difference(candidate_uris)
+        to_remove = to_remove.difference(candidate_uris)
         self.G.remove_nodes_from(to_remove)
-        self.matrix = nx.linalg.graphmatrix.adjacency_matrix(self.G, weight='w')
+        self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float32)
         for i, uri in enumerate(self.G.nodes()):
             self.index_map[uri] = i
 
@@ -103,7 +106,7 @@ class SemanticGraph:
             if prev_norm and abs(cur_norm - prev_norm) < 0.00001:
                 break
             prev_norm = cur_norm
-        return pi
+        return pi/pi.sum()
 
     def doc_signature(self):
         """compute document signature"""
@@ -120,7 +123,7 @@ class SemanticGraph:
         for p_i, q_i in zip(p, q):
             if q_i == 0:
                 total += p_i*20
-            else:
+            elif p_i > 0:
                 total += p_i*math.log(p_i/q_i)
         return total
 
@@ -130,13 +133,15 @@ class SemanticGraph:
             if len(candidate.uri_counts) == 1:
                 candidate.resolved_true_entity = candidate.uri_counts.items()[0][0]
         for candidate in sorted(self.candidates, key=lambda x: len(x.uri_counts)):
+            if not candidate.uri_counts or candidate.resolved_true_entity:
+                continue
             doc_sign = self.doc_signature()
             total_uri_count = sum([x for x in candidate.uri_counts.values()], 1)
             e_signatures = self.compute_signatures(candidate)
             cand_scores = []
             for uri, e_sign in e_signatures:
                 # global similarity + local (prior prob)
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) +\
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) *\
                           candidate.uri_counts[uri]/total_uri_count
                 cand_scores.append((uri, sem_sim))
             max_uri, score = max(cand_scores, key=lambda x: x[1])

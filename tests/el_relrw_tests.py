@@ -24,7 +24,7 @@ class TestEntityLinkingKB(unittest.TestCase):
         print 'REL-RW, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
-            syntactic_subsumption(datafile.candidates)
+            #syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
             graph.do_linking()
             for candidate in datafile:
