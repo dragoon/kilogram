@@ -34,8 +34,8 @@ class TestEntityLinking(unittest.TestCase):
 
 class TestEntityLinkingKB(unittest.TestCase):
 
-    def test_sem_a2kb(self):
-        print 'Semantic prob, A2KB'
+    def test_a2kb(self):
+        print 'Babelfy, A2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
@@ -47,8 +47,8 @@ class TestEntityLinkingKB(unittest.TestCase):
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
-    def test_sem_prob_a2kb_typed(self):
-        print 'Semantic prob, A2KB + Types'
+    def test_a2kb_typed(self):
+        print 'Babelfy, A2KB + Types'
         metric = Metrics()
         for datafile in msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
@@ -60,8 +60,8 @@ class TestEntityLinkingKB(unittest.TestCase):
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
-    def test_sem_prob_d2kb(self):
-        print 'Semantic prob, D2KB'
+    def test_d2kb(self):
+        print 'Babelfy, D2KB'
         metric = Metrics()
         for datafile in msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
@@ -78,5 +78,5 @@ class TestEntityLinkingKB(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print('Test Entity Linkings')
+    print('Test Babelfy Entity Linking')
     unittest.main()
