@@ -129,9 +129,16 @@ class SemanticGraph:
         for candidate in self.candidates:
             if len(candidate.uri_counts) == 1:
                 candidate.resolved_true_entity = candidate.uri_counts.items()[0][0]
-        doc_sign = self.doc_signature()
         for candidate in sorted(self.candidates, key=lambda x: len(x.uri_counts)):
+            doc_sign = self.doc_signature()
+            total_uri_count = sum([x for x in candidate.uri_counts.values()], 1)
             e_signatures = self.compute_signatures(candidate)
+            cand_scores = []
             for uri, e_sign in e_signatures:
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)
+                # global similarity + local (prior prob)
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) +\
+                          candidate.uri_counts[uri]/total_uri_count
+                cand_scores.append((uri, sem_sim))
+            max_uri, score = max(cand_scores, key=lambda x: x[1])
+            candidate.resolved_true_entity = max_uri
 
