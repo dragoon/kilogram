@@ -45,7 +45,7 @@ class SemanticGraph:
         for cand in candidates:
             for uri in cand.uri_counts.keys():
                 candidate_uris.add(uri)
-                neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+                neighbors[uri] = NgramService.get_wiki_direct_links(uri)
                 # delete self
                 try:
                     del neighbors[uri][uri]
@@ -60,7 +60,11 @@ class SemanticGraph:
                 for neighbor, weight in neighbors[uri].iteritems():
                     if self.G.has_edge(uri, neighbor):
                         continue
-                    self.G.add_edge(uri, neighbor, {'w': weight})
+                    try:
+                        self.G.add_edge(uri, neighbor, {'w': int(weight)})
+                    # happens because of malformed links
+                    except ValueError:
+                        pass
                 # always add candidates
                 self.G.add_node(uri)
 
@@ -141,7 +145,7 @@ class SemanticGraph:
             cand_scores = []
             for uri, e_sign in e_signatures:
                 # global similarity + local (prior prob)
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) *\
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) +\
                           candidate.uri_counts[uri]/total_uri_count
                 cand_scores.append((uri, sem_sim))
             max_uri, score = max(cand_scores, key=lambda x: x[1])
