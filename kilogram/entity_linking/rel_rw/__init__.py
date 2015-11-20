@@ -24,7 +24,7 @@ def _candidate_filter(candidates):
         candidate.uri_counts = dict(top_prior(candidate) + string_similar(candidate))
 
 
-ALPHA = 0.85  # restart probability
+ALPHA = 0.15  # restart probability
 
 
 class SemanticGraph:
@@ -75,42 +75,42 @@ class SemanticGraph:
                 to_remove.add(node)
         to_remove = to_remove.difference(candidate_uris)
         self.G.remove_nodes_from(to_remove)
-        self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float32)
+        self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float64)
         for i, uri in enumerate(self.G.nodes()):
             self.index_map[uri] = i
 
     def _get_entity_teleport_v(self, i):
-        teleport_vector = np.zeros(self.matrix.shape[0], dtype=np.float64)
+        teleport_vector = np.zeros((self.matrix.shape[0], 1), dtype=np.float64)
         teleport_vector[i] = 1-ALPHA
-        return teleport_vector
+        return np.matrix(teleport_vector)
 
     def _get_doc_teleport_v(self):
-        teleport_vector = np.zeros(self.matrix.shape[0], dtype=np.float64)
+        teleport_vector = np.zeros((self.matrix.shape[0], 1), dtype=np.float64)
         resolved = [self.index_map[x.resolved_true_entity] for x in self.candidates
                     if x.resolved_true_entity is not None]
         if len(resolved) > 0:
             for i in resolved:
-                teleport_vector[i] = 1
+                teleport_vector[i] = 1-ALPHA
         else:
             # assign uniformly
             for i in range(teleport_vector):
-                teleport_vector[i] = 1./self.matrix.shape[0]
+                teleport_vector[i] = 1./self.matrix.shape[0]*(1-ALPHA)
 
-        return teleport_vector
+        return np.matrix(teleport_vector)
 
     def _learn_eigenvector(self, teleport_vector):
 
-        pi = np.random.rand(teleport_vector.shape[0])
+        pi = np.matrix(np.random.rand(*teleport_vector.shape))
         prev_norm = 0
 
         for _ in range(1000):
-            pi = self.matrix.dot(pi)*ALPHA + teleport_vector
+            pi = self.matrix*pi*ALPHA + teleport_vector
             cur_norm = np.linalg.norm(pi)
             pi /= cur_norm
             if prev_norm and abs(cur_norm - prev_norm) < 0.00001:
                 break
             prev_norm = cur_norm
-        return pi/pi.sum()
+        return np.ravel(pi/pi.sum())
 
     def doc_signature(self):
         """compute document signature"""
@@ -145,8 +145,8 @@ class SemanticGraph:
             cand_scores = []
             for uri, e_sign in e_signatures:
                 # global similarity + local (prior prob)
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign) +\
-                          candidate.uri_counts[uri]/total_uri_count
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)
+                          #+ candidate.uri_counts[uri]/total_uri_count
                 cand_scores.append((uri, sem_sim))
             max_uri, score = max(cand_scores, key=lambda x: x[1])
             candidate.resolved_true_entity = max_uri
