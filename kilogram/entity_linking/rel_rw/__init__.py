@@ -6,6 +6,21 @@ from ..util.ml import Feature
 from kilogram import NgramService
 
 
+class Signature(object):
+    vector = None
+    mapping = None
+
+    def __init__(self, vector, G):
+        self.vector = vector
+        self.mapping = []
+        for prob, uri in zip(vector, G.nodes()):
+            self.mapping.append((prob, uri))
+        self.mapping.sort(reverse=True)
+
+    def __repr__(self):
+        return str(self.mapping[:10])
+
+
 def _candidate_filter(candidates):
 
     def string_similar(candidate_, topn=10):
@@ -22,7 +37,10 @@ def _candidate_filter(candidates):
         return sorted(candidate_.entities, key=lambda e: e.count, reverse=True)[:topn]
 
     for candidate in candidates:
-        candidate.entities = dict(top_prior(candidate) + string_similar(candidate))
+        entities = top_prior(candidate)
+        uris = set(e.uri for e in entities)
+        entities.extend([e for e in string_similar(candidate) if e.uri not in uris])
+        candidate.entities = entities
 
 
 ALPHA = 0.15  # restart probability
@@ -94,7 +112,7 @@ class SemanticGraph:
                 teleport_vector[i] = 1-ALPHA
         else:
             # assign uniformly
-            for i in range(teleport_vector):
+            for i in range(len(teleport_vector)):
                 teleport_vector[i] = 1./self.matrix.shape[0]*(1-ALPHA)
 
         return np.matrix(teleport_vector)
@@ -115,14 +133,19 @@ class SemanticGraph:
 
     def doc_signature(self):
         """compute document signature"""
-        return self._learn_eigenvector(self._get_doc_teleport_v())
+        return Signature(self._learn_eigenvector(self._get_doc_teleport_v()), self.G)
 
     def compute_signature(self, entity):
-        return self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri]))
+        return Signature(self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri])), self.G)
 
     def _zero_kl_score(self, p, q):
+        """
+        :type p: Signature
+        :type q: Signature
+        :return: Zero Kullback-Leiber divergence score
+        """
         total = 0
-        for p_i, q_i in zip(p, q):
+        for p_i, q_i in zip(p.vector, q.vector):
             if q_i == 0:
                 total += p_i*20
             elif p_i > 0:
