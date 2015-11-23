@@ -2,14 +2,33 @@ from kilogram import ListPacker, NgramService
 
 PERCENTILE = 0.9
 
+
+class Entity:
+    uri = None
+    count = 0
+    types = None
+
+    def __init__(self, uri, count, ner):
+        self.uri = uri
+        self.count = count
+        self.types = ner.get_type(uri)
+
+    def get_generic_type(self):
+        return self.types[-1]
+
+    def __repr__(self):
+        return self.uri + ': ' + str(self.count)
+
+
 class CandidateEntity:
+    entities = None
     uri_counts = None
     start_i = 0
     end_i = 0
     noun_index = 0
     cand_string = None
     resolved_true_entity = None
-    e_type = None
+    type = None
     truth_data = None
     context = None
 
@@ -24,8 +43,13 @@ class CandidateEntity:
             return [(uri, long(count)) for uri, count in candidates]
         return None
 
-    def __init__(self, start_i, end_i, cand_string, noun_index=None, e_type=None, context=None):
-        self.e_type = e_type
+    def _init_entities(self, ner):
+        self.entities = []
+        for uri, count in self.uri_counts.items():
+            self.entities.append(Entity(uri, count, ner))
+
+    def __init__(self, start_i, end_i, cand_string, noun_index=None, e_type=None, context=None, ner=None):
+        self.type = e_type
         self.context = context
         self.cand_string = cand_string
         self.start_i = start_i
@@ -49,39 +73,20 @@ class CandidateEntity:
         for uri in self.uri_counts.keys():
             if self.uri_counts[uri] < 2:
                 del self.uri_counts[uri]
-
-    def keep_only_types(self, ner, types_to_keep):
-        for uri in self.uri_counts.keys():
-            try:
-                uri_type = ner.get_type(uri, -1)
-                if uri_type not in types_to_keep:
-                    del self.uri_counts[uri]
-            except KeyError:
-                del self.uri_counts[uri]
-
-    def prune_types(self, e_type, ner):
-        if self.uri_counts and e_type:
-            for uri in self.uri_counts.keys():
-                try:
-                    uri_type = ner.get_type(uri, -1)
-                    if uri_type != e_type:
-                        del self.uri_counts[uri]
-                except KeyError:
-                    pass
+        self._init_entities(ner)
 
     def get_max_uri(self):
-        if not self.uri_counts:
+        if not self.entities:
             return None
-        return max(self.uri_counts.items(), key=lambda x: x[1])[0]
+        return max(self.entities, key=lambda e: e.count).uri
 
-    def get_max_typed_uri(self, ner):
-        for cand_uri, _ in sorted(self.uri_counts.items(), key=lambda x: x[1], reverse=True):
+    def get_max_typed_uri(self):
+        for entity in sorted(self.entities, key=lambda e: e.count, reverse=True):
             try:
-                cand_type = ner.get_type(cand_uri, -1)
-                if cand_type == self.e_type:
-                    return cand_uri
+                if entity.get_generic_type() == self.type:
+                    return entity.uri
             except KeyError:
-                return cand_uri
+                return entity.uri
         return None
 
     def __len__(self):
@@ -95,13 +100,14 @@ def syntactic_subsumption(candidates):
     """replace candidates that are syntactically part of another: Ford -> Gerald Ford"""
     cand_dict = dict([(x.cand_string, x) for x in candidates])
 
-    def get_super_candidate(candidate):
+    def get_super_candidate(c):
         for cand_string in cand_dict.keys():
-            if candidate.cand_string != cand_string and candidate.cand_string in cand_string:
-                if cand_dict[cand_string].e_type == '<dbpedia:Person>':
+            if c.cand_string != cand_string and c.cand_string in cand_string:
+                if cand_dict[cand_string].type == '<dbpedia:Person>':
                     return cand_dict[cand_string]
         return None
     for candidate in candidates:
         super_candidate = get_super_candidate(candidate)
         if super_candidate:
             candidate.uri_counts = super_candidate.uri_counts
+            candidate.entities = super_candidate.entities
