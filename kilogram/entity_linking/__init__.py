@@ -11,7 +11,8 @@ class Entity:
     def __init__(self, uri, count, ner):
         self.uri = uri
         self.count = count
-        self.types = ner.get_type(uri)
+        if ner is not None:
+            self.types = ner.get_type(uri)
 
     def get_generic_type(self):
         return self.types[-1]
@@ -22,7 +23,6 @@ class Entity:
 
 class CandidateEntity:
     entities = None
-    uri_counts = None
     start_i = 0
     end_i = 0
     noun_index = 0
@@ -43,9 +43,9 @@ class CandidateEntity:
             return [(uri, long(count)) for uri, count in candidates]
         return None
 
-    def _init_entities(self, ner):
+    def _init_entities(self, uri_counts, ner):
         self.entities = []
-        for uri, count in self.uri_counts.items():
+        for uri, count in uri_counts.items():
             self.entities.append(Entity(uri, count, ner))
 
     def __init__(self, start_i, end_i, cand_string, noun_index=None, e_type=None, context=None, ner=None):
@@ -55,7 +55,7 @@ class CandidateEntity:
         self.start_i = start_i
         self.end_i = end_i
         self.noun_index = noun_index
-        self.uri_counts = {}
+        uri_counts = {}
 
         # take Xs percentile to remove noisy candidates
         temp_candidates = self._get_uri_counts()
@@ -67,13 +67,13 @@ class CandidateEntity:
             if cur_c/total_c > PERCENTILE:
                 break
             cur_c += count
-            self.uri_counts[uri] = count
+            uri_counts[uri] = count
         # also remove all counts = 1
         # TODO: do experiments
-        for uri in self.uri_counts.keys():
-            if self.uri_counts[uri] < 2:
-                del self.uri_counts[uri]
-        self._init_entities(ner)
+        for uri in uri_counts.keys():
+            if uri_counts[uri] < 2:
+                del uri_counts[uri]
+        self._init_entities(uri_counts, ner)
 
     def get_max_uri(self):
         if not self.entities:
@@ -90,7 +90,7 @@ class CandidateEntity:
         return None
 
     def __len__(self):
-        return len(self.uri_counts)
+        return len(self.entities)
 
     def __repr__(self):
         return self.cand_string + ":" + str(self.resolved_true_entity)
@@ -109,5 +109,4 @@ def syntactic_subsumption(candidates):
     for candidate in candidates:
         super_candidate = get_super_candidate(candidate)
         if super_candidate:
-            candidate.uri_counts = super_candidate.uri_counts
             candidate.entities = super_candidate.entities

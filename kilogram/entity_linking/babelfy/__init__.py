@@ -46,7 +46,7 @@ def _extract_candidates(pos_tokens):
                 # TODO: what to do with lower-case things?
                 if not cand_entity.cand_string[0].isupper():
                     continue
-                if cand_entity.uri_counts and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
+                if cand_entity.entities and (cand_entity.start_i, cand_entity.end_i) not in entity_indexes:
                     entity_indexes.add((cand_entity.start_i, cand_entity.end_i))
                     cand_entities.append(cand_entity)
                 # no uris? then check if sub-ngrams possible
@@ -57,7 +57,7 @@ def _extract_candidates(pos_tokens):
                         for subngram in nltk.ngrams(ngram, i):
                             cand_entity = CandidateEntity(start_i, start_i+1, ' '.join(subngram),
                                                           noun_index=noun_index)
-                            if cand_entity.uri_counts:
+                            if cand_entity.entities:
                                 cand_entities.append(cand_entity)
                         if len(cand_entities) > prev_len:
                             break

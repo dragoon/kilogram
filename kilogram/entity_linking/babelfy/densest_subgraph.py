@@ -23,11 +23,11 @@ class SemanticGraph:
         neighbors = {}
 
         for cand in candidates:
-            for uri in cand.uri_counts.keys():
-                neighbors[uri] = NgramService.get_wiki_edge_weights(uri)
+            for e in cand.entities:
+                neighbors[e.uri] = NgramService.get_wiki_edge_weights(e.uri)
                 # delete self
                 try:
-                    del neighbors[uri][uri]
+                    del neighbors[e.uri][e.uri]
                 except KeyError:
                     pass
 
@@ -43,32 +43,29 @@ class SemanticGraph:
                 if cand_j.noun_index is not None and cand_i.noun_index is not None \
                         and cand_j.noun_index == cand_i.noun_index:
                     continue
-                for uri_i in cand_i.uri_counts.keys():
-                    for uri_j in cand_j.uri_counts.keys():
-                        if not self.G.has_edge(uri_i, uri_j):
-                            weight = int(neighbors[uri_i].get(uri_j, 0))
+                for e_i in cand_i.entities:
+                    for e_j in cand_j.entities:
+                        if not self.G.has_edge(e_i.uri, e_j.uri):
+                            weight = int(neighbors[e_i.uri].get(e_j.uri, 0))
                             if weight > 0:
-                                self.G.add_edge(uri_i, uri_j, {'w': weight})
+                                self.G.add_edge(e_i.uri, e_j.uri, {'w': weight})
         self.uri_fragment_counts = defaultdict(lambda: 0)
         # TODO: do not prune if no nodes?
         if self.G.number_of_nodes() == 0:
             return
         for cand in candidates:
-            # immediately prune nodes without connections
-            for uri in cand.uri_counts.keys():
-                if self.G.has_node(uri):
-                    self.uri_fragment_counts[uri] += 1
-                #else:
-                #    del cand.uri_counts[uri]
+            for e in cand.entities:
+                if self.G.has_node(e.uri):
+                    self.uri_fragment_counts[e.uri] += 1
 
     def _calculate_scores(self, candidate):
         total = 0
         scores = {}
         # pre-compute numerators and denominator
-        for uri in candidate.uri_counts.keys():
-            w = self.uri_fragment_counts[uri]/max(len(self.candidates)-1, 1)
-            scores[uri] = (self.G.degree([uri], weight='w').get(uri) or 0)*w
-            total += scores[uri]
+        for e in candidate.entities:
+            w = self.uri_fragment_counts[e.uri]/max(len(self.candidates)-1, 1)
+            scores[e.uri] = (self.G.degree([e.uri], weight='w').get(e.uri) or 0)*w
+            total += scores[e.uri]
         if total > 0:
             for uri in scores.keys():
                 scores[uri] /= total
@@ -88,7 +85,7 @@ class SemanticGraph:
 
             self.G.remove_node(min_uri)
             if SemanticGraph.avg_deg(self.G) > SemanticGraph.avg_deg(best_G):
-                del candidate.uri_counts[min_uri]
+                candidate.entities = [e for e in candidate.entities if e.uri != min_uri]
                 best_G = self.G.copy()
         self.G = best_G
 
@@ -97,7 +94,7 @@ class SemanticGraph:
         while True:
             scores = [(candidate, max(self._calculate_scores(candidate).items(), key=lambda x: x[1]))
                       for candidate in self.candidates
-                      if candidate.uri_counts and not candidate.resolved_true_entity]
+                      if candidate.entities and not candidate.resolved_true_entity]
             if not scores:
                 break
             candidate, uri_score = max(scores, key=lambda x: x[1][1])
@@ -107,15 +104,12 @@ class SemanticGraph:
                 # max is 0, break and resort to max prob
                 break
             # delete other entities
-            for uri in candidate.uri_counts.keys():
-                if uri != candidate.resolved_true_entity and self.G.has_node(uri):
-                    self.G.remove_node(uri)
+            for e in candidate.entities:
+                if e.uri != candidate.resolved_true_entity and self.G.has_node(e.uri):
+                    self.G.remove_node(e.uri)
 
-        # max prob
+        # max prob fall-back
         for candidate in self.candidates:
             if candidate.resolved_true_entity:
                 continue
-            true_entity = candidate.get_max_uri()
-            # makes sure max probable uri is not removed by type pruning
-            if true_entity in candidate.uri_counts:
-                candidate.resolved_true_entity = true_entity
+            candidate.resolved_true_entity = candidate.get_max_uri()
