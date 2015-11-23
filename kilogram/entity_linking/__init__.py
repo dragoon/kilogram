@@ -55,6 +55,7 @@ class CandidateEntity:
         self.start_i = start_i
         self.end_i = end_i
         self.noun_index = noun_index
+        self.entities = []
         uri_counts = {}
 
         # take Xs percentile to remove noisy candidates
