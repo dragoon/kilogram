@@ -10,11 +10,15 @@ class Signature(object):
     vector = None
     mapping = None
 
-    def __init__(self, vector, G):
+    def __init__(self, vector, G, candidate_uris):
+        """
+        :type candidate_uris: set
+        """
         self.vector = vector
         self.mapping = []
         for prob, uri in zip(vector, G.nodes()):
-            self.mapping.append((prob, uri))
+            if uri in candidate_uris:
+                self.mapping.append((prob, uri))
         self.mapping.sort(reverse=True)
 
     def __repr__(self):
@@ -52,6 +56,7 @@ class SemanticGraph:
     matrix = None
     # map candidate urls to indexes in the matrix
     index_map = None
+    candidate_uris = None
 
     def __init__(self, candidates):
         self.G = nx.Graph()
@@ -60,11 +65,12 @@ class SemanticGraph:
         neighbors = {}
         self.index_map = {}
 
-        candidate_uris = set()
+        self.candidate_uris = set()
         for cand in candidates:
             for e in cand.entities:
-                candidate_uris.add(e.uri)
+                self.candidate_uris.add(e.uri)
                 neighbors[e.uri] = NgramService.get_wiki_direct_links(e.uri)
+                #neighbors[e.uri].update(NgramService.get_wiki_edge_weights(e.uri))
                 # delete self
                 try:
                     del neighbors[e.uri][e.uri]
@@ -92,7 +98,7 @@ class SemanticGraph:
         for node, degree in self.G.degree_iter():
             if degree <= 1:
                 to_remove.add(node)
-        to_remove = to_remove.difference(candidate_uris)
+        to_remove = to_remove.difference(self.candidate_uris)
         self.G.remove_nodes_from(to_remove)
         self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float64)
         for i, uri in enumerate(self.G.nodes()):
@@ -133,10 +139,10 @@ class SemanticGraph:
 
     def doc_signature(self):
         """compute document signature"""
-        return Signature(self._learn_eigenvector(self._get_doc_teleport_v()), self.G)
+        return Signature(self._learn_eigenvector(self._get_doc_teleport_v()), self.G, self.candidate_uris)
 
     def compute_signature(self, entity):
-        return Signature(self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri])), self.G)
+        return Signature(self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri])), self.G, self.candidate_uris)
 
     def _zero_kl_score(self, p, q):
         """
