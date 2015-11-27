@@ -12,7 +12,10 @@ class Entity:
         self.uri = uri
         self.count = count
         if ner is not None:
-            self.types = ner.get_types(uri)
+            try:
+                self.types = ner.get_types(uri)
+            except KeyError:
+                pass
 
     def get_generic_type(self):
         return self.types[-1]
