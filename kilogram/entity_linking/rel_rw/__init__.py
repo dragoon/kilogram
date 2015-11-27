@@ -177,3 +177,25 @@ class SemanticGraph:
                 cand_scores.append((e.uri, sem_sim))
             max_uri, score = max(cand_scores, key=lambda x: x[1])
             candidate.resolved_true_entity = max_uri
+
+    def do_features(self, feature_file):
+        # link unambiguous first
+        for candidate in self.candidates:
+            if len(candidate.entities) == 1:
+                candidate.resolved_true_entity = candidate.entities[0].uri
+        for candidate in sorted(self.candidates, key=lambda x: len(x.entities)):
+            if not candidate.entities or candidate.resolved_true_entity:
+                continue
+            doc_sign = self.doc_signature()
+            total_uri_count = sum([e.count for e in candidate.entities], 1)
+            cand_scores = []
+            for e in candidate.entities:
+                e_sign = self.compute_signature(e)
+                # global similarity + local (prior prob)
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)\
+                          + e.count/total_uri_count
+                cand_scores.append((e.uri, sem_sim))
+                f = Feature(candidate, e, sem_sim, int(e.uri == candidate.truth_data['uri']))
+                feature_file.write(str(f) + '\n')
+            max_uri, score = max(cand_scores, key=lambda x: x[1])
+            candidate.resolved_true_entity = max_uri
