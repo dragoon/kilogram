@@ -100,3 +100,7 @@ class NgramEntityResolver:
     def get_type(self, word, order):
         types = self.dbpedia_types[word]
         return '<dbpedia:' + self.ontology.get_ordered_types(types)[order] + '>'
+
+    def get_types(self, word):
+        types = self.dbpedia_types[word]
+        return ['<dbpedia:' + x + '>' for x in  self.ontology.get_ordered_types(types)]
