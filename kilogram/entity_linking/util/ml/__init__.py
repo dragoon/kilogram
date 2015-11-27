@@ -1,3 +1,6 @@
+from __future__ import division
+
+
 class Feature(object):
     graph_score = 0
     prior_prob = 0

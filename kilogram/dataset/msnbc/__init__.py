@@ -59,13 +59,13 @@ class DataSet(object):
             visited = set()
             for values in ner_list:
                 candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
-                                            context=values['context'])
+                                            context=values['context'], ner=self.ner)
                 candidate.truth_data = self.truth_data[filename].get(values['text'], {'uri': None})
                 datafile.candidates.append(candidate)
                 visited.add(values['text'])
             for text, uri in self.truth_data[filename].iteritems():
                 if text not in visited:
-                    candidate = CandidateEntity(0, 0, text)
+                    candidate = CandidateEntity(0, 0, text, ner=self.ner)
                     candidate.truth_data = uri
                     datafile.candidates.append(candidate)
             data.append(datafile)
