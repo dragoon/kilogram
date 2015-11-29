@@ -12,9 +12,9 @@ class Feature(object):
     cand_num = 0
     label = 0
 
-    def __init__(self, candidate, entity, graph_score, label):
+    def __init__(self, candidate, entity, graph_rank, label):
         self.label = label
-        self.graph_score = graph_score
+        self.graph_score = graph_rank
         self.cand_num = len(candidate.entities)
         self.prior_prob = entity.count/sum([e.count for e in candidate.entities], 1)
         if entity.types:

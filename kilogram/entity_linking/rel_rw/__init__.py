@@ -196,9 +196,15 @@ class SemanticGraph:
                 # global similarity + local (prior prob)
                 sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)\
                           + e.count/total_uri_count
-                cand_scores.append((e.uri, sem_sim))
-                f = Feature(candidate, e, sem_sim, int(e.uri == candidate.truth_data['uri']))
+                cand_scores.append((e, sem_sim))
+            cand_scores.sort(key=lambda x: x[1], reverse=True)
+
+            i = 0
+            for e, sem_sim in cand_scores:
+                f = Feature(candidate, e, i, int(e.uri == candidate.truth_data['uri']))
                 features[e.uri+'|'+candidate.cand_string].append(f)
-            max_uri, score = max(cand_scores, key=lambda x: x[1])
+                i += 1
+
+            max_uri, score = cand_scores[0][0].uri
             candidate.resolved_true_entity = max_uri
         return features
