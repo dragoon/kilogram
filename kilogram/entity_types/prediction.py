@@ -1,10 +1,7 @@
 from __future__ import division
 from collections import defaultdict
-import shelve
 
-from scipy.stats import entropy, kurtosis
-
-from .. import NgramService, SUBSTITUTION_TOKEN, ListPacker
+from kilogram import NgramService, SUBSTITUTION_TOKEN, ListPacker
 
 
 def parse_counts(filename):

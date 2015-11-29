@@ -34,6 +34,7 @@ class CandidateEntity:
     type = None
     truth_data = None
     context = None
+    context_types = None
 
     def _get_uri_counts(self):
         table = "wiki_anchor_ngrams"
@@ -45,6 +46,10 @@ class CandidateEntity:
             candidates = ListPacker.unpack(res)
             return [(uri, long(count)) for uri, count in candidates]
         return None
+
+    def init_context_types(self, type_predictor):
+        if self.context:
+            self.context_types = type_predictor.predict_types_features(self.context.split())
 
     def _init_entities(self, uri_counts, ner):
         self.entities = []

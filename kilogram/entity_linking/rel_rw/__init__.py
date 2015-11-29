@@ -1,4 +1,5 @@
 from __future__ import division
+from collections import defaultdict
 import math
 import numpy as np
 import networkx as nx
@@ -178,8 +179,9 @@ class SemanticGraph:
             max_uri, score = max(cand_scores, key=lambda x: x[1])
             candidate.resolved_true_entity = max_uri
 
-    def do_features(self, feature_file):
+    def do_features(self):
         # link unambiguous first
+        features = defaultdict(list)
         for candidate in self.candidates:
             if len(candidate.entities) == 1:
                 candidate.resolved_true_entity = candidate.entities[0].uri
@@ -196,6 +198,7 @@ class SemanticGraph:
                           + e.count/total_uri_count
                 cand_scores.append((e.uri, sem_sim))
                 f = Feature(candidate, e, sem_sim, int(e.uri == candidate.truth_data['uri']))
-                feature_file.write(str(f) + '\n')
+                features[e.uri+'|'+candidate.cand_string].append(f)
             max_uri, score = max(cand_scores, key=lambda x: x[1])
             candidate.resolved_true_entity = max_uri
+        return features
