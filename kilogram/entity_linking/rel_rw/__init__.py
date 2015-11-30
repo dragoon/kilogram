@@ -205,6 +205,6 @@ class SemanticGraph:
                 features[e.uri+'|'+candidate.cand_string].append(f)
                 i += 1
 
-            max_uri, score = cand_scores[0][0].uri
+            max_uri = cand_scores[0][0].uri
             candidate.resolved_true_entity = max_uri
         return features
