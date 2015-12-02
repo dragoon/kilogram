@@ -181,7 +181,7 @@ class SemanticGraph:
 
     def do_features(self):
         # link unambiguous first
-        features = defaultdict(list)
+        features = defaultdict(lambda: defaultdict(list))
         for candidate in self.candidates:
             if len(candidate.entities) == 1:
                 candidate.resolved_true_entity = candidate.entities[0].uri
@@ -202,14 +202,15 @@ class SemanticGraph:
             i = 0
             for e, sem_sim in cand_scores:
                 f = Feature(candidate, e, i, int(e.uri == candidate.truth_data['uri']))
-                features[e.uri+'|'+candidate.cand_string].append(f)
+                features[candidate.cand_string][e.uri].append(f)
                 i += 1
 
             max_uri = cand_scores[0][0].uri
             candidate.resolved_true_entity = max_uri
         # 1. max merge
-        features = [Feature.max_merge(cand_features) for cand_features in features.values()]
+        merged_features = [[Feature.max_merge(x) for x in cand_features.values()]
+                    for cand_string, cand_features in features.iteritems()]
         # 2. group features
-        features = Feature.add_candidate_features(features)
+        features = [Feature.add_candidate_features(cand_features) for cand_features in merged_features]
 
         return features

@@ -35,8 +35,10 @@ class TestEntityLinkingKB(unittest.TestCase):
             for candidate in datafile:
                 candidate.init_context_types(ngram_predictor)
             features = graph.do_features()
-            for f in features:
-                feature_file.write(str(f) + '\n')
+            for f_list in features:
+                feature_file.write('#CANDIDATE\n')
+                for f in f_list:
+                    feature_file.write(str(f) + '\n')
             for candidate in datafile:
                 # D2KB condition
                 if candidate.truth_data['uri'] is None:
