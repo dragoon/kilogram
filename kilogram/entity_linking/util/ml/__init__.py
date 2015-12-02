@@ -64,5 +64,5 @@ class Feature(object):
         for i, feature in enumerate(sorted(features, key=lambda f: f.type_prob, reverse=True)):
             feature.type_prob_rank = i
         for i, feature in enumerate(sorted(features, key=lambda f: f.prior_prob, reverse=True)):
-            feature.type_prob_rank = i
+            feature.prior_prob_rank = i
         return features
