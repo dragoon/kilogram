@@ -13,6 +13,7 @@ class Feature(object):
     cand_num = 0
     type_prob_rank = None
     prior_prob_rank = None
+    number_merged = 1
     label = 0
 
     def __init__(self, candidate, entity, graph_rank, label):
@@ -31,7 +32,7 @@ class Feature(object):
 
     @staticmethod
     def header():
-        return 'CAND_NUM\tGRAPH_SCORE\tTYPE_EXISTS\tTYPE_MATCH\tTYPE_PREDICTABLE\tTYPE_PROB\tTYPE_PROB_RANK\tPRIOR_PROB\tPRIOR_PROB_RANK' + \
+        return 'CAND_NUM\tGRAPH_SCORE\tTYPE_EXISTS\tTYPE_MATCH\tTYPE_PREDICTABLE\tTYPE_PROB\tTYPE_PROB_RANK\tNUMBER_MERGED\tPRIOR_PROB\tPRIOR_PROB_RANK' + \
                '\tLABEL'
 
     def __str__(self):
@@ -39,6 +40,7 @@ class Feature(object):
                                            self.type_exists, self.type_match,
                                            self.type_predictable, self.type_prob,
                                            self.type_prob_rank,
+                                           self.number_merged,
                                            self.prior_prob, self.prior_prob_rank,
                                            self.label)))
 
@@ -51,6 +53,7 @@ class Feature(object):
         result_f = features[0]
         result_f.type_prob = max_type_prob
         result_f.type_pmi = max_pmi
+        result_f.number_merged = len(features)
         return result_f
 
     @staticmethod
