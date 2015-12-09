@@ -147,7 +147,7 @@ Rosie O'Donnell	Rosie O'Donnell
 Donald Trump	Donald Trump
 Walters	Barbara Walters
 ABC	American Broadcasting Company
-The View	The View
+The View	The_View_(U.S._TV_series)
 Trump	Donald Trump
 O'Donnell	Rosie O'Donnell
 Walters	Barbara Walters
@@ -156,7 +156,7 @@ Walters	Barbara Walters
 Walters	Barbara Walters
 The Donald	Donald Trump
 O'Donnell	Rosie O'Donnell
-The View	The View
+The View	The_View_(U.S._TV_series)
 ABC	American Broadcasting Company
 Donald Trump	Donald Trump
 Walters	Barbara Walters
@@ -167,7 +167,7 @@ Trump	Donald Trump
 Miss Universe Organization	Miss Universe Organization
 Miss USA	Miss USA
 Miss Teen USA	Miss Teen USA
-The View	The View
+The View	The_View_(U.S._TV_series)
 Trump	Donald Trump
 Conner	Tara Conner
 America	United States
