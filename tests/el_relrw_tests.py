@@ -1,6 +1,7 @@
 import unittest
 from kilogram.dataset.dbpedia import NgramEntityResolver
-from kilogram.dataset.msnbc import DataSet
+from kilogram.dataset.msnbc import DataSet as MSNBC
+from kilogram.dataset.microposts import DataSet as Tweets
 from kilogram.entity_linking import syntactic_subsumption
 
 from kilogram.entity_linking.evaluation import Metrics
@@ -17,18 +18,18 @@ ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
 ngram_predictor = NgramTypePredictor('typogram')
-msnbc_data = DataSet('../extra/data/msnbc/texts/',
+
+
+class TestEntityLinkingKBMSNBC(unittest.TestCase):
+    msnbc_data = MSNBC('../extra/data/msnbc/texts/',
                         '../extra/data/msnbc/msnbc_truth.txt', ner)
-
-
-class TestEntityLinkingKB(unittest.TestCase):
 
     def test_d2kb(self):
         print 'REL-RW, D2KB'
         feature_file = open('features.txt', 'w')
         metric = Metrics()
         feature_file.write(Feature.header()+'\n')
-        for datafile in msnbc_data.data:
+        for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
             #graph.do_linking()
@@ -46,6 +47,27 @@ class TestEntityLinkingKB(unittest.TestCase):
                 uri = candidate.resolved_true_entity
                 metric.evaluate(candidate.truth_data, uri)
         feature_file.close()
+        metric.print_metrics()
+
+
+class TestEntityLinkingKBMicroposts(unittest.TestCase):
+    microposts_data = Tweets('../extra/data/microposts2014/microposts_test.txt', ner)
+
+    def test_d2kb(self):
+        print 'REL-RW, D2KB'
+        metric = Metrics()
+        for datafile in self.microposts_data.data:
+            syntactic_subsumption(datafile.candidates)
+            graph = SemanticGraph(datafile.candidates)
+            graph.do_linking()
+            for candidate in datafile:
+                candidate.init_context_types(ngram_predictor)
+            for candidate in datafile:
+                # D2KB condition
+                if candidate.truth_data['uri'] is None:
+                    continue
+                uri = candidate.resolved_true_entity
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
 
