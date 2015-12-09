@@ -171,13 +171,16 @@ def parse_entities(sentence):
     from .. import NER_HOSTNAME, NER_PORT
     text = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
     ne_list = []
+    words_i = 0
     for i, c in enumerate(text):
-        if c == '<':
+        if c == ' ':
+            words_i += 1
+        elif c == '<':
             # check end
             match = ENTITY_MATCH_RE.match(text[i:])
             if match:
                 uri_text = match.group(2)
                 e_type = dbp_type(match.group(1))
-                ne_list.append({'text': uri_text, 'type': e_type,
+                ne_list.append({'text': uri_text, 'type': e_type, 'start': words_i,
                                 'context': replace_types(get_context(i, text, match))})
     return ne_list
