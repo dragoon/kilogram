@@ -25,10 +25,17 @@ class Feature(object):
             self.type_exists = 1
             self.type_match = int(candidate.type == entity.get_generic_type())
             if candidate.context_types:
-                pre_bigrams = [x for x in candidate.context_types[2][0]['values'] if x['name'] in entity.types]
-                if pre_bigrams:
+                type_probs = []
+                for order, values in candidate.context_types.items():
+                    for ngram_value in values:
+                        for type_obj in ngram_value['values']:
+                            if type_obj['name'] in entity.types:
+                                type_probs.append(type_obj['prob'])
+
+                # select max type prob
+                if type_probs:
                     self.type_predictable = 1
-                    self.type_prob = pre_bigrams[0]['prob']
+                    self.type_prob = max(type_probs)
 
     @staticmethod
     def header():
@@ -65,7 +72,11 @@ class Feature(object):
         """
 
         for i, feature in enumerate(sorted(features, key=lambda f: f.type_prob, reverse=True)):
-            feature.type_prob_rank = i
+            if feature.type_prob == 1.0:
+                # more than 1 zero rank is allowed
+                feature.type_prob_rank = 0
+            else:
+                feature.type_prob_rank = i
         for i, feature in enumerate(sorted(features, key=lambda f: f.prior_prob, reverse=True)):
             feature.prior_prob_rank = i
         return features
