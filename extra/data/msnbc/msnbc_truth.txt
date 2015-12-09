@@ -503,7 +503,7 @@ Shaanxi	Shaanxi
 ### 16451635
 ~~~ 16454435
 Mars rovers	Mars Rover
-LOS ANGELES	Los Angeles. California
+LOS ANGELES	Los Angeles
 Mars rovers	Mars Rover
 Red Planet	Mars
 John Callas	John Callas	---
@@ -835,3 +835,7 @@ The	!!!
 Maha Kumbh Mela	Kumbh Mela
 Guinness Book of Records	Guinness World Records
 ### 16447201
+~~~ test_doc
+London	London
+New York City	New York City
+### test_doc
