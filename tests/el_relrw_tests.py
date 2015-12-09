@@ -35,7 +35,7 @@ class TestEntityLinkingKB(unittest.TestCase):
             for candidate in datafile:
                 candidate.init_context_types(ngram_predictor)
             features = graph.do_features()
-            for f_list in features:
+            for f_list in features.values():
                 feature_file.write('#CANDIDATE\n')
                 for f in f_list:
                     feature_file.write(str(f) + '\n')
