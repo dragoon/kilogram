@@ -182,7 +182,7 @@ Mayo Clinic	Mayo Clinic
 Mayo Clinic	Mayo Clinic
 OK	!!!
 Stony Brook University	State University of New York at Stony Brook
-New York	New York City
+New York	New York
 Or	!!!
 Goteborg University	Goteborg University	---
 Sweden	Sweden
