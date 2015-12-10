@@ -17,20 +17,23 @@ class DataSet(object):
         data = []
         for line in open(self.dataset_file):
             line = line.strip().split('\t')
-            datafile = DataFile(line[0], line[1])
+            try:
+                datafile = DataFile(line[0], line[1])
+            except IndexError:
+                continue
             truth_data = dict(zip(line[3::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[4::2]]))
-            ner_list = parse_entities(line[1])
+            ner_list = parse_entities(line[1].decode('utf-8'))
             visited = set()
             for values in ner_list:
                 candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
                                             context=values['context'], ner=self.ner)
-                candidate.truth_data = truth_data.get(values['text'], {'uri': None})
+                candidate.truth_data = {'uri': truth_data.get(values['text']), 'exists': True}
                 datafile.candidates.append(candidate)
                 visited.add(values['text'])
             for text, uri in truth_data.iteritems():
                 if text not in visited:
                     candidate = CandidateEntity(0, 0, text, ner=self.ner)
-                    candidate.truth_data = uri
+                    candidate.truth_data = {'uri': uri, 'exists': True}
                     datafile.candidates.append(candidate)
             data.append(datafile)
         return data
