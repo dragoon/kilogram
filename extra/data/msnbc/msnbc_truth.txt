@@ -174,7 +174,7 @@ America	United States
 Trump	Donald Trump
 O'Donnell	Rosie O'Donnell
 NBC	NBC
-The Apprentice	The Apprentice
+The Apprentice	The_Apprentice_(U.S._TV_series)
 ### 16453733
 ~~~ 16384904
 Santa Baby	Santa Baby
@@ -837,5 +837,5 @@ Guinness Book of Records	Guinness World Records
 ### 16447201
 ~~~ test_doc
 London	London
-New York City	New York City
+Sweden	Sweden
 ### test_doc
