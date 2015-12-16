@@ -111,6 +111,7 @@ def semantic_signature(orig_uri, edges_map):
         if rand() <= ALPHA:
             # restart
             uri = orig_uri
+            weights[uri] += 1
         try:
             values, p = edges_map[uri]
         except KeyError:
