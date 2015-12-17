@@ -25,4 +25,12 @@ echo "create 'wiki_anchor_ngrams', 'ngram'" | hbase shell -n
 pig -p table=wiki_anchor_ngrams -p path=/user/roman/candidate_ngram_links ../extra/hbase_upload_array.pig
 
 
+# wiki direct links table
+spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/michael/plain_wikipedia_pagelinks" "/user/roman/SOTA_EL/wikipedia_pagelinks"
+echo "disable 'wiki_direct_links'" | hbase shell -n
+echo "drop 'wiki_direct_links'" | hbase shell -n
+echo "create 'wiki_direct_links', 'ngram'" | hbase shell -n
+pig -p table=wiki_direct_links -p path=/user/roman/SOTA_EL/wikipedia_pagelinks ../extra/hbase_upload_array.pig
+
+
 rm -rf kilogram
