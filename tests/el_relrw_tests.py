@@ -11,6 +11,8 @@ from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
 import kilogram
 
+kilogram.DEBUG = False
+
 NgramService.configure(hbase_host=('diufpc304', '9090'), subst_table='typogram')
 kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
 ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
