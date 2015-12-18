@@ -89,6 +89,11 @@ class CandidateEntity:
             return None
         return max(self.entities, key=lambda e: e.count).uri
 
+    def get_max_entity(self):
+        if not self.entities:
+            return None
+        return max(self.entities, key=lambda e: e.count)
+
     def get_max_typed_uri(self):
         for entity in sorted(self.entities, key=lambda e: e.count, reverse=True):
             try:
@@ -109,13 +114,25 @@ def syntactic_subsumption(candidates):
     """replace candidates that are syntactically part of another: Ford -> Gerald Ford"""
     cand_dict = dict([(x.cand_string, x) for x in candidates])
 
-    def get_super_candidate(c):
+    def get_super_candidates(c):
+        res = []
         for cand_string in cand_dict.keys():
             if c.cand_string != cand_string and c.cand_string in cand_string:
-                if cand_dict[cand_string].type == '<dbpedia:Person>':
-                    return cand_dict[cand_string]
-        return None
+                if cand_dict[cand_string].entities:
+                    res.append(cand_dict[cand_string])
+        return res
     for candidate in candidates:
-        super_candidate = get_super_candidate(candidate)
-        if super_candidate:
-            candidate.entities = super_candidate.entities
+        super_candidates = get_super_candidates(candidate)
+        if super_candidates:
+            person_cands = [x for x in super_candidates if x.type == '<dbpedia:Person>']
+            if len(person_cands) >= 1:
+                candidate.entities = person_cands[0].entities
+            else:
+                max_ent = candidate.get_max_entity()
+                candidate.entities = []
+                for super_candidate in super_candidates:
+                    candidate.entities.extend(super_candidate.entities)
+                if max_ent:
+                    candidate.entities.append(max_ent)
+                if candidate.truth_data['uri'] is not None and candidate.truth_data['uri'] not in [x.uri for x in candidate.entities]:
+                    print 'Not in truth!', candidate
