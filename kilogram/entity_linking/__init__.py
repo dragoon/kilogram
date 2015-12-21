@@ -35,6 +35,7 @@ class CandidateEntity:
     truth_data = None
     context = None
     context_types = None
+    has_super = None
 
     def _get_uri_counts(self):
         table = "wiki_anchor_ngrams"
@@ -64,6 +65,7 @@ class CandidateEntity:
         self.end_i = end_i
         self.noun_index = noun_index
         self.entities = []
+        self.has_super = False
         uri_counts = {}
 
         # take Xs percentile to remove noisy candidates
@@ -134,5 +136,6 @@ def syntactic_subsumption(candidates):
                     candidate.entities.extend(super_candidate.entities)
                 if max_ent:
                     candidate.entities.append(max_ent)
+                candidate.has_super = True
                 if candidate.truth_data['uri'] is not None and candidate.truth_data['uri'] not in [x.uri for x in candidate.entities]:
                     print 'Not in truth!', candidate
