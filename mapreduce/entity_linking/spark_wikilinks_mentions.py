@@ -1,6 +1,6 @@
 """
 spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks_mentions.py "/user/ded/wikilinks_mentions" "/user/roman/SOTA_EL/wikipedia_pagelinks_mentions"
-pig -p table=wiki_pagelinks_mentions -p path=/user/roman/wikipedia_pagelinks_mentions ./hbase_upload_array.pig
+pig -p table=wiki_pagelinks_mentions -p path=/user/roman/SOTA_EL/wikipedia_pagelinks_mentions ./hbase_upload_array.pig
 """
 import sys
 from pyspark import SparkContext
