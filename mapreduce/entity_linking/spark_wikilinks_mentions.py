@@ -29,7 +29,7 @@ def mapper(line):
     line = line.split('\t')
     return line[1]+'|'+line[0], line[3]+'|'+line[2]
 
-pagelinks = pagelinks_file.filter(lambda x: '(disambiguation)' not in x).map(lambda x: x.split('\t')).aggregateByKey({}, seqfunc, combfunc)
+pagelinks = pagelinks_file.filter(lambda x: '(disambiguation)' not in x).map(mapper).aggregateByKey({}, seqfunc, combfunc)
 
 def printer(value):
     return value[0] + '\t' + ' '.join([x+","+str(y) for x, y in value[1].items()])
