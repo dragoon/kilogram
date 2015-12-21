@@ -43,6 +43,7 @@ class NgramService(object):
     wiki_urls_table = None
     wiki_edges_table = None
     wiki_direct_links_table = None
+    wiki_direct_links_mentions_table = None
 
     @staticmethod
     def _is_subst(ngram):
@@ -52,6 +53,7 @@ class NgramService(object):
     def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
                   wiki_edges_table="wiki_edges", wiki_direct_links_table="wiki_direct_links",
+                  wiki_direct_links_mentions_table="wiki_pagelinks_mentions",
                   hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
@@ -59,6 +61,7 @@ class NgramService(object):
         cls.wiki_anchors_table = wiki_anchors_table
         cls.wiki_edges_table = wiki_edges_table
         cls.wiki_direct_links_table = wiki_direct_links_table
+        cls.wiki_direct_links_mentions_table = wiki_direct_links_mentions_table
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -174,4 +177,10 @@ class NgramService(object):
     def get_wiki_direct_links(cls, uri):
         res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_direct_links_table, uri,
                                                             "ngram:value")))
+        return res
+
+    @classmethod
+    def get_wiki_direct_links_mentions(cls, mention_uri):
+        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_direct_links_mentions_table,
+                                                            mention_uri, "ngram:value")))
         return res
