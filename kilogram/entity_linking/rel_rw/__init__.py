@@ -3,6 +3,8 @@ from collections import defaultdict
 import math
 import numpy as np
 import networkx as nx
+from numpy.random import rand, choice
+from sklearn.preprocessing import normalize
 from ..util.ml import Feature
 from kilogram import NgramService
 
@@ -101,7 +103,9 @@ class SemanticGraph:
                 to_remove.add(node)
         to_remove = to_remove.difference(self.candidate_uris)
         self.G.remove_nodes_from(to_remove)
-        self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float64)
+        if self.G.number_of_nodes() > 0:
+            self.matrix = nx.to_scipy_sparse_matrix(self.G, weight='w', dtype=np.float64)
+            self.matrix = normalize(self.matrix, norm='l1', axis=1)
         for i, uri in enumerate(self.G.nodes()):
             self.index_map[uri] = i
 
@@ -118,18 +122,20 @@ class SemanticGraph:
             for i in resolved:
                 teleport_vector[i] = 1-ALPHA
         else:
-            # assign uniformly
-            for i in range(len(teleport_vector)):
-                teleport_vector[i] = 1./self.matrix.shape[0]*(1-ALPHA)
+            # assign according to prior probabilities
+            for candidate in self.candidates:
+                total_uri_count = sum([e.count for e in candidate.entities], 1)
+                for e in candidate.entities:
+                    teleport_vector[self.index_map.get(e.uri)] = e.count/total_uri_count
 
         return np.matrix(teleport_vector)
 
     def _learn_eigenvector(self, teleport_vector):
 
-        pi = np.matrix(np.random.rand(*teleport_vector.shape))
+        pi = np.matrix(np.zeros(teleport_vector.shape))
         prev_norm = 0
 
-        for _ in range(1000):
+        for _ in range(10000):
             pi = self.matrix*pi*ALPHA + teleport_vector
             cur_norm = np.linalg.norm(pi)
             pi /= cur_norm
@@ -143,7 +149,22 @@ class SemanticGraph:
         return Signature(self._learn_eigenvector(self._get_doc_teleport_v()), self.G, self.candidate_uris)
 
     def compute_signature(self, entity):
-        return Signature(self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri])), self.G, self.candidate_uris)
+        # weights = defaultdict(lambda: 0)
+        # uri = entity.uri
+        # for i in range(10000):
+        #     if rand() <= ALPHA:
+        #         # restart
+        #         uri = entity.uri
+        #         weights[uri] += 1
+        #     edges = self.G.edges([uri], data=True)
+        #     p = [x[2]['w'] for x in edges]
+        #     p = [x/sum(p) for x in p]
+        #     uri = edges[choice(len(p), p=p)][1]
+        #     weights[uri] += 1
+        # total = sum(weights.values())
+        # res = sorted([(x[0], x[1]/total) for x in weights.iteritems()], key=lambda x: x[1], reverse=True)
+        sig = Signature(self._learn_eigenvector(self._get_entity_teleport_v(self.index_map[entity.uri])), self.G, self.candidate_uris)
+        return sig
 
     def _zero_kl_score(self, p, q):
         """
@@ -165,6 +186,8 @@ class SemanticGraph:
             if len(candidate.entities) == 1:
                 candidate.resolved_true_entity = candidate.entities[0].uri
         for candidate in sorted(self.candidates, key=lambda x: len(x.entities)):
+            if candidate.truth_data['uri'] is None:
+                continue
             if not candidate.entities or candidate.resolved_true_entity:
                 continue
             doc_sign = self.doc_signature()
@@ -179,6 +202,16 @@ class SemanticGraph:
             max_uri, score = max(cand_scores, key=lambda x: x[1])
             candidate.resolved_true_entity = max_uri
 
+            if candidate.has_super and max_uri != candidate.get_max_uri():
+                try:
+                    path = nx.shortest_path(self.G, max_uri, candidate.get_max_uri())
+                    path_len = len(path) - 2
+                except nx.NetworkXNoPath:
+                    path_len = 10
+
+                if path_len > 1:
+                    candidate.resolved_true_entity = max_uri
+
     def do_features(self):
         # link unambiguous first
         features = defaultdict(lambda: defaultdict(list))
@@ -186,6 +219,8 @@ class SemanticGraph:
             if len(candidate.entities) == 1:
                 candidate.resolved_true_entity = candidate.entities[0].uri
         for candidate in sorted(self.candidates, key=lambda x: len(x.entities)):
+            if candidate.truth_data['uri'] is None:
+                continue
             if not candidate.entities or candidate.resolved_true_entity:
                 continue
             doc_sign = self.doc_signature()
@@ -194,23 +229,33 @@ class SemanticGraph:
             for e in candidate.entities:
                 e_sign = self.compute_signature(e)
                 # global similarity + local (prior prob)
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)\
-                          + e.count/total_uri_count
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)#\
+                          #+ e.count/total_uri_count
                 cand_scores.append((e, sem_sim))
             cand_scores.sort(key=lambda x: x[1], reverse=True)
 
             i = 0
+            type_match = True
             for e, sem_sim in cand_scores:
                 f = Feature(candidate, e, i, int(e.uri == candidate.truth_data['uri']))
                 features[candidate.cand_string][e.uri].append(f)
+                if i == 0 and f.type_predictable and f.type_prob < 0.8:
+                    type_match = False
                 i += 1
 
+            if type_match:
+                max_uri = cand_scores[0][0].uri
+                candidate.resolved_true_entity = max_uri
+            else:
+                candidate.resolved_true_entity = candidate.get_max_uri()
+
             max_uri = cand_scores[0][0].uri
-            candidate.resolved_true_entity = max_uri
+            candidate.resolved_true_entity = candidate.get_max_uri()
+
         # 1. max merge
-        merged_features = [[Feature.max_merge(x) for x in cand_features.values()]
+        merged_features = [(cand_string, [Feature.max_merge(x) for x in cand_features.values()])
                     for cand_string, cand_features in features.iteritems()]
         # 2. group features
-        features = [Feature.add_candidate_features(cand_features) for cand_features in merged_features]
+        features = dict([(cand_string, Feature.add_candidate_features(cand_features)) for cand_string, cand_features in merged_features])
 
         return features
