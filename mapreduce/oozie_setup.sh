@@ -18,7 +18,7 @@ echo "create 'wiki_urls', 'ngram'" | hbase shell -n
 pig -p table=wiki_urls -p path=/user/roman/wiki_urls ../extra/hbase_upload_array.pig
 
 # candidate_ngrams generation - depends on prev task
-spark-submit --master yarn-client --num-executors 20 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py "/user/roman/dbpedia_data.txt" "/user/roman/wikipedia_anchors" "/user/roman/candidate_ngram_links"
+spark-submit --master yarn-client --num-executors 20 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors" "/user/roman/candidate_ngram_links"
 echo "disable 'wiki_anchor_ngrams'" | hbase shell -n
 echo "drop 'wiki_anchor_ngrams'" | hbase shell -n
 echo "create 'wiki_anchor_ngrams', 'ngram'" | hbase shell -n
