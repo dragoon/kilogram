@@ -33,4 +33,11 @@ echo "create 'wiki_direct_links', 'ngram'" | hbase shell -n
 pig -p table=wiki_direct_links -p path=/user/roman/SOTA_EL/wikipedia_pagelinks ../extra/hbase_upload_array.pig
 
 
+park-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks_mentions.py "/user/ded/wikilinks_mentions" "/user/roman/SOTA_EL/wikipedia_pagelinks_mentions"
+echo "disable 'wiki_direct_links_mentions'" | hbase shell -n
+echo "drop 'wiki_direct_links_mentions'" | hbase shell -n
+echo "create 'wiki_direct_links_mentions', 'ngram'" | hbase shell -n
+pig -p table=wiki_direct_links_mentions -p path=/user/roman/SOTA_EL/wikipedia_pagelinks_mentions ../extra/hbase_upload_array.pig
+
+
 rm -rf kilogram
