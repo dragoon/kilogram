@@ -6,6 +6,7 @@ pig -p table=wiki_urls -p path=/user/roman/wiki_urls ./hbase_upload_array.pig
 import sys
 from pyspark import SparkContext
 import re
+import urllib
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 
@@ -43,7 +44,7 @@ def map_redirects(line):
         return None, None
     canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     # return only redirect, we'll do left join later
-    return uri, canon_uri
+    return uri, urllib.unquote(canon_uri)
 
 dbp_urls = dbp_redirects_file.map(map_redirects).distinct()
 dbp_anchor_join = anchor_counts.leftOuterJoin(dbp_urls)
