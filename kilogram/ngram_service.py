@@ -53,7 +53,7 @@ class NgramService(object):
     def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
                   wiki_edges_table="wiki_edges", wiki_direct_links_table="wiki_direct_links",
-                  wiki_direct_links_mentions_table="wiki_pagelinks_mentions",
+                  wiki_direct_links_mentions_table="wiki_direct_links_mentions",
                   hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
