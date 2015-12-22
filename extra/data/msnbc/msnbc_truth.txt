@@ -652,7 +652,7 @@ New York	New York City
 U.S. cities	!!!
 New York	New York City
 Hurricane Katrina	Hurricane Katrina
-Los Angeles	Los Angeles. California
+Los Angeles	Los Angeles
 San Francisco	San Francisco, California
 Congress	United States Congress
 Homeland Security Department	United States Department of Homeland Security
