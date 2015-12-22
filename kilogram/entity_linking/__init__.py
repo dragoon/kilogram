@@ -131,9 +131,14 @@ def syntactic_subsumption(candidates):
                 candidate.entities = person_cands[0].entities
             else:
                 max_ent = candidate.get_max_entity()
+                current_entity_set = set([e.uri for e in candidate.entities])
                 candidate.entities = []
                 for super_candidate in super_candidates:
-                    candidate.entities.extend(super_candidate.entities)
+                    candidate.entities.extend([e for e in super_candidate.entities if e.uri in current_entity_set])
+                # add everything if still empty -- means no good matches
+                if len(candidate.entities) == 0:
+                    for super_candidate in super_candidates:
+                        candidate.entities.extend(super_candidate.entities)
                 if max_ent:
                     candidate.entities.append(max_ent)
                 candidate.has_super = True
