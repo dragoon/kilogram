@@ -44,7 +44,7 @@ def map_redirects(line):
         return None, None
     canon_uri = canon_uri.replace('<http://dbpedia.org/resource/', '')[:-1]
     # return only redirect, we'll do left join later
-    return uri, urllib.unquote(canon_uri)
+    return uri, urllib.unquote(canon_uri.encode('ascii')).decode('utf-8')
 
 dbp_urls = dbp_redirects_file.map(map_redirects).distinct()
 dbp_anchor_join = anchor_counts.leftOuterJoin(dbp_urls)
