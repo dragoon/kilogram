@@ -250,7 +250,7 @@ class SemanticGraph:
                 candidate.resolved_true_entity = candidate.get_max_uri()
 
             max_uri = cand_scores[0][0].uri
-            candidate.resolved_true_entity = candidate.get_max_uri()
+            candidate.resolved_true_entity = max_uri
 
         # 1. max merge
         merged_features = [(cand_string, [Feature.max_merge(x) for x in cand_features.values()])
