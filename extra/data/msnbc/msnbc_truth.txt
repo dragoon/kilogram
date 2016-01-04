@@ -662,7 +662,7 @@ Baton Rouge	Baton Rouge, Louisiana
 Mandan	Mandan, North Dakota
 N.D.	North Dakota
 American Samoa	American Samoa
-Tammy Lapp	Tammy Lapp
+Tammy Lapp	Tammy Lapp	---
 Mandan	Mandan, North Dakota
 Morton County	Morton County, North Dakota
 N.D.	North Dakota
