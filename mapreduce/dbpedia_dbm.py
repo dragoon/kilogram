@@ -51,6 +51,7 @@ for types_file in TYPE_FILES:
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
+ambig_redirects_set = set()
 for line in p.stdout:
     try:
         uri_redirect, predicate, uri_canon = line.split(' ', 2)
@@ -58,12 +59,14 @@ for line in p.stdout:
         continue
     name_redirect = urllib.unquote(uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1])
     name_canon = urllib.unquote(uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4])
-    if '(disambiguation)' in name_redirect:
-        # delete other references if exist
-        del typed_entities[name_canon.decode('utf-8')]
+    if '(disambiguation)' in name_redirect or '(disambiguation)' in name_canon:
+        ambig_redirects_set.add(name_canon.decode('utf-8'))
         continue
 
     typed_entities[name_canon.decode('utf-8')]['redirects'].append(name_redirect.decode('utf-8'))
+
+for ambig_redirect in ambig_redirects_set:
+    del typed_entities[ambig_redirect]
 
 dbpedia_data = codecs.open('dbpedia_data.txt', 'w', 'utf-8')
 
