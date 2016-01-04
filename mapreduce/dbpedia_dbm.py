@@ -66,7 +66,10 @@ for line in p.stdout:
     typed_entities[name_canon.decode('utf-8')]['redirects'].append(name_redirect.decode('utf-8'))
 
 for ambig_redirect in ambig_redirects_set:
-    del typed_entities[ambig_redirect]
+    try:
+        del typed_entities[ambig_redirect]
+    except KeyError:
+        pass
 
 dbpedia_data = codecs.open('dbpedia_data.txt', 'w', 'utf-8')
 
