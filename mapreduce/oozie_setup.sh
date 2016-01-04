@@ -22,7 +22,7 @@ spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./enti
 echo "disable 'wiki_anchor_ngrams'" | hbase shell -n
 echo "drop 'wiki_anchor_ngrams'" | hbase shell -n
 echo "create 'wiki_anchor_ngrams', 'ngram'" | hbase shell -n
-pig -p table=wiki_anchor_ngrams -p path=/user/roman/candidate_ngram_links ../extra/hbase_upload_array.pig
+pig -p table=wiki_anchor_ngrams -p path=/user/roman/SOTA_EL/candidate_ngram_links ../extra/hbase_upload_array.pig
 
 
 # wiki direct links table
