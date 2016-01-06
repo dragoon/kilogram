@@ -55,8 +55,8 @@ class TestEntityLinking(unittest.TestCase):
                 # D2KB
                 if candidate.truth_data['uri'] is None:
                     continue
-                if candidate.e_type is not None:
-                    uri = candidate.get_max_typed_uri(ner)
+                if candidate.type is not None:
+                    uri = candidate.get_max_typed_uri()
                 else:
                     uri = candidate.get_max_uri()
 
