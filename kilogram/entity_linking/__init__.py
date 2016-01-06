@@ -101,9 +101,9 @@ class CandidateEntity:
             try:
                 if entity.get_generic_type() == self.type:
                     return entity.uri
-            except KeyError:
-                return entity.uri
-        return None
+            except TypeError:
+                continue
+        return self.get_max_uri()
 
     def __len__(self):
         return len(self.entities)
