@@ -2,6 +2,7 @@
 import re
 import socket
 import time
+from .unicode import strip_unicode
 from .tokenize import wiki_tokenize_func
 
 DT_STRIPS = {'my', 'our', 'your', 'their', 'a', 'an', 'the', 'her', 'its', 'his'}
@@ -27,6 +28,8 @@ _RE_NUM_SUBS = [('<NUM:AREA>', SQ_RE), ('<NUM:VOL>', VOL_RE), ('<NUM:GEO>', GEO_
 
 NE_TOKEN = re.compile(r'<[A-Z]+?>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+?>$')
+
+ENTITY_MATCH_RE = re.compile(r'(<[A-Z]+>)(.+?)</[A-Z]+>')
 
 
 def number_replace(sentence):
@@ -128,23 +131,46 @@ def replace_ne(sentence):
     return ' '.join(typed_tokens)
 
 
+def dbp_type(ner_type):
+        if ner_type == '<LOCATION>':
+            return '<dbpedia:Place>'
+        elif ner_type == '<PERSON>':
+            return '<dbpedia:Person>'
+        elif ner_type in ('<ORGANISATION>', '<ORGANIZATION>'):
+            return '<dbpedia:Organisation>'
+
+
+def replace_types(context):
+    return ENTITY_MATCH_RE.sub(lambda m: dbp_type(m.group(1)), context)
+
+
 def get_context(start, text, match):
     end = match.end() + start
-    spaces = [i for i, c in enumerate(text) if c == ' ']
+
+    start_text = replace_types(text[:start])
+    end_text = replace_types(text[end:])
+
     try:
-        prev_space = [i for i in spaces if i < start][-3]
-    except IndexError:
+        space_iter = (i for i, c in enumerate(reversed(start_text)) if c == ' ')
+        space_iter.next()
+        space_iter.next()
+        prev_space = space_iter.next()
+    except StopIteration:
         prev_space = -1
+
     try:
-        next_space = [i for i in spaces if i >= end][2]
-    except IndexError:
+        space_iter = (i for i, c in enumerate(end_text) if c == ' ')
+        space_iter.next()
+        space_iter.next()
+        next_space = space_iter.next()
+    except StopIteration:
         next_space = len(text)
 
-    prev_ngrams = wiki_tokenize_func(text[prev_space+1:start])[-2:]
+    prev_ngrams = wiki_tokenize_func(start_text[prev_space+1:])[-2:]
     while len(prev_ngrams) < 2:
         prev_ngrams.insert(0, 'NONE')
 
-    next_ngrams = wiki_tokenize_func(text[end:next_space])[:2]
+    next_ngrams = wiki_tokenize_func(end_text[:next_space])[:2]
     while len(next_ngrams) < 2:
         next_ngrams.append('NONE')
 
@@ -155,21 +181,9 @@ def parse_entities(sentence):
     """
     /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
     """
-    ENTITY_MATCH_RE = re.compile(r'(<[A-Z]+>)(.+?)</[A-Z]+>')
-
-    def dbp_type(ner_type):
-        if ner_type == '<LOCATION>':
-            return '<dbpedia:Place>'
-        elif ner_type == '<PERSON>':
-            return '<dbpedia:Person>'
-        elif ner_type in ('<ORGANISATION>', '<ORGANIZATION>'):
-            return '<dbpedia:Organisation>'
-
-    def replace_types(context):
-        return ENTITY_MATCH_RE.sub(lambda m: dbp_type(m.group(1)), context)
 
     from .. import NER_HOSTNAME, NER_PORT
-    text = _stanford_socket(NER_HOSTNAME, NER_PORT, sentence).strip()
+    text = _stanford_socket(NER_HOSTNAME, NER_PORT, strip_unicode(sentence)).strip()
     ne_list = []
     words_i = 0
     for i, c in enumerate(text):
