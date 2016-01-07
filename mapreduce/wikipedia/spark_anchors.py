@@ -5,9 +5,8 @@ pig -p table=wiki_urls -p path=/user/roman/wiki_urls ./hbase_upload_array.pig
 """
 import sys
 from pyspark import SparkContext
-import re
 import urllib
-from lang import strip_unicode
+from kilogram.lang.unicode import strip_unicode
 
 sc = SparkContext(appName="WikipediaAnchors")
 
