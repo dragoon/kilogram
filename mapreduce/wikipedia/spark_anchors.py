@@ -1,5 +1,5 @@
 """
-spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wiki_anchors" "/user/roman/wiki_urls"
+spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors.py "/user/ded/link_mention" "/user/roman/wiki_anchors" "/user/roman/wiki_urls"
 pig -p table=wiki_anchors -p path=/user/roman/wiki_anchors ./hbase_upload_array.pig
 pig -p table=wiki_urls -p path=/user/roman/wiki_urls ./hbase_upload_array.pig
 """
@@ -8,29 +8,17 @@ from pyspark import SparkContext
 import re
 import urllib
 
-ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
-
-
 sc = SparkContext(appName="WikipediaAnchors")
 
 lines = sc.textFile(sys.argv[1])
 
 # Split each line into words
 def unpack_anchors(line):
-    result = []
-    line = line.strip()
-    for word in line.split():
-        match = ENTITY_MATCH_RE.search(word)
-        if match:
-            uri = match.group(1)
-            if '#' in uri:
-                continue
-            anchor_text = match.group(2)
-            anchor_text = anchor_text.replace('_', ' ')
-            result.append((uri[0].upper()+uri[1:], anchor_text))
-    return result
+    uri, mention = line.split('\t')
+    mention = mention.replace('_', ' ')
+    return uri[0].upper()+uri[1:], mention
 
-anchor_counts = lines.flatMap(unpack_anchors)
+anchor_counts = lines.map(unpack_anchors)
 
 
 dbp_redirects_file = sc.textFile("/user/roman/redirects_transitive_en.nt.bz2")
