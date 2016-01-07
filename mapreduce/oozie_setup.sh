@@ -8,7 +8,7 @@ python dbpedia_dbp.py
 
 # wiki_urls and wiki_achors generation
 hdfs dfs -rm -r /user/roman/wiki_anchors /user/roman/wiki_urls
-spark-submit --executor-memory 5g --num-executors 20 --master yarn-client ./wikipedia/spark_anchors.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wiki_anchors" "/user/roman/wiki_urls"
+spark-submit --executor-memory 5g --num-executors 10 --master yarn-client ./wikipedia/spark_anchors.py "/user/ded/link_mention" "/user/roman/wiki_anchors" "/user/roman/wiki_urls"
 echo "disable 'wiki_anchors'" | hbase shell -n
 echo "drop 'wiki_anchors'" | hbase shell -n
 echo "create 'wiki_anchors', 'ngram'" | hbase shell -n

@@ -7,6 +7,7 @@ import sys
 from pyspark import SparkContext
 import re
 import urllib
+from lang import strip_unicode
 
 sc = SparkContext(appName="WikipediaAnchors")
 
@@ -14,7 +15,9 @@ lines = sc.textFile(sys.argv[1])
 
 # Split each line into words
 def unpack_anchors(line):
+    line = strip_unicode(line)
     uri, mention = line.split('\t')
+    uri = uri.replace(' ', '_')
     mention = mention.replace('_', ' ')
     return uri[0].upper()+uri[1:], mention
 
