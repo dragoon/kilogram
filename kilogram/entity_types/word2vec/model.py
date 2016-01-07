@@ -77,6 +77,18 @@ class TypePredictionModel(object):
 
         return [sorted(types_ranked, key=lambda x: x[1], reverse=True)]
 
+    def similarity(self, words):
+        scores = []
+        for entity_type in self.available_types:
+            score = 0
+            for word in words:
+                try:
+                    score += self.word2vec_model.similarity(word, entity_type)
+                except KeyError:
+                    break
+            scores.append((entity_type, score))
+        return sorted(scores, key=lambda x: x[1])
+
 
 class NumberAnnotator(object):
     """Simple format: one sentence = one line; words already preprocessed and separated by whitespace."""
