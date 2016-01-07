@@ -15,7 +15,8 @@ _CHAR_REPLACEMENT = {
     0xFB04: u'ffl',
     0xFB06: u'st',
     0xFB00: u'ff',
-    0xFFFD: u''
+    0xFFFD: u'',
+    0x00A0: u' '
 }
 
 
