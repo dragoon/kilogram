@@ -31,7 +31,7 @@ spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./enti
 echo "disable 'TL'" | hbase shell -n
 echo "drop 'TL'" | hbase shell -n
 echo "create 'TL', 'ngram'" | hbase shell -n
-pig -p table=TL -p path=/user/roman/SOTA_EL/TL ../extra/hbase_upload_array.pig
+pig -p table=TL -p path=/user/roman/SOTA_EL/TL_processed ../extra/hbase_upload_array.pig
 
 
 park-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks_mentions.py "/user/ded/CC" "/user/roman/SOTA_EL/CC_processed"
