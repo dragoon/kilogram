@@ -27,18 +27,18 @@ pig -p table=wiki_anchor_ngrams -p path=/user/roman/SOTA_EL/candidate_ngram_link
 
 
 # wiki direct links table
-spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/michael/plain_wikipedia_pagelinks" "/user/roman/SOTA_EL/wikipedia_pagelinks"
-echo "disable 'wiki_direct_links'" | hbase shell -n
-echo "drop 'wiki_direct_links'" | hbase shell -n
-echo "create 'wiki_direct_links', 'ngram'" | hbase shell -n
-pig -p table=wiki_direct_links -p path=/user/roman/SOTA_EL/wikipedia_pagelinks ../extra/hbase_upload_array.pig
+spark-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks.py "/user/ded/TL" "/user/roman/SOTA_EL/TL_processed"
+echo "disable 'TL'" | hbase shell -n
+echo "drop 'TL'" | hbase shell -n
+echo "create 'TL', 'ngram'" | hbase shell -n
+pig -p table=TL -p path=/user/roman/SOTA_EL/TL ../extra/hbase_upload_array.pig
 
 
-park-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks_mentions.py "/user/ded/wikilinks_mentions" "/user/roman/SOTA_EL/wikipedia_pagelinks_mentions"
-echo "disable 'wiki_direct_links_mentions'" | hbase shell -n
-echo "drop 'wiki_direct_links_mentions'" | hbase shell -n
-echo "create 'wiki_direct_links_mentions', 'ngram'" | hbase shell -n
-pig -p table=wiki_direct_links_mentions -p path=/user/roman/SOTA_EL/wikipedia_pagelinks_mentions ../extra/hbase_upload_array.pig
+park-submit --master yarn-client --executor-memory 5g --num-executors 10 ./entity_linking/spark_wikilinks_mentions.py "/user/ded/CC" "/user/roman/SOTA_EL/CC_processed"
+echo "disable 'CC'" | hbase shell -n
+echo "drop 'CC'" | hbase shell -n
+echo "create 'CC', 'ngram'" | hbase shell -n
+pig -p table=CC -p path=/user/roman/SOTA_EL/CC_processed ../extra/hbase_upload_array.pig
 
 
 rm -rf kilogram
