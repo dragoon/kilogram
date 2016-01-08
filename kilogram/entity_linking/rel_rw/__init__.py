@@ -229,25 +229,16 @@ class SemanticGraph:
             for e in candidate.entities:
                 e_sign = self.compute_signature(e)
                 # global similarity + local (prior prob)
-                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)#\
-                          #+ e.count/total_uri_count
+                sem_sim = 1/self._zero_kl_score(e_sign, doc_sign)\
+                    + e.count/total_uri_count
                 cand_scores.append((e, sem_sim))
             cand_scores.sort(key=lambda x: x[1], reverse=True)
 
             i = 0
-            type_match = True
             for e, sem_sim in cand_scores:
                 f = Feature(candidate, e, i, int(e.uri == candidate.truth_data['uri']))
                 features[candidate.cand_string][e.uri].append(f)
-                if i == 0 and f.type_predictable and f.type_prob < 0.8:
-                    type_match = False
                 i += 1
-
-            if type_match:
-                max_uri = cand_scores[0][0].uri
-                candidate.resolved_true_entity = max_uri
-            else:
-                candidate.resolved_true_entity = candidate.get_max_uri()
 
             max_uri = cand_scores[0][0].uri
             candidate.resolved_true_entity = max_uri
