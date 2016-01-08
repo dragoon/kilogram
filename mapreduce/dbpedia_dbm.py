@@ -15,7 +15,7 @@ import urllib
 from collections import defaultdict
 
 
-TYPE_FILES = ['instance-types_en.nt.bz2', 'instance-types-transitive_en.nt.bz2']
+TYPE_FILES = ['instance-types_en.nt.bz2', 'instance-types-transitive_en.nt.bz2', 'instance_types_sdtyped-dbo_en.nt.bz2']
 EXCLUDES = {'Agent', 'TimePeriod', 'PersonFunction', 'Year'}
 
 typed_entities = defaultdict(lambda: {'types': set(), 'redirects': []})
