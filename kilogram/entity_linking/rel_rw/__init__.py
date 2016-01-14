@@ -72,7 +72,7 @@ class SemanticGraph:
         for cand in candidates:
             for e in cand.entities:
                 self.candidate_uris.add(e.uri)
-                neighbors[e.uri] = NgramService.get_wiki_direct_links(e.uri)
+                neighbors[e.uri] = NgramService.get_wiki_title_pagelinks(e.uri)
                 #neighbors[e.uri].update(NgramService.get_wiki_edge_weights(e.uri))
                 # delete self
                 try:

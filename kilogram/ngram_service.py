@@ -42,8 +42,9 @@ class NgramService(object):
     wiki_anchors_table = None
     wiki_urls_table = None
     wiki_edges_table = None
-    wiki_direct_links_table = None
-    wiki_direct_links_mentions_table = None
+    wiki_pagelinks_title_table = None
+    wiki_link_mention_cooccur_table = None
+    wiki_link_cooccur_table = None
 
     @staticmethod
     def _is_subst(ngram):
@@ -52,16 +53,17 @@ class NgramService(object):
     @classmethod
     def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
-                  wiki_edges_table="wiki_edges", wiki_direct_links_table="TL",
-                  wiki_direct_links_mentions_table="CC",
+                  wiki_edges_table="wiki_edges", wiki_pagelinks_title_table="TL",
+                  wiki_link_mention_cooccur="CC", wiki_link_cooccur_table="LL",
                   hbase_host=None):
         cls.subst_table = subst_table
         cls.ngram_table = ngram_table
         cls.wiki_urls_table = wiki_urls_table
         cls.wiki_anchors_table = wiki_anchors_table
         cls.wiki_edges_table = wiki_edges_table
-        cls.wiki_direct_links_table = wiki_direct_links_table
-        cls.wiki_direct_links_mentions_table = wiki_direct_links_mentions_table
+        cls.wiki_pagelinks_title_table = wiki_pagelinks_title_table
+        cls.wiki_link_mention_cooccur_table = wiki_link_mention_cooccur
+        cls.wiki_link_cooccur_table = wiki_link_cooccur_table
 
         # HBASE
         cls.h_transport = TTransport.TBufferedTransport(TSocket.TSocket(*hbase_host))
@@ -174,13 +176,19 @@ class NgramService(object):
         return res
 
     @classmethod
-    def get_wiki_direct_links(cls, uri):
-        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_direct_links_table, uri,
+    def get_wiki_title_pagelinks(cls, uri):
+        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_pagelinks_title_table, uri,
                                                             "ngram:value")))
         return res
 
     @classmethod
-    def get_wiki_direct_links_mentions(cls, mention_uri):
-        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_direct_links_mentions_table,
+    def get_wiki_links_cooccur(cls, uri):
+        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_link_cooccur_table, uri,
+                                                            "ngram:value")))
+        return res
+
+    @classmethod
+    def get_wiki_link_mention_cooccur(cls, mention_uri):
+        res = dict(ListPacker.unpack(NgramService.hbase_raw(cls.wiki_link_mention_cooccur_table,
                                                             mention_uri, "ngram:value")))
         return res
