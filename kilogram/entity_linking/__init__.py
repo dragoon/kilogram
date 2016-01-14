@@ -86,6 +86,18 @@ class CandidateEntity:
                 del uri_counts[uri]
         self._init_entities(uri_counts, ner)
 
+    def _prune_types(self):
+        true_entity = None
+        for entity in self.entities:
+            if self.truth_data and entity.uri == self.truth_data['uri']:
+                true_entity = entity
+
+        if not true_entity:
+            return
+
+        if true_entity.types:
+            self.entities = [e for e in self.entities if e.types and e.get_generic_type() == true_entity.get_generic_type()]
+
     def get_max_uri(self):
         if not self.entities:
             return None
