@@ -71,6 +71,7 @@ class SemanticGraph:
 
         self.candidate_uris = set()
         for cand in candidates:
+            total = sum([e.count for e in cand.entities])
             for e in cand.entities:
                 mention_uri = _mention_uri(e.uri, cand.cand_string)
                 self.candidate_uris.add(mention_uri)
@@ -81,6 +82,8 @@ class SemanticGraph:
                 except KeyError:
                     pass
                 for neighbor, weight in neighbors[mention_uri].iteritems():
+                    #if neighbor.split('|')[0] not in self.candidate_uris:
+                    #    continue
                     if self.G.has_edge(mention_uri, neighbor):
                         continue
                     try:
@@ -89,7 +92,7 @@ class SemanticGraph:
                     except ValueError:
                         pass
                 # always add candidates
-                self.G.add_node(mention_uri)
+                self.G.add_node(mention_uri, {'prior': e.count/total})
 
         # prune 1-degree edges except original candidates
         to_remove = set()

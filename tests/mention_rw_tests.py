@@ -33,6 +33,8 @@ class TestEntityLinkingKBMSNBC(unittest.TestCase):
         for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             graph = SemanticGraph(datafile.candidates)
+            #import pickle
+            #pickle.dump(graph.G, open(datafile.filename+'.pcl', 'wb'))
             for candidate in datafile:
                 candidate.init_context_types(ngram_predictor)
             graph.do_linking()
