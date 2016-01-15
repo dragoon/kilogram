@@ -4,6 +4,7 @@ from dataset.dbpedia import NgramEntityResolver
 from dataset.msnbc import DataSet
 from entity_linking import syntactic_subsumption
 from entity_linking.evaluation import Metrics
+from entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
 import kilogram
 
@@ -15,6 +16,8 @@ ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
 msnbc_data = DataSet('../extra/data/msnbc/texts/',
                         '../extra/data/msnbc/msnbc_truth.txt', ner)
+
+ngram_predictor = NgramTypePredictor('typogram')
 
 
 class TestEntityLinking(unittest.TestCase):
@@ -52,11 +55,14 @@ class TestEntityLinking(unittest.TestCase):
         for datafile in msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
+                candidate.init_context_types(ngram_predictor)
+            for candidate in datafile:
                 # D2KB
                 if candidate.truth_data['uri'] is None:
                     continue
-                if candidate.type is not None:
-                    uri = candidate.get_max_typed_uri()
+                context_types_list = [c.context_types for c in datafile if c.context_types and c.cand_string == candidate.cand_string]
+                if context_types_list:
+                    uri = candidate.get_max_typed_uri(context_types_list)
                 else:
                     uri = candidate.get_max_uri()
 
@@ -70,11 +76,14 @@ class TestEntityLinking(unittest.TestCase):
         for datafile in msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
+                candidate.init_context_types(ngram_predictor)
+            for candidate in datafile:
                 uri = None
                 # A2KB condition
                 if candidate.context is not None:
-                    if candidate.e_type is not None:
-                        uri = candidate.get_max_typed_uri(ner)
+                    context_types_list = [c.context_types for c in datafile if c.context_types and c.cand_string == candidate.cand_string]
+                    if context_types_list:
+                        uri = candidate.get_max_typed_uri(context_types_list)
                     else:
                         uri = candidate.get_max_uri()
 

@@ -109,24 +109,24 @@ class CandidateEntity:
             return None
         return max(self.entities, key=lambda e: e.count)
 
-    def get_max_typed_uri(self):
-        if not self.context_types:
+    def get_max_typed_uri(self, context_types_list):
+        if not context_types_list:
             return self.get_max_uri()
 
-        if self.context_types:
-            type_probs = defaultdict(lambda: 0)
-            for order, values in self.context_types.items():
+        type_probs = defaultdict(lambda: 0)
+        for context_types in context_types_list:
+            for order, values in context_types.items():
                 for ngram_value in values:
                     for type_obj in ngram_value['values']:
                         type_probs[type_obj['name']] = max(type_probs[type_obj['name']], type_obj['prob'])
 
-            if len(self.entities) > 1:
-                for entity in sorted(self.entities, key=lambda e: e.count, reverse=True):
-                    try:
-                        if type_probs[entity.get_generic_type()] > 0.90:
-                            return entity.uri
-                    except TypeError:
-                        break
+        if len(self.entities) > 1:
+            for entity in sorted(self.entities, key=lambda e: e.count, reverse=True):
+                try:
+                    if type_probs[entity.get_generic_type()] > 0.90:
+                        return entity.uri
+                except TypeError:
+                    break
         return self.get_max_uri()
 
     def __len__(self):
