@@ -72,8 +72,11 @@ class SemanticGraph:
         for cand in candidates:
             for e in cand.entities:
                 self.candidate_uris.add(e.uri)
-                neighbors[e.uri] = NgramService.get_wiki_title_pagelinks(e.uri)
-                #neighbors[e.uri].update(NgramService.get_wiki_edge_weights(e.uri))
+                neighbors[e.uri] = defaultdict(lambda: 0)
+                for n_uri, n_count in NgramService.get_wiki_title_pagelinks(e.uri).items():
+                    neighbors[e.uri][n_uri] = int(n_count)
+                for n_uri, n_count in NgramService.get_wiki_links_cooccur(e.uri).items():
+                    neighbors[e.uri][n_uri] += int(n_count)
                 # delete self
                 try:
                     del neighbors[e.uri][e.uri]
