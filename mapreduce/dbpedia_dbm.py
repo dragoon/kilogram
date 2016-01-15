@@ -30,7 +30,7 @@ for types_file in TYPE_FILES:
         except:
             continue
         if '<http://schema.org/Person>' in type_uri:
-            type_uri = '<http://dbpedia.org/ontology/Person>   '
+            type_uri = '<http://dbpedia.org/ontology/Person>'
         if 'http://dbpedia.org/ontology/' not in type_uri:
             continue
         if 'http://dbpedia.org/ontology/Wikidata' in type_uri:
@@ -51,7 +51,6 @@ for types_file in TYPE_FILES:
 REDIRECTS_FILE = 'redirects_transitive_en.nt.bz2'
 # BZ2File module cannot process multi-stream files, so use subprocess
 p = subprocess.Popen('bzcat -q ' + REDIRECTS_FILE, shell=True, stdout=subprocess.PIPE)
-ambig_redirects_set = set()
 for line in p.stdout:
     try:
         uri_redirect, predicate, uri_canon = line.split(' ', 2)
@@ -59,11 +58,20 @@ for line in p.stdout:
         continue
     name_redirect = urllib.unquote(uri_redirect.replace('<http://dbpedia.org/resource/', '')[:-1])
     name_canon = urllib.unquote(uri_canon.replace('<http://dbpedia.org/resource/', '')[:-4])
-    if '(disambiguation)' in name_redirect or '(disambiguation)' in name_canon:
-        ambig_redirects_set.add(name_canon.decode('utf-8'))
-        continue
 
     typed_entities[name_canon.decode('utf-8')]['redirects'].append(name_redirect.decode('utf-8'))
+
+
+ambig_redirects_set = set()
+DISAMBIG_FILE = 'disambiguations_en.nt.bz2'
+p = subprocess.Popen('bzcat -q ' + DISAMBIG_FILE, shell=True, stdout=subprocess.PIPE)
+for line in p.stdout:
+    try:
+        uri_ambig, predicate, _ = line.split(' ', 2)
+    except:
+        continue
+    ambig_redirects_set.add(uri_ambig.replace('<http://dbpedia.org/resource/', '')[:-1])
+
 
 for ambig_redirect in ambig_redirects_set:
     try:
