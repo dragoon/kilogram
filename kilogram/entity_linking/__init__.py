@@ -96,7 +96,7 @@ class CandidateEntity:
             return
 
         if true_entity.types:
-            self.entities = [e for e in self.entities if e.types and e.get_generic_type() == true_entity.get_generic_type()]
+            self.entities = [e for e in self.entities if e.types is None or e.get_generic_type() == true_entity.get_generic_type()]
 
     def get_max_uri(self):
         if not self.entities:
