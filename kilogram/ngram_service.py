@@ -51,7 +51,7 @@ class NgramService(object):
         return SUBSTITUTION_TOKEN in set(ngram)
 
     @classmethod
-    def configure(cls, ngram_table="ngrams", subst_table="ngram_types",
+    def configure(cls, ngram_table="ngrams", subst_table="typogram",
                   wiki_anchors_table="wiki_anchors", wiki_urls_table="wiki_urls",
                   wiki_edges_table="wiki_edges", wiki_pagelinks_title_table="TL",
                   wiki_link_mention_cooccur="CC", wiki_link_cooccur_table="LL",
