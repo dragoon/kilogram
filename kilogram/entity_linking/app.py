@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-./app.py typogram
+./app.py --dbpedia-data-dir /home/roman/dbpedia --ner-host diufpc54.unifr.ch --types-table typogram --hbase-host diufpc304
 """
-
-import sys
+import argparse
+import os.path
 
 from flask import Flask, jsonify, request
 
@@ -14,16 +14,32 @@ from kilogram.dataset.dbpedia import DBPediaOntology, NgramEntityResolver
 from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
 
-NgramService.configure(hbase_host=('diufpc304', '9090'))
-kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
-ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--dbpedia-data-dir', dest='dbpedia_data_dir', action='store', required=True,
+                    help='DBpedia data directory')
+parser.add_argument('--ner-host', dest='ner_host', action='store', required=True,
+                    help='Hostname of the server where Stanford NER is running')
+parser.add_argument('--types-table', dest='types_table', action='store', required=True,
+                    help='Typed N-gram table in HBase')
+parser.add_argument('--hbase-host', dest='hbase_host', action='store', required=True,
+                    help='HBase gateway host')
+parser.add_argument('--hbase-port', dest='hbase_port', action='store', required=True,
+                    default='9090', help='HBase gateway host')
 
 
-dbpedia_ontology = DBPediaOntology('dbpedia_2015-04.owl')
-ngram_predictor = NgramTypePredictor(sys.argv[1], dbpedia_ontology)
+args = parser.parse_args()
+
+NgramService.configure(hbase_host=(args.hbase_host, args.hbase_port))
+kilogram.NER_HOSTNAME = args.ner_host
+ner = NgramEntityResolver(os.path.join(args.dbpedia_data_dir, "dbpedia_data.txt"),
+                          os.path.join(args.dbpedia_data_dir, "dbpedia_uri_excludes.txt"),
+                          os.path.join(args.dbpedia_data_dir, "dbpedia_lower_includes.txt"),
+                          os.path.join(args.dbpedia_data_dir, "dbpedia_2015-04.owl"))
+
+
+dbpedia_ontology = DBPediaOntology(os.path.join(args.dbpedia_data_dir, "dbpedia_2015-04.owl"))
+ngram_predictor = NgramTypePredictor(args.types_table, dbpedia_ontology)
 
 app = Flask(__name__)
 
