@@ -57,7 +57,7 @@ def d2kb_prior():
 
 
 @app.route('/entity-linking/d2kb/prior-typed', methods=['POST'])
-def d2kb_prior():
+def d2kb_prior_types():
     result = request.get_json(force=True)
     candidates = DataSet(result['text'], result['mentions'], ner).candidates
     syntactic_subsumption(candidates)
