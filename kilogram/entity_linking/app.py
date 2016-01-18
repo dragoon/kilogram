@@ -52,7 +52,8 @@ def d2kb_prior():
     new_mentions = []
     for mention, candidate in zip(result['mentions'], candidates):
         mention['uri'] = candidate.get_max_uri()
-        new_mentions.append(mention)
+        if mention['uri'] is not None:
+            new_mentions.append(mention)
     return jsonify({'mentions': new_mentions})
 
 
