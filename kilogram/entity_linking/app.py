@@ -24,7 +24,7 @@ parser.add_argument('--types-table', dest='types_table', action='store', require
                     help='Typed N-gram table in HBase')
 parser.add_argument('--hbase-host', dest='hbase_host', action='store', required=True,
                     help='HBase gateway host')
-parser.add_argument('--hbase-port', dest='hbase_port', action='store', required=True,
+parser.add_argument('--hbase-port', dest='hbase_port', action='store',
                     default='9090', help='HBase gateway host')
 
 
