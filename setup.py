@@ -39,10 +39,10 @@ setup(
     dependency_links=[
         'https://github.com/dragoon/pyutils/tarball/master#egg=pyutils-dev',
     ],
-    scripts=['kilogram/dataset/stackexchange/se_parse_edit_history.py',
-             'kilogram/dataset/wikipedia/wiki_parse_edit_history.py',
-             'kilogram/dataset/conll/conll_sgml_parse.py',
-             'kilogram/dataset/fce/fce_parse_edit_history.py'],
+    scripts=['kilogram/dataset/edit_histories/stackexchange/se_parse_edit_history.py',
+             'kilogram/dataset/edit_histories/wikipedia/wiki_parse_edit_history.py',
+             'kilogram/dataset/edit_histories/conll/conll_sgml_parse.py',
+             'kilogram/dataset/edit_histories/fce/fce_parse_edit_history.py'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
