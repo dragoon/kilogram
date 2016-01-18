@@ -178,5 +178,5 @@ def syntactic_subsumption(candidates):
                 if max_ent:
                     candidate.entities.append(max_ent)
                 candidate.has_super = True
-                if candidate.truth_data['uri'] is not None and candidate.truth_data['uri'] not in [x.uri for x in candidate.entities]:
+                if candidate.truth_data and candidate.truth_data['uri'] is not None and candidate.truth_data['uri'] not in [x.uri for x in candidate.entities]:
                     print 'Not in truth!', candidate
