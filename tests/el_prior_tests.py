@@ -1,10 +1,10 @@
 import unittest
 
-from dataset.dbpedia import NgramEntityResolver
-from dataset.msnbc import DataSet
-from entity_linking import syntactic_subsumption
-from entity_linking.evaluation import Metrics
-from entity_types.prediction import NgramTypePredictor
+from kilogram.dataset.dbpedia import NgramEntityResolver
+from kilogram.dataset.entity_linking.msnbc import DataSet
+from kilogram.entity_linking import syntactic_subsumption
+from kilogram.entity_linking.evaluation import Metrics
+from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
 import kilogram
 

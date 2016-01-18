@@ -144,8 +144,7 @@ def replace_types(context):
     return ENTITY_MATCH_RE.sub(lambda m: dbp_type(m.group(1)), context)
 
 
-def get_context(start, text, match):
-    end = match.end() + start
+def get_context(start, end, text):
 
     start_text = replace_types(text[:start])
     end_text = replace_types(text[end:])
@@ -196,5 +195,5 @@ def parse_entities(sentence):
                 uri_text = match.group(2)
                 e_type = dbp_type(match.group(1))
                 ne_list.append({'text': uri_text, 'type': e_type, 'start': words_i,
-                                'context': replace_types(get_context(i, text, match))})
+                                'context': replace_types(get_context(i, match.end()+i, text))})
     return ne_list

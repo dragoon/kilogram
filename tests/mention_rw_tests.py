@@ -1,8 +1,8 @@
 import unittest
-from kilogram.dataset.dbpedia import NgramEntityResolver
-from kilogram.dataset.msnbc import DataSet as MSNBC
-from kilogram.entity_linking import syntactic_subsumption
 
+from dataset.dbpedia import NgramEntityResolver
+from dataset.entity_linking.msnbc import DataSet as MSNBC
+from kilogram.entity_linking import syntactic_subsumption
 from kilogram.entity_linking.evaluation import Metrics
 from kilogram.entity_linking.mention_rw import SemanticGraph
 from kilogram.entity_linking.util.ml import Feature

@@ -2,11 +2,13 @@
 spark-submit --num-executors 20 --executor-memory 5g --master yarn-client ./wikipedia/spark_typed_ngrams_from_organic.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/dbpedia_types.txt" "/user/roman/wikipedia_typed_ngrams_organic" 3
 """
 import sys
-from pyspark import SparkContext
 import re
+
 import nltk
+
+from pyspark import SparkContext
 from kilogram.lang.tokenize import wiki_tokenize_func
-from kilogram.dataset.wikipedia import line_filter
+from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 ENTITY_MATCH_RE = re.compile(r'<(.+?)\|(.+?)>')
 

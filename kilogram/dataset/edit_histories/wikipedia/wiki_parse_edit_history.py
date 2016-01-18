@@ -4,8 +4,9 @@ Extract grammatical error edits from Wikipedia page histories
 """
 
 import argparse
-import unicodecsv as csv
 import subprocess
+
+import unicodecsv as csv
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-o', '--output', dest='out_file', action='store', required=True,

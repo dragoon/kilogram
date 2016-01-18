@@ -1,8 +1,8 @@
 from __future__ import division
 import os
 import re
-from entity_linking import CandidateEntity
-from kilogram.lang import parse_entities
+from ....entity_linking import CandidateEntity
+from ....lang import parse_entities
 
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>(\'s)?')
 

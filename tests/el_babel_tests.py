@@ -1,8 +1,8 @@
 import unittest
-from dataset.dbpedia import NgramEntityResolver
-from dataset.msnbc import DataSet
-from entity_linking import syntactic_subsumption
 
+from dataset.dbpedia import NgramEntityResolver
+from dataset.entity_linking.msnbc import DataSet
+from entity_linking import syntactic_subsumption
 from entity_linking.babelfy import _extract_candidates, link, SemanticGraph
 from entity_linking.evaluation import Metrics
 from kilogram import NgramService
