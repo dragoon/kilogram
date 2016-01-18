@@ -53,7 +53,7 @@ def d2kb_prior():
     for mention, candidate in zip(result['mentions'], candidates):
         mention['uri'] = candidate.get_max_uri()
         new_mentions.append(mention)
-    return jsonify(new_mentions)
+    return jsonify({'mentions': new_mentions})
 
 
 @app.route('/entity-linking/d2kb/prior-typed', methods=['POST'])
@@ -72,7 +72,7 @@ def d2kb_prior_types():
         else:
             mention['uri'] = candidate.get_max_uri()
         new_mentions.append(mention)
-    return jsonify(new_mentions)
+    return jsonify({'mentions': new_mentions})
 
 
 @app.after_request
