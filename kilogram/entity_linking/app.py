@@ -53,9 +53,10 @@ def d2kb_prior():
     for mention, candidate in zip(result['mentions'], candidates):
         mention['uri'] = candidate.get_max_uri()
         if mention['uri'] is None:
-            mention['uri'] = 'http://uknown.org/unknown/' + mention['name'].replace(' ', '_')
+            mention['uri'] = 'http://unknown.org/unknown/' + mention['name'].replace(' ', '_')
         else:
             mention['uri'] = 'http://dbpedia.org/resource/' + mention['uri']
+        print mention
         new_mentions.append(mention)
     return jsonify({'mentions': new_mentions})
 
