@@ -1,5 +1,5 @@
 from ....entity_linking import CandidateEntity
-from ....lang import get_context
+from ....lang import get_context, parse_entities
 
 
 class DataSet(object):
@@ -16,9 +16,11 @@ class DataSet(object):
 
     def _parse_candidates(self):
         candidates = []
+        ner_list = parse_entities(self.text)
+        type_dict = dict([(e['text'], e['type']) for e in ner_list])
         for mention in self.mentions:
             context = get_context(mention['start'], mention['end'], self.text)
-            candidate = CandidateEntity(0, 0, mention['name'], e_type=None,
+            candidate = CandidateEntity(0, 0, mention['name'], e_type=type_dict.get(mention['name']),
                                         context=context, ner=self.ner)
             candidates.append(candidate)
         return candidates
