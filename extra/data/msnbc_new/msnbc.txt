@@ -1,0 +1,779 @@
+~~~ 3683270
+NEW YORK	New York City
+New York Stock Exchange	New York Stock Exchange
+Nasdaq Stock Market	NASDAQ
+U.S.	United States
+Home Depot Inc.	The Home Depot
+Saks Inc.	Saks Incorporated
+Target Corp.	Target Corporation
+Uri Landesman	!!!
+ING Investment Management	ING Group
+New York	New York City
+The Fed	Federal Reserve System
+Thomson Reuters	Thomson Reuters
+Labor Department	United States Department of Labor
+Producer Price Index	Producer price index
+Tim Courtney	!!!
+Oklahoma City	Oklahoma City
+Burns Advisory Group	!!!
+Dow Jones industrial average	Dow Jones Industrial Average
+Dow	Dow Jones Industrial Average
+Standard & Poor's 500	S&P 500
+Nasdaq	NASDAQ
+NYSE	New York Stock Exchange
+Dow	Dow Jones Industrial Average
+New York Mercantile Exchange	New York Mercantile Exchange
+Exxon Mobil Corp.	ExxonMobil
+United States Steel Corp.	U.S. Steel
+Home Depot	The Home Depot
+Saks	Saks Incorporated
+Target	Target Corporation
+Pacific Sunwear of California Inc.	PacSun
+Russell 2000 index	Russell 2000
+Japan	Japan
+Nikkei stock average	Nikkei 225
+Britain	Great Britain
+FTSE 100	FTSE 100 Index
+Germany	Germany
+DAX	DAX
+France	France
+CAC-40	CAC 40
+### 3683270
+~~~ 16451112
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+ATLANTA	Atlanta
+Bob Nardelli	Robert Nardelli
+The Home Depot Inc.	The Home Depot
+Nardelli	Robert Nardelli
+Atlanta	Atlanta
+Nardelli	Robert Nardelli
+Barney Frank	Barney Frank
+House Financial Services Committee	United States House Committee on Financial Services
+Frank	Barney Frank
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+Home Depot	The Home Depot
+United States	United States
+Canada	Canada
+Mexico	Mexico
+China	China
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Frank Blake	Frank Blake
+Home Depot	The Home Depot
+Bernie Marcus	Bernard Marcus
+Nardelli	Robert Nardelli
+Nardelli	Robert Nardelli
+Blake	Frank Blake
+Marcus	Bernard Marcus
+Home Depot	The Home Depot
+Marcus	Bernard Marcus
+Marcus	Bernard Marcus
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+General Electric Co.	General Electric
+Nardelli	Robert Nardelli
+Blake	Frank Blake
+Home Depot	The Home Depot
+Jerry Shields	!!!
+Blake	Frank Blake
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+New York Stock Exchange	New York Stock Exchange
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+The Associated Press	Associated Press
+Nardelli	Robert Nardelli
+Los Angeles	Los Angeles
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+Marcus	Bernard Marcus
+Nardelli	Robert Nardelli
+Nardelli	Robert Nardelli
+Marcus	Bernard Marcus
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+Bob	Robert Nardelli
+The Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Home Depot	The Home Depot
+Nardelli	Robert Nardelli
+Blake	Frank Blake
+James Senn	!!!
+Georgia State University	Georgia State University
+Bob	Robert Nardelli
+Edward Jones	Edward Jones Investments
+Stephanie Hoff	!!!
+### 16451112
+~~~ 16444023
+Timberlake	Justin Timberlake
+Diaz	Cameron Diaz
+N' Sync	'N Sync
+Justin Timberlake	Justin Timberlake
+Cameron Diaz	Cameron Diaz
+Star magazine	Star (magazine)
+Star	Star (magazine)
+Diaz	Cameron Diaz
+Christmas	Christmas
+Vail	Vail, Colorado
+Colo.	Colorado
+Timberlake	Justin Timberlake
+Memphis	Memphis, Tennessee
+N' Sync	'N Sync
+Saturday Night Live	Saturday Night Live
+Diaz	Cameron Diaz
+Timberlake	Justin Timberlake
+Kids' Choice Awards	Nickelodeon Kids' Choice Awards
+Timberlake	Justin Timberlake
+Veronica Finn	Innosense
+Britney Spears	Britney Spears
+Finn	Innosense
+Spears	Britney Spears
+Innosense	Innosense
+Lou Pearlman	Lou Pearlman
+### 16444023
+~~~ 16453733
+Barbara Walters	Barbara Walters
+Rosie O'Donnell	Rosie O'Donnell
+Trump	Donald Trump
+NEW YORK	New York City
+Barbara Walters	Barbara Walters
+Rosie O'Donnell	Rosie O'Donnell
+Donald Trump	Donald Trump
+Walters	Barbara Walters
+ABC	American Broadcasting Company
+The View	The View (U.S. TV series)
+Trump	Donald Trump
+O'Donnell	Rosie O'Donnell
+Walters	Barbara Walters
+O'Donnell	Rosie O'Donnell
+Walters	Barbara Walters
+Walters	Barbara Walters
+The Donald	Donald Trump
+O'Donnell	Rosie O'Donnell
+The View	The View (U.S. TV series)
+ABC	American Broadcasting Company
+Donald Trump	Donald Trump
+Walters	Barbara Walters
+The Associated Press	Associated Press
+Trump	Donald Trump
+Walters	Barbara Walters
+Barbara	Barbara Walters
+Barbara	Barbara Walters
+Rosie	Rosie O'Donnell
+O'Donnell	Rosie O'Donnell
+Trump	Donald Trump
+Miss USA	Miss USA
+Tara Conner	Tara Conner
+Trump	Donald Trump
+Miss Universe Organization	Miss Universe Organization
+Miss USA	Miss USA
+Miss Teen USA	Miss Teen USA
+The View	The View (U.S. TV series)
+Trump	Donald Trump
+Conner	Tara Conner
+America	United States
+Trump	Donald Trump
+O'Donnell	Rosie O'Donnell
+NBC	NBC
+The Apprentice	The Apprentice (U.S. TV series)
+### 16453733
+~~~ 16384904
+Santa Baby	Santa Baby
+Mayo Clinic	Mayo Clinic
+Mayo Clinic	Mayo Clinic
+Stony Brook University	Stony Brook University
+New York	New York City
+Goteborg University	University of Gothenburg
+Sweden	Sweden
+London	London
+Hodgkin's lymphoma	Hodgkin's lymphoma
+Ohio State University	Ohio State University
+University of Missouri	University of Missouri
+### 16384904
+~~~ 16451212
+BIRMINGHAM	Birmingham, Alabama
+Ala.	Alabama
+Al Rohling	!!!
+U.S. government	Federal government of the United States
+Rohling	!!!
+Alabama	Alabama
+Rohling	!!!
+Rohling	!!!
+Child Caring Foundation	!!!
+Blue Cross and Blue Shield of Alabama	Blue Cross and Blue Shield of Alabama
+Medicaid	Medicaid
+U.S.	United States
+United States	United States
+Jennifer Tolbert	!!!
+Washington	Washington, D.C.
+Tolbert	!!!
+U.S. Congress	United States Congress
+State Children's Health Insurance Program	State Children's Health Insurance Program
+SCHIP	State Children's Health Insurance Program
+Alabama	Alabama
+Child Caring Foundation	!!!
+Jody Sharp	!!!
+Sharp	!!!
+Sharp	!!!
+Sharp	!!!
+Reuters	Reuters
+Alabama Blue Cross Blue Shield	Blue Cross and Blue Shield of Alabama
+Sharp	!!!
+Sharp	!!!
+Rohling	!!!
+University of Alabama at Birmingham	University of Alabama at Birmingham
+School of Nursing	Nursing school
+Pittsburgh	Pittsburgh
+Highmark Blue Cross Blue Shield	Highmark
+Western Pennsylvania	Western Pennsylvania
+Denise Grabner	!!!
+Highmark	Highmark
+Congress	United States Congress
+SCHIP	State Children's Health Insurance Program
+Alabama	Alabama
+All Kids	!!!
+Medicaid	Medicaid
+Rohling	!!!
+### 16451212
+~~~ 16417540
+TUSCALOOSA	Tuscaloosa, Alabama
+Ala.	Alabama
+Nick Saban	Nick Saban
+Saban	Nick Saban
+Alabama	University of Alabama
+Miami Dolphins	Miami Dolphins
+Crimson Tide	Alabama Crimson Tide
+Bear Bryant	Bear Bryant
+Saban	Nick Saban
+Alabama	Alabama
+Mal Moore	Mal Moore
+Tide	Alabama Crimson Tide
+Saban	Nick Saban
+Saban	Nick Saban
+Alabama	University of Alabama
+LSU	Louisiana State University
+SEC	Southeastern Conference
+Miami	Miami Dolphins
+Alabama	University of Alabama
+Mike DuBose	Mike DuBose
+Tide	Alabama Crimson Tide
+Gene Stallings	Gene Stallings
+Alabama	University of Alabama
+Moore	Mal Moore
+Bryant	Bear Bryant
+Saban	Nick Saban
+Moore	Mal Moore
+Alabama	University of Alabama
+Richard Lindsey	!!!
+John Vincent	!!!
+Vincent	!!!
+Saban	Nick Saban
+University of Alabama	University of Alabama
+Saban	Nick Saban
+Tide	Alabama Crimson Tide
+Florida State	Florida State University
+Kevin Steele	Kevin Steele
+Seminoles	Florida State Seminoles football
+Bobby Bowden	Bobby Bowden
+Saban	Nick Saban
+Quarterback	Quarterback
+JaMarcus Russell	JaMarcus Russell
+Early Doucet	Early Doucet
+LaRon Landry	LaRon Landry
+LSU	Louisiana State University
+Sugar Bowl	Sugar Bowl
+Notre Dame	Notre Dame Fighting Irish football
+Baton Rouge	Baton Rouge, Louisiana
+Saban	Nick Saban
+Terry	!!!
+Tuscaloosa	Tuscaloosa, Alabama
+Saban	Nick Saban
+LSU	Louisiana State University
+Michigan State	Michigan State Spartans football
+Terry Saban	!!!
+Saban	Nick Saban
+Lake Burton	Lake Burton (Georgia)
+Georgia	Georgia (U.S. state)
+Saban	Nick Saban
+### 16417540
+~~~ 16455207
+Riley	Pat Riley
+MIAMI	Miami
+Pat Riley	Pat Riley
+Miami Heat	Miami Heat
+Ron Rothstein	Ron Rothstein
+Riley	Pat Riley
+Miami	Miami Heat
+Los Angeles Clippers	Los Angeles Clippers
+Heat	Miami Heat
+Shaquille O'Neal	Shaquille O'Neal
+Dwyane Wade	Dwyane Wade
+Jason Williams	Jason Williams (basketball, born 1975)
+Riley	Pat Riley
+Riley	Pat Riley
+Riley	Pat Riley
+Heat	Miami Heat
+Stan Van Gundy	Stan Van Gundy
+Riley	Pat Riley
+Riley	Pat Riley
+Riley	Pat Riley
+Chicago	Chicago
+Riley	Pat Riley
+Heat	Miami Heat
+Alonzo Mourning	Alonzo Mourning
+Riley	Pat Riley
+Mourning	Alonzo Mourning
+Rothstein	Ron Rothstein
+Detroit Pistons	Detroit Pistons
+Riley	Pat Riley
+Rothstein	Ron Rothstein
+WNBA	Women's National Basketball Association
+Miami Sol	Miami Sol
+WNBA	Women's National Basketball Association
+Riley	Pat Riley
+Heat	Miami Heat
+Antoine Walker	Antoine Walker
+James Posey	James Posey
+Riley	Pat Riley
+Shaq	Shaquille O'Neal
+Dwyane	Dwyane Wade
+Heat	Miami Heat
+O'Neal	Shaquille O'Neal
+Wade	Dwyane Wade
+MVP	Most Valuable Player
+Phoenix	Phoenix, Arizona
+O'Neal	Shaquille O'Neal
+Riley	Pat Riley
+Riley	Pat Riley
+Riley	Pat Riley
+Riley	Pat Riley
+Los Angeles Lakers	Los Angeles Lakers
+Larry Brown	Larry Brown (basketball)
+Pistons	Detroit Pistons
+Lakers	Los Angeles Lakers
+Phil Jackson	Phil Jackson
+Riley	Pat Riley
+### 16455207
+~~~ 16451635
+China	China
+BEIJING	Beijing
+China	China
+Cao Qingyao	!!!
+State Forestry Administration	State Forestry Administration of the People's Republic of China
+Xinhua News Agency	Xinhua News Agency
+China	China
+China	China
+Sichuan	Sichuan
+Chengdu Research Base	!!!
+Chongqing	Chongqing
+China	China
+Sichuan	Sichuan
+Shaanxi	Shaanxi
+Giant pandas	Giant panda
+### 16451635
+~~~ 16454435
+Mars rovers	Mars rover
+LOS ANGELES	Los Angeles
+Mars rovers	Mars rover
+Red Planet	Mars
+John Callas	!!!
+Jet Propulsion Laboratory	Jet Propulsion Laboratory
+NASA	NASA
+Earth	Earth
+Earth	Earth
+Mars	Mars
+Spirit	Spirit (rover)
+Opportunity	Opportunity (rover)
+Callas	!!!
+Spirit	Spirit (rover)
+Opportunity	Opportunity (rover)
+Mars	Mars
+Spirit	Spirit (rover)
+Martian	Martian
+Opportunity	Opportunity (rover)
+### 16454435
+~~~ 16444229
+Texas	Texas
+HOUSTON	Houston
+George Bush Intercontinental Airport	George Bush Intercontinental Airport
+Houston	Houston
+Police	Police
+Rick Bownds	!!!
+Manuel	!!!
+Ricardo Aguilar	!!!
+Carlos Osorio	!!!
+Erick Perez	!!!
+Daniel Venegas	!!!
+Osorio	!!!
+Perez	!!!
+Harris County Jail	!!!
+Venegas	!!!
+Bownds	!!!
+Menzies Aviation Group	!!!
+United States	United States
+London	London
+Bownds	!!!
+### 16444229
+~~~ 16454203
+London's Heathrow Airport	London Heathrow Airport
+LONDON	London
+London's Heathrow Airport	London Heathrow Airport
+Heathrow	London Heathrow Airport
+British Airways	British Airways
+BA	British Airways
+Heathrow	London Heathrow Airport
+BA	British Airways
+Christmas holiday	Christmas Holiday
+BA	British Airways
+Heathrow	Heathrow, London
+Heathrow	Heathrow, London
+BA	British Airways
+### 16454203
+~~~ 16442287
+Joy Bauer	Joy Bauer
+New Year's resolution	New Year's resolution
+Nutritionist	Nutritionist
+Joy Bauer	Joy Bauer
+Joy	Joy Bauer
+New Year	New Year
+LDL-Cholesterol	Low-density lipoprotein
+HDL-Cholesterol	High-density lipoprotein
+Triglycerides	Triglyceride
+Blood Sugars	Blood sugar
+American Journal of Clinical Nutrition	The American Journal of Clinical Nutrition
+Blackberries	Blackberry
+Walnuts	Walnut
+Strawberries	Strawberry
+Artichokes	Artichoke
+Cranberries	Cranberry
+Raspberries	Raspberry
+Blueberries	Blueberry
+Sara Lee Food & Beverage	!!!
+Whole Wheat	Whole grain
+Whole Grain	Whole grain
+Annual Scientific Meeting	!!!
+NAASO	!!!
+Joy Bauer	Joy Bauer
+### 16442287
+~~~ 16442342
+U.S.	United States
+Sago Mine accident	Sago Mine disaster
+BUCKHANNON	Buckhannon, West Virginia
+W. Va	West Virginia
+Sago Mine	Sago Mine disaster
+Buckhannon	Buckhannon, West Virginia
+W. Va	West Virginia
+West Virginia	West Virginia
+Randal McCloy	Sago Mine disaster
+Debbie Hamner	!!!
+Sago	Sago Mine disaster
+West Virginia	West Virginia
+Davitt McAteer	!!!
+Mine Safety and Health Administration	Mine Safety and Health Administration
+West Virginia	West Virginia
+Sago Mine	Sago Mine disaster
+McAteer	!!!
+Sago	Sago Mine disaster
+Dennis O'Dell	!!!
+United Mine Workers of America	United Mine Workers
+### 16442342
+~~~ 16443053
+Chertoff	Michael Chertoff
+WASHINGTON	Washington, D.C.
+Homeland Security	United States Department of Homeland Security
+Michael Chertoff	Michael Chertoff
+Democrats	Democratic Party (United States)
+Congress	United States Congress
+Chertoff	Michael Chertoff
+U.S.	United States
+The Associated Press	Associated Press
+Chertoff	Michael Chertoff
+Chertoff	Michael Chertoff
+Washington	Washington, D.C.
+D.C.	Washington, D.C.
+San Diego	San Diego
+Minneapolis-St. Paul	Minneapolis–Saint Paul
+Columbus	Columbus, Ohio
+Ohio	Ohio
+Sioux Falls	Sioux Falls, South Dakota
+S.D.	South Dakota
+Laramie County	Laramie County, Wyoming
+Wyo.	Wyoming
+Chicago	Chicago
+Cleveland	Cleveland
+Baton Rouge	Baton Rouge, Louisiana
+La.	Louisiana
+Mandan	Mandan, North Dakota
+N.D.	North Dakota
+American Samoa	American Samoa
+U.S. territories	Territories of the United States
+Congress	United States Congress
+Democrats	Democratic Party (United States)
+Charles Schumer	Chuck Schumer
+World Trade Center	World Trade Center
+New York	New York City
+U.S.	United States
+New York	New York City
+Chicago	Chicago
+Tammy Lapp	!!!
+Mandan	Mandan, North Dakota
+Morton County	Morton County, North Dakota
+N.D.	North Dakota
+### 16443053
+~~~ 16444287
+Muslim	Muslim
+U.S.	United States
+Syrian	Syrian people
+Las Vegas	Las Vegas
+FRESNO	Fresno, California
+Calif.	California
+Syrian	Syrian people
+Las Vegas	Las Vegas
+U.S.	United States
+Majed Shehadeh	!!!
+Shehadeh	!!!
+Frankfurt	Frankfurt
+Las Vegas	Las Vegas
+Bakersfield	Bakersfield, California
+California	California
+California	California
+Roxanne Hercules	!!!
+U.S. Customs and Border Protection	U.S. Customs and Border Protection
+Shehadeh	!!!
+Shehadeh	!!!
+Council on American-Islamic Relations	Council on American–Islamic Relations
+Islamic scholar	Ulama
+South Africa	South Africa
+San Francisco International Airport	San Francisco International Airport
+US Airways	US Airways
+Minneapolis	Minneapolis
+Phoenix	Phoenix, Arizona
+U.S. war	United States military casualties of war
+Iraq	Iraq
+Affad Shaikh	!!!
+CAIR	Council on American–Islamic Relations
+Shehadeh	!!!
+Condor Airlines	Condor Flugdienst
+McCarran International Airport	McCarran International Airport
+Las Vegas	Las Vegas
+New Year	New Year
+Central California	Central California
+Shehadeh	!!!
+Alzenau	Alzenau
+Washington	Federal government of the United States
+Border Protection	!!!
+FBI	Federal Bureau of Investigation
+Shehadeh	!!!
+North Las Vegas	North Las Vegas, Nevada
+Shehadeh	!!!
+U.S.	United States
+Joanne Mulligan	!!!
+U.S. Immigration and Customs Enforcement	U.S. Immigration and Customs Enforcement
+FBI	Federal Bureau of Investigation
+Las Vegas	Las Vegas
+Shehadeh	!!!
+Shehadeh	!!!
+Shehadeh	!!!
+Shehadeh	!!!
+### 16444287
+~~~ 16447720
+Gerald Ford	Gerald Ford
+Michigan	Michigan
+GRAND RAPIDS	Grand Rapids, Michigan
+Mich.	Michigan
+Gerald R. Ford	Gerald Ford
+California desert	Deserts of California
+Ford	Gerald Ford
+Vice President	Vice President of the United States
+Dick Cheney	Dick Cheney
+Betty Ford	Betty Ford
+American flag	Flag of the United States
+Ford	Gerald Ford
+Grace Episcopal Church	!!!
+Ford	Gerald Ford
+Donald Rumsfeld	Donald Rumsfeld
+Ford	Gerald Ford
+Jimmy Carter	Jimmy Carter
+Rumsfeld	Donald Rumsfeld
+Jack Nicklaus	Jack Nicklaus
+Rumsfeld	Donald Rumsfeld
+Rumsfeld	Donald Rumsfeld
+President Bush	George W. Bush
+Ford	Gerald Ford
+Watergate	Watergate scandal
+Rumsfeld	Donald Rumsfeld
+Navy	United States Navy
+Ford	Gerald Ford
+Gerald R. Ford	Gerald Ford
+Ford	Gerald Ford
+Carter	Jimmy Carter
+Rosalynn	Rosalynn Carter
+Ford	Gerald Ford
+Grand Rapids	Grand Rapids, Michigan
+Philip Bareham	!!!
+Lansing	Lansing, Michigan
+Ford	Gerald Ford
+Ford	Gerald Ford
+Grand Rapids	Grand Rapids, Michigan
+Congress	United States Congress
+Grace Episcopal Church	!!!
+Richard Norton Smith	Richard Norton Smith
+Ford	Gerald Ford
+Ford	Gerald Ford
+Grand Rapids	Grand Rapids, Michigan
+Smith	Richard Norton Smith
+Ford	Gerald Ford
+University of Michigan	University of Michigan
+Michigan	Michigan
+Ford	Gerald Ford
+Richard Nixon	Richard Nixon
+Rancho Mirage	Rancho Mirage, California
+Calif.	California
+### 16447720
+~~~ 16452612
+WASHINGTON	Washington, D.C.
+President George W. Bush	George W. Bush
+Iraq	Iraq
+Bush	George W. Bush
+Iraq	Iraq
+Gerald Ford	Gerald Ford
+Richard Nixon	Richard Nixon
+Ford	Gerald Ford
+Nixon	Richard Nixon
+Jimmy Carter	Jimmy Carter
+Washington	Washington, D.C.
+American people	Americans
+Washington	Washington, D.c.
+Washington	Washington, D.c.
+Evan Bayh	Evan Bayh
+Indiana	Indiana
+Senate	United States Senate
+Bayh	Evan Bayh
+Washington	Washington, D.C.
+Dan Pfeiffer	Daniel Pfeiffer
+Bayh	Evan Bayh
+Pfeiffer	Daniel Pfeiffer
+Boomer	!!!
+Vietnam	Vietnam War
+Pfeiffer	Daniel Pfeiffer
+Bush campaign	George W. Bush presidential campaign, 2004
+John Kerry	John Kerry
+Bush	George W. Bush
+Bill Clinton	Bill Clinton
+Pfeiffer	Daniel Pfeiffer
+Positively American	!!!
+Charles Schumer	Chuck Schumer
+New York	New York
+Schumer	Chuck Schumer
+### 16452612
+~~~ 13259309
+Al-Maliki	Nouri al-Maliki
+BAGHDAD	Baghdad
+Iraq	Iraq
+Iraq	Iraq
+NBC News	NBC News
+Saddam Hussein	Saddam Hussein
+Saddam Hussein	Saddam Hussein
+Mowaffak al-Rubaie	Mowaffak al-Rubaie
+Saddam	Saddam Hussein
+Iraqi forces	Iraqi Army
+Saddam	Saddam Hussein
+Al-Jazeera	Al Jazeera
+Internet	Internet
+Saddam	Saddam Hussein
+Associated Press	Associated Press
+Nouri al-Maliki	Nouri al-Maliki
+Al-Maliki	Nouri al-Maliki
+Saddam	Saddam Hussein
+U.S. military	United States Armed Forces
+United States	United States
+al-Rubaie	Mowaffak al-Rubaie
+Mowaffak al-Rubaie	Mowaffak al-Rubaie
+Munqith al-Faroon	!!!
+Saddam	Saddam Hussein
+The Associated Press	Associated Press
+al-Faroon	!!!
+Al-Jazeera	Al Jazeera
+Web site	Website
+Saddam	Saddam Hussein
+New York Times	The New York Times
+al-Faroon	!!!
+Hussein	Saddam Hussein
+Mowaffak al-Rubaie	Mowaffak al-Rubaie
+Maliki	Nouri al-Maliki
+Times	The New York Times
+al-Rubaie	Mowaffak al-Rubaie
+AP	Associated Press
+al-Maliki	Nouri al-Maliki
+Najaf	Najaf
+Al-Faroon	!!!
+Saddam	Saddam Hussein
+Al-Arabiya	Al Arabiya
+MSNBC	MSNBC
+Saddam	Saddam Hussein
+Muqtada	Muqtada al-Sadr
+Muqtada	Muqtada al-Sadr
+Muqtada	Muqtada al-Sadr
+Muqtada al-Sadr	Muqtada al-Sadr
+Mahdi Army	Mahdi Army
+Sunnis	Sunni Islam
+Al-Sadr	Muqtada al-Sadr
+Saddam	Saddam Hussein
+al-Maliki	Nouri al-Maliki
+U.S.	United States
+William Caldwell	William B. Caldwell
+U.S. military	United States Armed Forces
+U.S. forces	United States Armed Forces
+Iraq	Iraq
+Caldwell	William B. Caldwell
+Saddam	Saddam Hussein
+US military	United States Armed Forces
+Caldwell	William B. Caldwell
+### 13259309
+~~~ 16447201
+Hindus	Hindu
+Ganges	Ganges
+Pilgrims	Pilgrim
+ALLAHABAD	Allahabad
+India	India
+Hindus	Hindu
+Ganges river	Ganges
+northern India	North India
+India	India
+Ardh Kumbh Mela	Kumbh Mela
+Half Pitcher Festival	!!!
+Ganges	Ganges
+Yamuna	Yamuna
+Allahabad	Allahabad
+Hindu scriptures	Hindu texts
+Maha Kumbh Mela	Kumbh Mela
+Great Pitcher Festival	!!!
+Ganges	Ganges
+Kumbh Mela	Kumbh Mela
+Naba Kumar Ghosh	!!!
+West Bengal	West Bengal
+Madhya Pradesh	Madhya Pradesh
+Ganges	Ganges
+Kumbh Mela	Kumbh Mela
+Kumbh	Kumbh Mela
+Rama Devi	!!!
+Allahabad	Allahabad
+Kumbh	Kumbh Mela
+Indian army	Indian Army
+Allahabad	Allahabad
+Hindi	Hindi
+Uttar Pradesh	Uttar Pradesh
+Garuda	Garuda
+Hindu god	Hindu deities
+Vishnu	Vishnu
+Garuda	Garuda
+Maha Kumbh Mela	Kumbh Mela
+Maha Kumbh	Kumbh Mela
+Maha Kumbh Mela	Kumbh Mela
+Guinness Book of Records	Guinness World Records
+### 16447201
