@@ -1,0 +1,11 @@
+Introduction
+=====================================
+
+The AQUAINT dataset was originally constructed by Milne and Witten in their work "Learning to Link with Wikipedia" in CIKM'08. The dataset is a subset of 50 documents from the AQUAINT text corpus: a collection of newswire stories. There are totally 50 documents with 727 mentions in the dataset. Details can be found in their paper.
+
+The dataset can be found in the website: http://cogcomp.cs.illinois.edu/page/download_view/Wikifier
+
+For our evaluation, we aligned annotations with our Wikipedia dump (20130604) with entities replaced by their redirected titles, and entities removed if they do not exist anymore. 
+
+In total we have 727 mentions remained as listed in the aquaint.xml.
+
