@@ -52,8 +52,7 @@ class DataSet(object):
         for filename in os.listdir(self.data_dir):
             text = ' '.join(open(self.data_dir+filename).readlines()).replace('\n', ' ')
             text = re.sub(r'\s+', ' ', text)
-            text = re.sub(r'\'s\b', '', text)
-            text = ENTITY_MATCH_RE.sub('\g<2>', text).replace('_', ' ').decode('utf-8')
+            text = re.sub(r'\'s\b', '', text).decode('utf-8')
             datafile = DataFile(filename, text)
             ner_list = parse_entities(text)
             visited = set()
