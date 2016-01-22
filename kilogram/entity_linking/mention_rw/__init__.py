@@ -69,20 +69,24 @@ class SemanticGraph:
         neighbors = {}
         self.index_map = {}
 
+        #self.candidate_uris1 = set()
+        #for cand in candidates:
+        #    self.candidate_uris1.add(cand.cand_string)
+
         self.candidate_uris = set()
         for cand in candidates:
             total = sum([e.count for e in cand.entities])
             for e in cand.entities:
                 mention_uri = _mention_uri(e.uri, cand.cand_string)
                 self.candidate_uris.add(mention_uri)
-                neighbors[mention_uri] = NgramService.get_wiki_direct_links_mentions(mention_uri)
+                neighbors[mention_uri] = NgramService.get_wiki_link_mention_cooccur(mention_uri)
                 # delete self
                 try:
                     del neighbors[mention_uri][mention_uri]
                 except KeyError:
                     pass
                 for neighbor, weight in neighbors[mention_uri].iteritems():
-                    #if neighbor.split('|')[0] not in self.candidate_uris:
+                    #if neighbor.split('|')[0] not in self.candidate_uris1:
                     #    continue
                     if self.G.has_edge(mention_uri, neighbor):
                         continue
