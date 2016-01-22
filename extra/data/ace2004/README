@@ -1,0 +1,10 @@
+Introduction
+=====================================
+The ACE2004 dataset was originally constructed by Ratinov et. al in their work "Local and global algorithms for disambiguation to wikipedia" in ACL'11. The dataset contains 57 documents with 306 mentions from the ACE2004 Coreference documents.
+
+The original dataset can be downloaded from the website: http://cogcomp.cs.illinois.edu/page/download_view/Wikifier
+
+For our evaluation, we aligned annotations with our Wikipedia dump (20130604) with entities replaced by their redirected titles, and entities removed if they do not exist anymore. 
+
+In total we have 306 mentions remained as listed in the ace2004.xml.
+

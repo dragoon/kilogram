@@ -1,0 +1,390 @@
+~~~ 20001115_AFP_ARB.0093.eng
+Bandar Seri Begawan	Bandar Seri Begawan
+AFP	Agence France-Presse
+United States	United States
+James Stewart	!!!
+White House	White House
+Palestinian Superior Security Council	Palestinian National Council
+area "A	!!!
+### 20001115_AFP_ARB.0093.eng
+~~~ PRI20001128.2000.0055
+NPR news	NPR
+Washington	Washington, D.C.
+Steve Inski	!!!
+Miami Dade County	Miami-Dade County, Florida
+Democrats	Democratic Party (United States)
+Palm Beach County	Palm Beach County, Florida
+Al Gore	Al Gore
+Washington State	Washington (state)
+Jennifer Nesan	!!!
+Seattle	Seattle
+### PRI20001128.2000.0055
+~~~ 20001115_AFP_ARB.0072.eng
+Baghdad	Baghdad
+AFP	Agence France-Presse
+Iraq	Iraq
+### 20001115_AFP_ARB.0072.eng
+~~~ 20001115_AFP_ARB.0210.eng
+Tallahassee	Tallahassee, Florida
+United States	United States
+AFP	Agence France-Presse
+Supreme Court	Supreme Court of Florida
+Florida	Florida
+### 20001115_AFP_ARB.0210.eng
+~~~ 20000815_AFP_ARB.0071.eng
+Beirut	Beirut
+AFP	Agence France-Presse
+Lebanon	Lebanon
+Israel	Israel
+Abbad sector	!!!
+Wadi Marjayoun	!!!
+### 20000815_AFP_ARB.0071.eng
+~~~ VOA20001020.2100.1853
+navy	United States Navy
+USS Cole	USS Cole (DDG-67)
+Yemen	Yemen
+### VOA20001020.2100.1853
+~~~ 20001115_AFP_ARB.0184.eng
+Jerusalem	Jerusalem
+AFP	Agence France-Presse
+Hussein Abiyat	!!!
+West Bank	West Bank
+### 20001115_AFP_ARB.0184.eng
+~~~ PRI20001122.2000.0320
+Yasser Arafat	Yasser Arafat
+Corey Flintoff	Corey Flintoff
+NPR news	NPR
+Washington	Washington, D.C.
+### PRI20001122.2000.0320
+~~~ 20001115_AFP_ARB.0061.eng
+Gaza	Gaza
+AFP	Agence France-Presse
+Palestinian Superior Security Council	!!!
+area "A"	!!!
+### 20001115_AFP_ARB.0061.eng
+~~~ 20000715_AFP_ARB.0072.eng
+Jerusalem	Jerusalem
+AFP	Agence France-Presse
+Iran	Iran
+Moscow	Moscow
+Ministry of Defense	Ministry of Defense and Armed Forces Logistics (Iran)
+Tehran Radio	!!!
+### 20000715_AFP_ARB.0072.eng
+~~~ 20001015_AFP_ARB.0053.eng
+Beirut	Beirut
+AFP	Agence France-Presse
+Saudi Soccer Federation	!!!
+Youth and Sports Bureau	!!!
+Lebanon	Lebanon
+Emirates	United Arab Emirates
+Mexico	Mexico
+Bangkok	Bangkok
+### 20001015_AFP_ARB.0053.eng
+~~~ VOA20001220.2000.0060
+VOA News	Voice of America
+America	United States
+Texas	Texas
+### VOA20001220.2000.0060
+~~~ chtb_165.eng
+Xinhua News Agency	Xinhua News Agency
+Shanghai	Shanghai
+HSBC	HSBC
+China Shipping Mansion	International Ocean Shipping Building
+Pudong Lujiazui financial trading district	Lujaizui
+Pudong	Pudong
+US	United States
+Citibank	Citibank
+Hong Kong	Hong Kong
+Japan	Japan
+Tokyo Mitsubishi Bank	The Bank of Tokyo-Mitsubishi UFJ
+### chtb_165.eng
+~~~ 20001115_AFP_ARB.0089.eng
+Albus	!!!
+Lebanon	Lebanon
+AFP	Agence France-Presse
+Palestinian National Council	Palestinian National Council
+Algeria	Algeria
+Albus Camp	!!!
+Souer	Tyre, Lebanon
+Beirut	Beirut
+Mohamed al-Dura	Muhammad al-Durrah incident
+Saida	Sidon
+Lebanon	Lebanon
+Khalid Arif	!!!
+Jerusalem	Jerusalem
+### 20001115_AFP_ARB.0089.eng
+~~~ PRI20001201.2000.1828
+BBC News	BBC News
+London	London
+US Supreme Court	Supreme Court of the United States
+Judith Spencer	!!!
+Ruth Bater Ginsburg	Ruth Bader Ginsburg
+Florida Supreme Court	Supreme Court of Florida
+Sandra Day O'Connor	Sandra Day O'Connor
+Washington	Washington, D.C.
+### PRI20001201.2000.1828
+~~~ 20001115_AFP_ARB.0060.eng
+Bandar Seri Begawan	Bandar Seri Begawan
+AFP	Agence France-Presse
+Sultanate of Brunei	Brunei
+Iran	Iran
+### 20001115_AFP_ARB.0060.eng
+~~~ NYT20001124.2050.0257
+HONG KONG	Hong Kong
+Asia	Asia
+International Monetary Fund	International Monetary Fund
+David Robinson	!!!
+Philippines	Philippines
+Taiwan	Taiwan
+Indonesia	Indonesia
+Chen Shui-bian	Chen Shui-bian
+Malaysia	Malaysia
+South Korea	South Korea
+Singapore	Singapore
+Bloomberg News	Bloomberg News
+United States	United States
+China	China
+Ian Perkin	!!!
+Hong Kong General Chamber of Commerce	Hong Kong General Chamber of Commerce
+### NYT20001124.2050.0257
+~~~ 20001115_AFP_ARB.0217.eng
+Bandar Seri Begawan	Bandar Seri Begawan
+AFP	Agence France-Presse
+Russia	Russia
+Coral Islands	!!!
+Brunei	Brunei
+Irkotsik	Irkutsk
+### 20001115_AFP_ARB.0217.eng
+~~~ chtb_267.eng
+Xinhua News Agency	Xinhua News Agency
+Beijing	Beijing
+Weir Group	Weir Group
+US	United States
+Jiangsu Province	Jiangsu
+Electric Power Department	!!!
+China	China
+Aixing Dan	!!!
+International Co-operation Department	!!!
+Electric Power Industry Ministry	!!!
+Yizhong Company	!!!
+Rudong	Rudong County
+Renzu Luo	!!!
+Japan	Japan
+South Korea	South Korea
+Taiwan	Taiwan
+John Weir	!!!
+Brown	!!!
+### chtb_267.eng
+~~~ 20001015_AFP_ARB.0229.eng
+London	London
+AFP	Agence France-Presse
+Baghdad	Baghdad
+Riyadh	Riyadh
+Riyadh International Airport	King Khalid International Airport
+### 20001015_AFP_ARB.0229.eng
+~~~ chtb_227.eng
+International Correspondence Communication News Agency	!!!
+Klelov	!!!
+### chtb_227.eng
+~~~ NYT20001129.2040.0383
+TALLAHASSEE	Tallahassee, Florida
+Fla.	Florida
+Supreme Court	Supreme Court of Florida
+District Court of Appeal	Florida District Courts of Appeal
+Barry Richard	!!!
+Electoral College	Electoral College (United States)
+Kendall Coffey	!!!
+### NYT20001129.2040.0383
+~~~ NYT20001217.2241.0165
+Chicago O'Hare	O'Hare International Airport
+La Guardia	LaGuardia Airport
+New York	New York City
+South	Southern United States
+Transportation Department	United States Department of Transportation
+Los Angeles International	Los Angeles International Airport
+Burbank	Bob Hope Airport
+John Wayne Airport	John Wayne Airport
+Orange County	Orange County, California
+Calif	California
+Westchester County Airport	Westchester County Airport
+JFK	John F. Kennedy International Airport
+Federal Aviation Administration	Federal Aviation Administration
+Washington	Washington, D.C.
+Aviation Consumer Protection Div	Airline complaints
+400 Seventh St. S.W.	!!!
+### NYT20001217.2241.0165
+~~~ APW20001001.2021.0521
+CAIRO	Cairo
+Egypt	Egypt
+AP	Associated Press
+Syria	Syria
+President	President of Egypt
+Iraq	Iraq
+West Bank	West Bank
+Gaza Strip	Gaza Strip
+Jerusalem	Jerusalem
+### APW20001001.2021.0521
+~~~ 20001115_AFP_ARB.0212.eng
+Stewart Talbot	!!!
+America	United States
+State	!!!
+Madeleine Albright	Madeleine Albright
+Yale University	Yale University
+northeast	!!!
+Richard Levin	Rick Levin
+Globalization Studies Center	Yale Center for the Study of Globalization
+Middle East	Middle East
+Time magazine	Time (magazine)
+### 20001115_AFP_ARB.0212.eng
+~~~ 20001115_AFP_ARB.0065.eng
+Camp Zeist	Zeist
+Holland	Holland
+AFP	Agence France-Presse
+Soviet Union	Soviet Union
+Sweden	Sweden
+Amsterdam	Amsterdam
+Copenhagen	Copenhagen
+Stockholm	Stockholm
+Alameen Khalifa Fahima	Lamin Khalifah Fhimah
+Abdulbasit al-Maqrahi	Abdelbaset al-Megrahi
+Malta	Malta
+### 20001115_AFP_ARB.0065.eng
+~~~ NYT20001125.1558.0117
+GROSSE POINTE PARK	Grosse Pointe Park, Michigan
+Mich.	Michigan
+New York	New York
+Pennsylvania	Pennsylvania
+Department of Natural Resources	Michigan Department of Natural Resources
+Rob Williams	!!!
+Detroit	Detroit
+Peter Thompson	!!!
+### NYT20001125.1558.0117
+~~~ VOA20001129.2000.0364
+Washington	Washington, D.C.
+Supreme Court	Supreme Court of the United States
+Joe O'Grossman	Joel Grossman
+Baltimore	Baltimore
+Johns Hopkins University	Johns Hopkins University
+Lawrence Tribe	Laurence Tribe
+Gore	Al Gore
+legislature	Florida Legislature
+Congress	United States Congress
+### VOA20001129.2000.0364
+~~~ 20001115_AFP_ARB.0030.eng
+Gaza	Gaza
+AFP	Agence France-Presse
+Egypt	Egypt
+Nitsarim	Netzarim (settlement)
+### 20001115_AFP_ARB.0030.eng
+~~~ NYT20001101.2212.0429
+Time Warner	Time Warner
+Larry Haverty	!!!
+State Street Research	State Street Corporation
+Boston	Boston
+Tom Wolzien	!!!
+Sanford C. Bernstein	Sanford Bernstein
+Disney	The Walt Disney Company
+Capital Cities/ABC	Capital Cities Communications
+Time	Time Inc.
+Warner	Warner Communications
+Roger McNamee	Roger McNamee
+Integral Capital	!!!
+Jessica Reif	!!!
+Merrill Lynch	Merrill Lynch
+NBC	NBC
+Washington	Washington, D.C.
+John Schreiber	!!!
+Janus Capital	Janus Capital Group
+Comcast	Comcast
+### NYT20001101.2212.0429
+~~~ 20001115_AFP_ARB.0013.eng
+Bandar Seri Begawan	Bandar Seri Begawan
+AFP	Agence France-Presse
+State of Florida	Florida
+Brunei	Brunei
+### 20001115_AFP_ARB.0013.eng
+~~~ PRI20001031.2000.1824
+BBC News	BBC News
+London	London
+Taiwan	Taiwan
+Los Angeles	Los Angeles
+David Chezan	!!!
+### PRI20001031.2000.1824
+~~~ NYT20001106.1705.0187
+CHATTANOOGA	Chattanooga, Tennessee
+Tenn.	Tennessee
+Washington	Washington, D.C.
+Arkansas	Arkansas
+White House	White House
+Wisconsin	Wisconsin
+Iowa	Iowa
+Michigan	Michigan
+Pennsylvania	Pennsylvania
+Green Bay	Green Bay, Wisconsin
+D.C.	Washington, D.C.
+### NYT20001106.1705.0187
+~~~ NYT20001109.1946.0315
+WASHINGTON	Washington, D.C.
+Ralph Nader	Ralph Nader
+America	United States
+Noni	!!!
+White House	White House
+Florida	Florida
+John Ruth	!!!
+Oregon	Oregon
+Julie Quastler	!!!
+Portland	Portland, Oregon
+Dorothy Byrne	!!!
+Green Party	Green Party of Florida
+Barbara Lange	!!!
+Sierra Club	Sierra Club
+Patricia Newell	!!!
+University of Florida	University of Florida
+Gainesville	Gainesville, Florida
+### NYT20001109.1946.0315
+~~~ NYT20001123.1511.0062
+ABC	American Broadcasting Company
+Fox Sports	Fox Sports (United States)
+Sun Microsystems	Sun Microsystems
+Fidelity Investments	Fidelity Investments
+Ocean Spray Cranberries	Ocean Spray (cooperative)
+In Style Entertaining 2000 magazine	InStyle
+PepsiCo	PepsiCo
+Jack Nicholson	Jack Nicholson
+Helen Hunt	Helen Hunt
+Greg Kinnear	Greg Kinnear
+James L. Brooks	James L. Brooks
+Campbell Soup Co	Campbell Soup Company
+Roundabout Theater Company	Roundabout Theatre Company
+Times Square	Times Square
+Reader's Digest Association	Reader's Digest Association
+Reader's Digest magazine	Reader's Digest
+Levi	Levi Strauss & Co.
+Empire Blue Cross Blue Shield	Blue Cross Blue Shield Association
+MSN network	MSN
+Microsoft	Microsoft
+Land Rover	Land Rover
+Volvo	Volvo
+Sprint Communications Co	Sprint Nextel
+John Corbett	John Corbett (actor)
+Houston Grand Opera	Houston Grand Opera
+CBS	CBS
+Brooklyn	Brooklyn
+### NYT20001123.1511.0062
+~~~ VOA20001223.2000.0139
+Democratic opposition	Democratic Opposition of Serbia
+Slobodan Milosevic	Slobodan Milošević
+Socialist Party	Socialist Party of Serbia
+### VOA20001223.2000.0139
+~~~ APW20001002.0615.0146
+### APW20001002.0615.0146
+~~~ APW20001016.1325.0321
+### APW20001016.1325.0321
+~~~ APW20001017.1313.0396
+### APW20001017.1313.0396
+~~~ APW20001022.1735.0376
+### APW20001022.1735.0376
+~~~ APW20001023.2100.0686
+### APW20001023.2100.0686
+~~~ APW20001102.1223.0376
+### APW20001102.1223.0376
