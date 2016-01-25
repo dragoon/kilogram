@@ -30,7 +30,7 @@ def unpack_anchors(line):
     uri, mention = line.split('\t')
     uri = uri.replace(' ', '_')
     mention = mention.replace('_', ' ')
-    if args.lowercase:
+    if args.is_lowercase:
         mention = mention.lower()
     return uri[0].upper()+uri[1:], mention
 
