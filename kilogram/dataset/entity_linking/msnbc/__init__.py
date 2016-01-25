@@ -50,6 +50,8 @@ class DataSet(object):
     def _parse_data(self):
         data = []
         for filename in os.listdir(self.data_dir):
+            if filename not in self.truth_data:
+                continue
             text = ' '.join(open(self.data_dir+filename).readlines()).replace('\n', ' ')
             text = re.sub(r'\s+', ' ', text)
             text = re.sub(r'\'s\b', '', text).decode('utf-8')
