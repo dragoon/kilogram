@@ -79,4 +79,4 @@ def printer(value):
     return value[0] + '\t' + ' '.join([x.replace(' ', '_')+","+str(y) for x, y in value[1].items()])
 
 anchor_counts_agg.map(printer).saveAsTextFile(args.wiki_anchors_out_dir)
-uri_counts_agg.map(printer).saveAsTextFile(args.wiki_anchors_out_dir)
+uri_counts_agg.map(printer).saveAsTextFile(args.wiki_urls_out_dir)
