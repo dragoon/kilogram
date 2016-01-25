@@ -3,14 +3,26 @@ spark-submit --executor-memory 5g --master yarn-client ./wikipedia/spark_anchors
 pig -p table=wiki_anchors -p path=/user/roman/wiki_anchors ./hbase_upload_array.pig
 pig -p table=wiki_urls -p path=/user/roman/wiki_urls ./hbase_upload_array.pig
 """
-import sys
 from pyspark import SparkContext
 import urllib
+import argparse
 from kilogram.lang.unicode import strip_unicode
 
 sc = SparkContext(appName="WikipediaAnchors")
 
-lines = sc.textFile(sys.argv[1])
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--lowercase', dest='is_lowercase', action='store_true', required=False,
+                    default=False, help='whether to lowercase the mentions or not')
+parser.add_argument('link_mention_dir',
+                    help='path to the link_mention directory on HDFS')
+parser.add_argument('wiki_anchors_out_dir',
+                    help='output path of the wiki anchors directory on HDFS')
+parser.add_argument('wiki_urls_out_dir',
+                    help='output path of the wiki urls directory on HDFS')
+
+args = parser.parse_args()
+
+lines = sc.textFile(args.link_mention_dir)
 
 # Split each line into words
 def unpack_anchors(line):
@@ -18,6 +30,8 @@ def unpack_anchors(line):
     uri, mention = line.split('\t')
     uri = uri.replace(' ', '_')
     mention = mention.replace('_', ' ')
+    if args.lowercase:
+        mention = mention.lower()
     return uri[0].upper()+uri[1:], mention
 
 anchor_counts = lines.map(unpack_anchors)
@@ -64,5 +78,5 @@ uri_counts_agg = uri_counts_join.aggregateByKey({}, seqfunc, combfunc)
 def printer(value):
     return value[0] + '\t' + ' '.join([x.replace(' ', '_')+","+str(y) for x, y in value[1].items()])
 
-anchor_counts_agg.map(printer).saveAsTextFile(sys.argv[2])
-uri_counts_agg.map(printer).saveAsTextFile(sys.argv[3])
+anchor_counts_agg.map(printer).saveAsTextFile(args.wiki_anchors_out_dir)
+uri_counts_agg.map(printer).saveAsTextFile(args.wiki_anchors_out_dir)
