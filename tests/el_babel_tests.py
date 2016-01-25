@@ -2,8 +2,8 @@ import unittest
 
 from dataset.dbpedia import NgramEntityResolver
 from dataset.entity_linking.msnbc import DataSet
-from entity_linking import syntactic_subsumption
-from entity_linking.babelfy import _extract_candidates, link, SemanticGraph
+from entity_linking import syntactic_subsumption, extract_candidates
+from entity_linking.babelfy import link, SemanticGraph
 from entity_linking.evaluation import Metrics
 from kilogram import NgramService
 import kilogram
@@ -21,8 +21,8 @@ msnbc_data = DataSet('../extra/data/msnbc/texts/',
 class TestEntityLinking(unittest.TestCase):
 
     def test_extract_candidates(self):
-        self.assertIsNotNone(_extract_candidates([("Obama", "NNP")]))
-        self.assertEquals(len(_extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
+        self.assertIsNotNone(extract_candidates([("Obama", "NNP")]))
+        self.assertEquals(len(extract_candidates([('Obama', 'NNP'), ('went', 'VBD'), ('with', 'IN'), ('me', 'PRP'), ('for', 'IN'), ('a', 'DT'), ('walk', 'NN'), ('.', '.')])), 2)
 
     def test_entity_linking(self):
         print link("After his departure from Buffalo, Saban returned to coach college football teams including Miami, Army and UCF.")
