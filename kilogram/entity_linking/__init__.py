@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import defaultdict
 import nltk
 from kilogram import ListPacker, NgramService
@@ -76,6 +77,7 @@ class CandidateEntity:
             return
         total_c = sum(zip(*temp_candidates)[1])
         cur_c = 0
+        # TODO: percentile has impact on the number of candidates and on the heuristic respectively
         for uri, count in sorted(temp_candidates, key=lambda x: x[1], reverse=True):
             if cur_c/total_c > PERCENTILE:
                 break
@@ -83,9 +85,10 @@ class CandidateEntity:
             uri_counts[uri] = count
         # also remove all counts = 1
         # TODO: do experiments
-        for uri in uri_counts.keys():
-            if uri_counts[uri] < 2:
-                del uri_counts[uri]
+        if any(uri_counts.values()) >= 2:
+            for uri in uri_counts.keys():
+                if uri_counts[uri] < 2:
+                    del uri_counts[uri]
         self._init_entities(uri_counts, ner)
 
     def _prune_generic_types(self):
