@@ -1,8 +1,8 @@
 import unittest
 
 from kilogram.dataset.dbpedia import NgramEntityResolver
-from dataset.entity_linking.msnbc import DataSet as MSNBC
-from dataset.entity_linking.microposts import DataSet as Tweets
+from kilogram.dataset.entity_linking.msnbc import DataSet as MSNBC
+from kilogram.dataset.entity_linking.microposts import DataSet as Tweets
 from kilogram.entity_linking import syntactic_subsumption
 from kilogram.entity_linking.evaluation import Metrics
 from kilogram.entity_linking.rel_rw import SemanticGraph
@@ -53,7 +53,7 @@ class TestEntityLinkingKBMSNBC(unittest.TestCase):
 
 
 class TestEntityLinkingKBMicroposts(unittest.TestCase):
-    microposts_data = Tweets('../extra/data/microposts2014/microposts_test.txt', ner)
+    microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner)
 
     def test_d2kb(self):
         print 'REL-RW, D2KB'
