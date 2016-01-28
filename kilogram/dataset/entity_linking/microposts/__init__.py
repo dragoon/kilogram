@@ -21,7 +21,7 @@ class DataSet(object):
                 datafile = DataFile(line[0], line[1])
             except IndexError:
                 continue
-            truth_data = dict(zip(line[3::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[4::2]]))
+            truth_data = dict(zip(line[2::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
             ner_list = parse_entities(line[1].decode('utf-8'))
             visited = set()
             for values in ner_list:
