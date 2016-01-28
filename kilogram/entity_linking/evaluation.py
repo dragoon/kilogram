@@ -35,5 +35,5 @@ class Metrics(object):
             self.save_file.close()
         precision = self.tp / (self.tp+self.fp)
         recall = self.tp / (self.tp+self.fn)
-        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
         print self.tp, self.fp, self.fn, self.tn
+        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
