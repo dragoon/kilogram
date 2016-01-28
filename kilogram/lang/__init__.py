@@ -32,12 +32,20 @@ NE_END_TOKEN = re.compile(r'</[A-Z]+?>$')
 ENTITY_MATCH_RE = re.compile(r'(<[A-Z]+>)(.+?)</[A-Z]+>')
 
 
+first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+all_cap_re = re.compile('([a-z0-9])([A-Z])')
+def split_camel_case(name):
+    s1 = first_cap_re.sub(r'\1 \2', name)
+    return all_cap_re.sub(r'\1 \2', s1)
+
+
 def number_replace(sentence):
     for repl, regex in _RE_NUM_SUBS:
         if not FAST_NUM_REGEX.search(sentence):
             break
         sentence = regex.sub(repl, sentence)
     return sentence
+
 
 def strip_determiners(ngram):
     """
