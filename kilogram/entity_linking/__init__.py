@@ -2,6 +2,7 @@ from __future__ import division
 from collections import defaultdict
 import nltk
 from kilogram import ListPacker, NgramService
+from kilogram.lang import split_camel_case
 
 PERCENTILE = 0.9
 
@@ -43,12 +44,15 @@ class CandidateEntity:
     def _get_uri_counts(self):
         table = "wiki_anchor_ngrams"
         column = "ngram:value"
-        res = NgramService.hbase_raw(table, self.cand_string, column)
-        if not res:
-            res = NgramService.hbase_raw(table, self.cand_string.title(), column)
-        if res:
-            candidates = ListPacker.unpack(res)
-            return [(uri, long(count)) for uri, count in candidates]
+        prev_cand_string = None
+        for cand_string in (self.cand_string, self.cand_string.title(), split_camel_case(self.cand_string)):
+            if prev_cand_string and cand_string == prev_cand_string:
+                continue
+            res = NgramService.hbase_raw(table, cand_string, column)
+            if res:
+                candidates = ListPacker.unpack(res)
+                return [(uri, long(count)) for uri, count in candidates]
+            prev_cand_string = cand_string
         return None
 
     def init_context_types(self, type_predictor):
