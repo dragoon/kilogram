@@ -11,8 +11,6 @@ from kilogram.lang.unicode import strip_unicode
 sc = SparkContext(appName="WikipediaAnchors")
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--lowercase', dest='is_lowercase', action='store_true', required=False,
-                    default=False, help='whether to lowercase the mentions or not')
 parser.add_argument('link_mention_dir',
                     help='path to the link_mention directory on HDFS')
 parser.add_argument('wiki_anchors_out_dir',
@@ -30,8 +28,6 @@ def unpack_anchors(line):
     uri, mention = line.split('\t')
     uri = uri.replace(' ', '_')
     mention = mention.replace('_', ' ')
-    if args.is_lowercase:
-        mention = mention.lower()
     return uri[0].upper()+uri[1:], mention
 
 anchor_counts = lines.map(unpack_anchors)

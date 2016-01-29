@@ -49,8 +49,8 @@ pig -p table=CC -p path=/user/roman/SOTA_EL/CC_processed ../extra/hbase_upload_a
 
 # lowercased anchors
 hdfs dfs -rm -r /user/roman/wiki_anchors_lower /user/roman/wiki_urls_lower
-spark-submit --executor-memory 5g --num-executors 10 --master yarn-client ./wikipedia/spark_anchors.py --lowercase "/user/ded/link_mention" "/user/roman/wiki_anchors_lower" "/user/roman/wiki_urls_lower"
-spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors_lower" "/user/roman/SOTA_EL/candidate_ngram_links_lower"
+spark-submit --executor-memory 5g --num-executors 10 --master yarn-client ./wikipedia/spark_anchors.py "/user/ded/link_mention" "/user/roman/wiki_anchors_lower" "/user/roman/wiki_urls_lower"
+spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py --lowercase "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors_lower" "/user/roman/SOTA_EL/candidate_ngram_links_lower"
 echo "disable 'wiki_anchor_ngrams_lower'" | hbase shell -n
 echo "drop 'wiki_anchor_ngrams_lower'" | hbase shell -n
 echo "create 'wiki_anchor_ngrams_lower', 'ngram'" | hbase shell -n

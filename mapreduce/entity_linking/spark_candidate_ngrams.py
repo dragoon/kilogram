@@ -2,13 +2,27 @@
 spark-submit --master yarn-client --num-executors 20 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors" "/user/roman/candidate_ngram_links"
 pig -p table=wiki_anchor_ngrams -p path=/user/roman/candidate_ngram_links ./hbase_upload_array.pig
 """
-import sys
+import argparse
 from pyspark import SparkContext
 from itertools import combinations
 from kilogram import ListPacker
 
 
 sc = SparkContext(appName="CandidateEntityLinkings")
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--lowercase', dest='is_lowercase', action='store_true', required=False,
+                    default=False, help='whether to lowercase the mentions or not')
+parser.add_argument('--nospace', dest='no_space', action='store_true', required=False,
+                    default=False, help='whether to strip the spaces from the labels')
+parser.add_argument('dbpedia_file',
+                    help='path to the dbpedia data file on HDFS')
+parser.add_argument('wiki_anchors_dir',
+                    help='path to the wiki anchors directory on HDFS')
+parser.add_argument('candidate_ngrams_out',
+                    help='output path of the candidate ngrams directory on HDFS')
+
+args = parser.parse_args()
 
 
 def generate_label_ngrams(line):
@@ -49,8 +63,7 @@ def uri_filter(line):
     return True
 
 
-dbp_file = sys.argv[1]
-uri_labels = sc.textFile(dbp_file).filter(uri_filter).map(generate_label_ngrams)
+uri_labels = sc.textFile(args.dbpedia_file).filter(uri_filter).map(generate_label_ngrams)
 
 
 def map_uris(anchor_line):
@@ -60,8 +73,7 @@ def map_uris(anchor_line):
         result.append((uri, long(v)))
     return result
 
-anchors_file = sys.argv[2]
-uri_counts = sc.textFile(anchors_file).flatMap(map_uris).reduceByKey(lambda x, y: x+y)
+uri_counts = sc.textFile(args.wiki_anchors_dir).flatMap(map_uris).reduceByKey(lambda x, y: x+y)
 
 
 def generate_candidates(label_anchor):
@@ -72,6 +84,10 @@ def generate_candidates(label_anchor):
         count = 1
     for label in labels:
         if len(label) > 0:
+            if args.is_lowercase:
+                label = label.lower()
+            if args.no_space:
+                label = label.replace(' ', '')
             result.append((label, (uri, count)))
     return result
 
@@ -95,7 +111,7 @@ def map_anchors(anchor_line):
         result.append((uri, long(v)))
     return label, result
 
-join = sc.textFile(anchors_file).map(map_anchors).fullOuterJoin(uri_label_counts)
+join = sc.textFile(args.wiki_anchors_dir).map(map_anchors).fullOuterJoin(uri_label_counts)
 
 
 def printer(value):
@@ -111,4 +127,4 @@ def printer(value):
             uri_count_labels_dict[uri] = count
     return label + '\t' + ListPacker.pack(uri_count_labels_dict.items())
 
-join.map(printer).saveAsTextFile(sys.argv[3])
+join.map(printer).saveAsTextFile(args.candidate_ngrams_out)
