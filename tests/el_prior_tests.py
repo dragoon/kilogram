@@ -2,11 +2,14 @@ import unittest
 
 from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram.dataset.entity_linking.msnbc import DataSet
+from kilogram.dataset.entity_linking.microposts import DataSet as Tweets
 from kilogram.entity_linking import syntactic_subsumption
 from kilogram.entity_linking.evaluation import Metrics
 from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
 import kilogram
+
+kilogram.DEBUG = False
 
 NgramService.configure(hbase_host=('diufpc304', '9090'))
 kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
@@ -14,18 +17,21 @@ ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
-msnbc_data = DataSet('../extra/data/msnbc/texts/',
-                        '../extra/data/msnbc/msnbc_truth.txt', ner)
 
 ngram_predictor = NgramTypePredictor('typogram')
 
 
 class TestEntityLinking(unittest.TestCase):
 
+    def __init__(self, methodName='runTest'):
+        super(TestEntityLinking, self).__init__(methodName)
+        self.msnbc_data = DataSet('../extra/data/aquaint/texts/',
+                                  '../extra/data/aquaint/aquaint.txt', ner)
+
     def test_d2kb(self):
-        print 'Prior prob, D2KB'
+        print('Prior prob, D2KB')
         metric = Metrics()
-        for datafile in msnbc_data.data:
+        for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 # D2KB condition
@@ -36,9 +42,9 @@ class TestEntityLinking(unittest.TestCase):
         print
 
     def test_a2kb(self):
-        print 'Prior prob, A2KB'
+        print('Prior prob, A2KB')
         metric = Metrics()
-        for datafile in msnbc_data.data:
+        for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 uri = None
@@ -50,9 +56,9 @@ class TestEntityLinking(unittest.TestCase):
         print
 
     def test_d2kb_typed(self):
-        print 'Prior prob + type improvements, D2KB'
+        print('Prior prob + type improvements, D2KB')
         metric = Metrics()
-        for datafile in msnbc_data.data:
+        for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 candidate.init_context_types(ngram_predictor)
@@ -71,9 +77,9 @@ class TestEntityLinking(unittest.TestCase):
         print
 
     def test_a2kb_typed(self):
-        print 'Prior prob + type improvements, A2KB'
+        print('Prior prob + type improvements, A2KB')
         metric = Metrics()
-        for datafile in msnbc_data.data:
+        for datafile in self.msnbc_data.data:
             syntactic_subsumption(datafile.candidates)
             for candidate in datafile:
                 candidate.init_context_types(ngram_predictor)
@@ -90,6 +96,31 @@ class TestEntityLinking(unittest.TestCase):
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
         print
+
+class TestEntityLinkingKBMicroposts(unittest.TestCase):
+
+    def __init__(self, methodName='runTest'):
+        super(TestEntityLinkingKBMicroposts, self).__init__(methodName)
+        self.microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner)
+
+    def test_d2kb(self):
+        print('REL-RW, D2KB')
+        metric = Metrics()
+        for datafile in self.microposts_data.data:
+            syntactic_subsumption(datafile.candidates)
+            #for candidate in datafile:
+            #    candidate.init_context_types(ngram_predictor)
+            for candidate in datafile:
+                # D2KB condition
+                if candidate.truth_data['uri'] is None:
+                    continue
+                if candidate.truth_data['uri'].startswith('NIL'):
+                    continue
+                result = candidate.get_max_uri()
+                if result != candidate.truth_data['uri']:
+                    print(candidate.cand_string, result, candidate.truth_data['uri'])
+                metric.evaluate(candidate.truth_data, result)
+        metric.print_metrics()
 
 
 if __name__ == '__main__':
