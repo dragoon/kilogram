@@ -1,5 +1,5 @@
 from __future__ import division
-from entity_linking import CandidateEntity
+from entity_linking import CandidateEntity, Entity
 from kilogram.lang import parse_entities, parse_tweet_entities, strip_tweet_entities
 
 
@@ -12,6 +12,17 @@ class DataSet(object):
         self.ner = ner
         self.dataset_file = dataset_file
         self.data = self._parse_data()
+
+    def _astrology_uri(self, cand_string):
+        signs = {'Leo', 'Capricorn', 'Pisces', 'Libra', 'Virgo', 'Cancer', 'Aquarius',
+                 'Gemini', 'Taurus', 'Aries', 'Sagittarius', 'Scorpio'}
+        if cand_string.title() in signs:
+            return cand_string.title()+'_(astrology)'
+        if cand_string[:-1].title() in signs:
+            return cand_string[:-1].title()+'_(astrology)'
+        if cand_string == 'Aquarians':
+            return 'Aquarius_(astrology)'
+        return None
 
     def _parse_data(self):
         data = []
@@ -31,12 +42,18 @@ class DataSet(object):
             for values in ner_list:
                 candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
                                             context=values['context'], ner=self.ner)
+                astr_uri = self._astrology_uri(candidate.cand_string)
+                if astr_uri:
+                    candidate.entities = [Entity(astr_uri, 1, self.ner)]
                 candidate.truth_data = {'uri': truth_data.get(values['text']), 'exists': True}
                 datafile.candidates.append(candidate)
                 visited.add(values['text'])
             for text, uri in truth_data.iteritems():
                 if text not in visited:
                     candidate = CandidateEntity(0, 0, text, ner=self.ner)
+                    astr_uri = self._astrology_uri(candidate.cand_string)
+                    if astr_uri:
+                        candidate.entities = [Entity(astr_uri, 1, self.ner)]
                     candidate.truth_data = {'uri': uri, 'exists': True}
                     datafile.candidates.append(candidate)
             data.append(datafile)

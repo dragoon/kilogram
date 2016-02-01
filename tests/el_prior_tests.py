@@ -70,7 +70,6 @@ class TestEntityLinking(unittest.TestCase):
             metric.print_metrics()
             print
 
-
 class TestEntityLinkingKBMicroposts(unittest.TestCase):
 
     def __init__(self, methodName='runTest'):
@@ -89,10 +88,6 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
                     continue
                 uri = None
                 if candidate.context is not None:
-                    for e in candidate.entities:
-                        if 'astrology' in e.uri:
-                            uri = e.uri
-                            break
                     if not uri:
                         uri = candidate.get_max_uri()
                     if uri != candidate.truth_data['uri']:
