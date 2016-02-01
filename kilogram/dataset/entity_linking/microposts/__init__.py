@@ -1,4 +1,5 @@
 from __future__ import division
+import codecs
 from entity_linking import CandidateEntity, Entity
 from kilogram.lang import parse_entities, parse_tweet_entities, strip_tweet_entities
 
@@ -7,10 +8,15 @@ class DataSet(object):
     dataset_file = None
     ner = None
     data = None
+    handles_dict = None
 
-    def __init__(self, dataset_file, ner):
+    def __init__(self, dataset_file, ner, handles_file=None):
         self.ner = ner
         self.dataset_file = dataset_file
+        if handles_file:
+            self.handles_dict = dict([x.split('\t') for x in codecs.open(handles_file, 'r', 'utf-8').read().splitlines()])
+        else:
+            self.handles_dict = {}
         self.data = self._parse_data()
 
     def _astrology_uri(self, cand_string):
@@ -26,7 +32,7 @@ class DataSet(object):
 
     def _parse_data(self):
         data = []
-        for line in open(self.dataset_file):
+        for line in codecs.open(self.dataset_file, 'r', 'utf-8'):
             line = line.strip().split('\t')
             try:
                 datafile = DataFile(line[0], line[1])
@@ -35,12 +41,13 @@ class DataSet(object):
             truth_data = dict(zip(line[2::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
             tweet_ne_list = parse_tweet_entities(datafile.text)
             tweet_ne_names = set([x['text'] for x in tweet_ne_list])
-            ner_list = parse_entities(strip_tweet_entities(datafile.text).decode('utf-8'))
+            ner_list = parse_entities(strip_tweet_entities(datafile.text))
             ner_list = [x for x in ner_list if x['text'] not in tweet_ne_names] + tweet_ne_list
 
             visited = set()
             for values in ner_list:
-                candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
+                cand_string = self.handles_dict.get(values['text'], values['text'].decode('utf-8'))
+                candidate = CandidateEntity(0, 0, cand_string, e_type=values['type'],
                                             context=values['context'], ner=self.ner)
                 astr_uri = self._astrology_uri(candidate.cand_string)
                 if astr_uri:
