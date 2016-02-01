@@ -2474,7 +2474,7 @@ class Processor(Iface, TProcessor):
     result = enableTable_result()
     try:
       self._handler.enableTable(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("enableTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2488,7 +2488,7 @@ class Processor(Iface, TProcessor):
     result = disableTable_result()
     try:
       self._handler.disableTable(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("disableTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2502,7 +2502,7 @@ class Processor(Iface, TProcessor):
     result = isTableEnabled_result()
     try:
       result.success = self._handler.isTableEnabled(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("isTableEnabled", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2516,7 +2516,7 @@ class Processor(Iface, TProcessor):
     result = compact_result()
     try:
       self._handler.compact(args.tableNameOrRegionName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("compact", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2530,7 +2530,7 @@ class Processor(Iface, TProcessor):
     result = majorCompact_result()
     try:
       self._handler.majorCompact(args.tableNameOrRegionName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("majorCompact", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2544,7 +2544,7 @@ class Processor(Iface, TProcessor):
     result = getTableNames_result()
     try:
       result.success = self._handler.getTableNames()
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getTableNames", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2558,7 +2558,7 @@ class Processor(Iface, TProcessor):
     result = getColumnDescriptors_result()
     try:
       result.success = self._handler.getColumnDescriptors(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getColumnDescriptors", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2572,7 +2572,7 @@ class Processor(Iface, TProcessor):
     result = getTableRegions_result()
     try:
       result.success = self._handler.getTableRegions(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getTableRegions", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2586,11 +2586,11 @@ class Processor(Iface, TProcessor):
     result = createTable_result()
     try:
       self._handler.createTable(args.tableName, args.columnFamilies)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
-    except AlreadyExists, exist:
+    except AlreadyExists as exist:
       result.exist = exist
     oprot.writeMessageBegin("createTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2604,7 +2604,7 @@ class Processor(Iface, TProcessor):
     result = deleteTable_result()
     try:
       self._handler.deleteTable(args.tableName)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("deleteTable", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2618,7 +2618,7 @@ class Processor(Iface, TProcessor):
     result = get_result()
     try:
       result.success = self._handler.get(args.tableName, args.row, args.column, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("get", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2632,7 +2632,7 @@ class Processor(Iface, TProcessor):
     result = getVer_result()
     try:
       result.success = self._handler.getVer(args.tableName, args.row, args.column, args.numVersions, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getVer", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2646,7 +2646,7 @@ class Processor(Iface, TProcessor):
     result = getVerTs_result()
     try:
       result.success = self._handler.getVerTs(args.tableName, args.row, args.column, args.timestamp, args.numVersions, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getVerTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2660,7 +2660,7 @@ class Processor(Iface, TProcessor):
     result = getRow_result()
     try:
       result.success = self._handler.getRow(args.tableName, args.row, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRow", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2674,7 +2674,7 @@ class Processor(Iface, TProcessor):
     result = getRowWithColumns_result()
     try:
       result.success = self._handler.getRowWithColumns(args.tableName, args.row, args.columns, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowWithColumns", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2688,7 +2688,7 @@ class Processor(Iface, TProcessor):
     result = getRowTs_result()
     try:
       result.success = self._handler.getRowTs(args.tableName, args.row, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2702,7 +2702,7 @@ class Processor(Iface, TProcessor):
     result = getRowWithColumnsTs_result()
     try:
       result.success = self._handler.getRowWithColumnsTs(args.tableName, args.row, args.columns, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowWithColumnsTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2716,7 +2716,7 @@ class Processor(Iface, TProcessor):
     result = getRows_result()
     try:
       result.success = self._handler.getRows(args.tableName, args.rows, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRows", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2730,7 +2730,7 @@ class Processor(Iface, TProcessor):
     result = getRowsWithColumns_result()
     try:
       result.success = self._handler.getRowsWithColumns(args.tableName, args.rows, args.columns, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowsWithColumns", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2744,7 +2744,7 @@ class Processor(Iface, TProcessor):
     result = getRowsTs_result()
     try:
       result.success = self._handler.getRowsTs(args.tableName, args.rows, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowsTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2758,7 +2758,7 @@ class Processor(Iface, TProcessor):
     result = getRowsWithColumnsTs_result()
     try:
       result.success = self._handler.getRowsWithColumnsTs(args.tableName, args.rows, args.columns, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowsWithColumnsTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2772,9 +2772,9 @@ class Processor(Iface, TProcessor):
     result = mutateRow_result()
     try:
       self._handler.mutateRow(args.tableName, args.row, args.mutations, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("mutateRow", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2788,9 +2788,9 @@ class Processor(Iface, TProcessor):
     result = mutateRowTs_result()
     try:
       self._handler.mutateRowTs(args.tableName, args.row, args.mutations, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("mutateRowTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2804,9 +2804,9 @@ class Processor(Iface, TProcessor):
     result = mutateRows_result()
     try:
       self._handler.mutateRows(args.tableName, args.rowBatches, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("mutateRows", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2820,9 +2820,9 @@ class Processor(Iface, TProcessor):
     result = mutateRowsTs_result()
     try:
       self._handler.mutateRowsTs(args.tableName, args.rowBatches, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("mutateRowsTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2836,9 +2836,9 @@ class Processor(Iface, TProcessor):
     result = atomicIncrement_result()
     try:
       result.success = self._handler.atomicIncrement(args.tableName, args.row, args.column, args.value)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("atomicIncrement", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2852,7 +2852,7 @@ class Processor(Iface, TProcessor):
     result = deleteAll_result()
     try:
       self._handler.deleteAll(args.tableName, args.row, args.column, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("deleteAll", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2866,7 +2866,7 @@ class Processor(Iface, TProcessor):
     result = deleteAllTs_result()
     try:
       self._handler.deleteAllTs(args.tableName, args.row, args.column, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("deleteAllTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2880,7 +2880,7 @@ class Processor(Iface, TProcessor):
     result = deleteAllRow_result()
     try:
       self._handler.deleteAllRow(args.tableName, args.row, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("deleteAllRow", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2894,7 +2894,7 @@ class Processor(Iface, TProcessor):
     result = increment_result()
     try:
       self._handler.increment(args.increment)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("increment", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2908,7 +2908,7 @@ class Processor(Iface, TProcessor):
     result = incrementRows_result()
     try:
       self._handler.incrementRows(args.increments)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("incrementRows", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2922,7 +2922,7 @@ class Processor(Iface, TProcessor):
     result = deleteAllRowTs_result()
     try:
       self._handler.deleteAllRowTs(args.tableName, args.row, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("deleteAllRowTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2936,7 +2936,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpenWithScan_result()
     try:
       result.success = self._handler.scannerOpenWithScan(args.tableName, args.scan, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpenWithScan", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2950,7 +2950,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpen_result()
     try:
       result.success = self._handler.scannerOpen(args.tableName, args.startRow, args.columns, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpen", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2964,7 +2964,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpenWithStop_result()
     try:
       result.success = self._handler.scannerOpenWithStop(args.tableName, args.startRow, args.stopRow, args.columns, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpenWithStop", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2978,7 +2978,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpenWithPrefix_result()
     try:
       result.success = self._handler.scannerOpenWithPrefix(args.tableName, args.startAndPrefix, args.columns, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpenWithPrefix", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -2992,7 +2992,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpenTs_result()
     try:
       result.success = self._handler.scannerOpenTs(args.tableName, args.startRow, args.columns, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpenTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3006,7 +3006,7 @@ class Processor(Iface, TProcessor):
     result = scannerOpenWithStopTs_result()
     try:
       result.success = self._handler.scannerOpenWithStopTs(args.tableName, args.startRow, args.stopRow, args.columns, args.timestamp, args.attributes)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("scannerOpenWithStopTs", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3020,9 +3020,9 @@ class Processor(Iface, TProcessor):
     result = scannerGet_result()
     try:
       result.success = self._handler.scannerGet(args.id)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("scannerGet", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3036,9 +3036,9 @@ class Processor(Iface, TProcessor):
     result = scannerGetList_result()
     try:
       result.success = self._handler.scannerGetList(args.id, args.nbRows)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("scannerGetList", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3052,9 +3052,9 @@ class Processor(Iface, TProcessor):
     result = scannerClose_result()
     try:
       self._handler.scannerClose(args.id)
-    except IOError, io:
+    except IOError as io:
       result.io = io
-    except IllegalArgument, ia:
+    except IllegalArgument as ia:
       result.ia = ia
     oprot.writeMessageBegin("scannerClose", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3068,7 +3068,7 @@ class Processor(Iface, TProcessor):
     result = getRowOrBefore_result()
     try:
       result.success = self._handler.getRowOrBefore(args.tableName, args.row, args.family)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRowOrBefore", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -3082,7 +3082,7 @@ class Processor(Iface, TProcessor):
     result = getRegionInfo_result()
     try:
       result.success = self._handler.getRegionInfo(args.row)
-    except IOError, io:
+    except IOError as io:
       result.io = io
     oprot.writeMessageBegin("getRegionInfo", TMessageType.REPLY, seqid)
     result.write(oprot)

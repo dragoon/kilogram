@@ -1,4 +1,3 @@
-from collections import defaultdict
 import unittest
 
 from kilogram.dataset.dbpedia import NgramEntityResolver
@@ -46,7 +45,7 @@ class TestEntityLinking(unittest.TestCase):
                         continue
                     metric.evaluate(candidate.truth_data, candidate.get_max_uri())
             metric.print_metrics()
-            print
+            print()
 
     def test_d2kb_typed(self):
         print('Prior prob + type improvements, D2KB')
@@ -68,13 +67,15 @@ class TestEntityLinking(unittest.TestCase):
 
                     metric.evaluate(candidate.truth_data, uri)
             metric.print_metrics()
-            print
+            print()
+
 
 class TestEntityLinkingKBMicroposts(unittest.TestCase):
 
     def __init__(self, methodName='runTest'):
         super(TestEntityLinkingKBMicroposts, self).__init__(methodName)
-        self.microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner)
+        self.microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner,
+                                      handles_file='../extra/data/microposts2016/users.tsv')
 
     def test_a2kb(self):
         print('REL-RW, A2KB')
@@ -91,7 +92,7 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
                     if not uri:
                         uri = candidate.get_max_uri()
                     if uri != candidate.truth_data['uri']:
-                        print uri, candidate.truth_data, candidate.cand_string
+                        print(uri, candidate.truth_data, candidate.cand_string)
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
