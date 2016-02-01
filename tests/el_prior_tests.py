@@ -1,3 +1,4 @@
+from collections import defaultdict
 import unittest
 
 from kilogram.dataset.dbpedia import NgramEntityResolver
@@ -25,77 +26,50 @@ class TestEntityLinking(unittest.TestCase):
 
     def __init__(self, methodName='runTest'):
         super(TestEntityLinking, self).__init__(methodName)
-        self.msnbc_data = DataSet('../extra/data/aquaint/texts/',
+        ace2004_data = DataSet('../extra/data/ace2004/texts/',
+                                  '../extra/data/ace2004/ace2004.txt', ner)
+        aquaint_data = DataSet('../extra/data/aquaint/texts/',
                                   '../extra/data/aquaint/aquaint.txt', ner)
+        msnbc_data = DataSet('../extra/data/msnbc/texts/',
+                                  '../extra/data/msnbc/msnbc_truth.txt', ner)
+        self.datas = [ace2004_data, aquaint_data, msnbc_data]
 
     def test_d2kb(self):
         print('Prior prob, D2KB')
-        metric = Metrics()
-        for datafile in self.msnbc_data.data:
-            syntactic_subsumption(datafile.candidates)
-            for candidate in datafile:
-                # D2KB condition
-                if candidate.truth_data['uri'] is None:
-                    continue
-                metric.evaluate(candidate.truth_data, candidate.get_max_uri())
-        metric.print_metrics()
-        print
-
-    def test_a2kb(self):
-        print('Prior prob, A2KB')
-        metric = Metrics()
-        for datafile in self.msnbc_data.data:
-            syntactic_subsumption(datafile.candidates)
-            for candidate in datafile:
-                uri = None
-                # A2KB condition
-                if candidate.context is not None:
-                    uri = candidate.get_max_uri()
-                metric.evaluate(candidate.truth_data, uri)
-        metric.print_metrics()
-        print
+        for data_col in self.datas:
+            metric = Metrics()
+            for datafile in data_col.data:
+                syntactic_subsumption(datafile.candidates)
+                for candidate in datafile:
+                    # D2KB condition
+                    if candidate.truth_data['uri'] is None:
+                        continue
+                    metric.evaluate(candidate.truth_data, candidate.get_max_uri())
+            metric.print_metrics()
+            print
 
     def test_d2kb_typed(self):
         print('Prior prob + type improvements, D2KB')
-        metric = Metrics()
-        for datafile in self.msnbc_data.data:
-            syntactic_subsumption(datafile.candidates)
-            for candidate in datafile:
-                candidate.init_context_types(ngram_predictor)
-            for candidate in datafile:
-                # D2KB
-                if candidate.truth_data['uri'] is None:
-                    continue
-                context_types_list = [c.context_types for c in datafile if c.context_types and c.cand_string == candidate.cand_string]
-                if context_types_list:
-                    uri = candidate.get_max_typed_uri(context_types_list)
-                else:
-                    uri = candidate.get_max_uri()
-
-                metric.evaluate(candidate.truth_data, uri)
-        metric.print_metrics()
-        print
-
-    def test_a2kb_typed(self):
-        print('Prior prob + type improvements, A2KB')
-        metric = Metrics()
-        for datafile in self.msnbc_data.data:
-            syntactic_subsumption(datafile.candidates)
-            for candidate in datafile:
-                candidate.init_context_types(ngram_predictor)
-            for candidate in datafile:
-                uri = None
-                # A2KB condition
-                if candidate.context is not None:
+        for data_col in self.datas:
+            metric = Metrics()
+            for datafile in data_col.data:
+                syntactic_subsumption(datafile.candidates)
+                for candidate in datafile:
+                    candidate.init_context_types(ngram_predictor)
+                for candidate in datafile:
+                    # D2KB
+                    if candidate.truth_data['uri'] is None:
+                        continue
                     context_types_list = [c.context_types for c in datafile if c.context_types and c.cand_string == candidate.cand_string]
                     if context_types_list:
                         uri = candidate.get_max_typed_uri(context_types_list)
                     else:
                         uri = candidate.get_max_uri()
 
-                metric.evaluate(candidate.truth_data, uri)
-        metric.print_metrics()
-        print
+                    metric.evaluate(candidate.truth_data, uri)
+            metric.print_metrics()
+            print
+
 
 class TestEntityLinkingKBMicroposts(unittest.TestCase):
 
