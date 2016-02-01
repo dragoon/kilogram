@@ -1,7 +1,6 @@
 from nltk import FreqDist, BigramCollocationFinder, TrigramCollocationFinder
 from nltk.collocations import TrigramAssocMeasures as trigram_measures
 from nltk.collocations import BigramAssocMeasures as bigram_measures
-from kilogram.lang.wordnet import WordNetNgram
 from .ngram_service import NgramService, SUBSTITUTION_TOKEN
 
 
@@ -80,11 +79,10 @@ class EditNgram(Ngram):
             try:
                 collocs = finder.score_ngrams(measures)
                 collocs = dict((x[0][self.edit_pos], (i, x[1])) for i, x in enumerate(collocs))
-            except Exception, e:
-                print 'Exception in pmi_preps'
-                print e
-                print self
-                print dist
+            except Exception as e:
+                print('Exception in pmi_preps', e)
+                print(self)
+                print(dist)
                 collocs = {}
             self._association_dict[measure] = collocs
             if collocs:
@@ -107,7 +105,6 @@ class EditNgram(Ngram):
             raise NotImplementedError
         return dist
 
-
     def get_single_feature(self, correction):
         """
         Returns a feature vector for a particular n-gram. Used to predict n-gram importance.
@@ -117,4 +114,3 @@ class EditNgram(Ngram):
         feature = [self.normal_position, self._ngram_size, len(collocs)]
         feature.extend(pos_tag_feature)
         return feature, collocs.get(correction, (50, 0))[0]
-

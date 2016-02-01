@@ -94,7 +94,7 @@ class NgramService(object):
         cls.h_rate += 1
         time_diff = time.time() - cls.h_start
         if time_diff > 30 and DEBUG:
-            print "HBase req rate:", cls.h_rate/time_diff, "r/s"
+            print("HBase req rate:", cls.h_rate/time_diff, "r/s")
             cls.h_start = time.time()
             cls.h_rate = 0
         try:
@@ -166,7 +166,7 @@ class NgramService(object):
         wiki_counts = sum([sum(cls.get_uri_counts(uri)) for uri, _ in anchor_counts]) + 10
 
         if wiki_counts - 10 < anchor_count:
-            print "PROBABILITY ERROR"
+            print("PROBABILITY ERROR")
         return anchor_count/wiki_counts
 
     @classmethod
