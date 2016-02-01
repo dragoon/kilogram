@@ -51,7 +51,7 @@ class CandidateEntity:
             res = NgramService.hbase_raw(table, cand_string, column)
             if res:
                 candidates = ListPacker.unpack(res)
-                return [(uri, long(count)) for uri, count in candidates]
+                return [(uri, float(count)) for uri, count in candidates]
             prev_cand_string = cand_string
         return None
 
