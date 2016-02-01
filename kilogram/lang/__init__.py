@@ -220,6 +220,8 @@ def parse_tweet_entities(text):
             elif c in ('@', '#'):
                 # find end
                 match = TWEET_ENTITY_RE.match(text[i:])
+                if match is None:
+                    continue
                 entities.append({'text': text[i+1:i+match.end()], 'type': 'TWITTER', 'start': words_i,
                                 'context': get_context(i, match.end()+i, text)})
         return entities

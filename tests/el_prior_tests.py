@@ -103,23 +103,27 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
         super(TestEntityLinkingKBMicroposts, self).__init__(methodName)
         self.microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner)
 
-    def test_d2kb(self):
-        print('REL-RW, D2KB')
+    def test_a2kb(self):
+        print('REL-RW, A2KB')
         metric = Metrics()
         for datafile in self.microposts_data.data:
             syntactic_subsumption(datafile.candidates)
             #for candidate in datafile:
             #    candidate.init_context_types(ngram_predictor)
             for candidate in datafile:
-                # D2KB condition
-                if candidate.truth_data['uri'] is None:
+                if candidate.truth_data['uri'] and candidate.truth_data['uri'].startswith('NIL'):
                     continue
-                if candidate.truth_data['uri'].startswith('NIL'):
-                    continue
-                result = candidate.get_max_uri()
-                if result != candidate.truth_data['uri']:
-                    print(candidate.cand_string, result, candidate.truth_data['uri'])
-                metric.evaluate(candidate.truth_data, result)
+                uri = None
+                if candidate.context is not None:
+                    for e in candidate.entities:
+                        if 'astrology' in e.uri:
+                            uri = e.uri
+                            break
+                    if not uri:
+                        uri = candidate.get_max_uri()
+                    if uri != candidate.truth_data['uri']:
+                        print uri, candidate.truth_data, candidate.cand_string
+                metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
 
 
