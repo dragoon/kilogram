@@ -30,7 +30,7 @@ NE_TOKEN = re.compile(r'<[A-Z]+?>')
 NE_END_TOKEN = re.compile(r'</[A-Z]+?>$')
 
 ENTITY_MATCH_RE = re.compile(r'(<[A-Z]+>)(.+?)</[A-Z]+>')
-TWEET_ENTITY_RE = re.compile(r'[\w_]+')
+TWEET_ENTITY_RE = re.compile(r'(@|#)[\w_]+')
 
 
 first_cap_re = re.compile('(.)([A-Z][a-z]+)')
@@ -219,7 +219,11 @@ def parse_tweet_entities(text):
                 words_i += 1
             elif c in ('@', '#'):
                 # find end
-                match = TWEET_ENTITY_RE.match(text[i+1:])
-                entities.append({'text': text[i:i+1+match.end()], 'type': 'TWITTER', 'start': words_i,
-                                'context': get_context(i, match.end()+i+1, text)})
+                match = TWEET_ENTITY_RE.match(text[i:])
+                entities.append({'text': text[i+1:i+match.end()], 'type': 'TWITTER', 'start': words_i,
+                                'context': get_context(i, match.end()+i, text)})
         return entities
+
+
+def strip_tweet_entities(text):
+    return text.replace('#', '').replace('@', '')

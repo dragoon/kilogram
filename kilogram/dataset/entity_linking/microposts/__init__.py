@@ -1,6 +1,6 @@
 from __future__ import division
 from entity_linking import CandidateEntity
-from kilogram.lang import parse_entities, parse_tweet_entities
+from kilogram.lang import parse_entities, parse_tweet_entities, strip_tweet_entities
 
 
 class DataSet(object):
@@ -22,7 +22,11 @@ class DataSet(object):
             except IndexError:
                 continue
             truth_data = dict(zip(line[2::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
-            ner_list = parse_entities(datafile.text.decode('utf-8')) + parse_tweet_entities(datafile.text)
+            tweet_ne_list = parse_tweet_entities(datafile.text)
+            tweet_ne_names = set([x['text'] for x in tweet_ne_list])
+            ner_list = parse_entities(strip_tweet_entities(datafile.text).decode('utf-8'))
+            ner_list = [x for x in ner_list if x['text'] not in tweet_ne_names] + tweet_ne_list
+
             visited = set()
             for values in ner_list:
                 candidate = CandidateEntity(0, 0, values['text'], e_type=values['type'],
