@@ -190,6 +190,27 @@ def syntactic_subsumption(candidates):
                     print 'Not in truth!', candidate
 
 
+def closeness_pruning(candidates):
+    import itertools
+    for cand1, cand2 in itertools.combinations(candidates, 2):
+        new_cand1_entities = []
+        new_cand2_entities = []
+        if cand1.cand_string == cand2.cand_string:
+            continue
+        cand2_entities = set([e.uri for e in cand2.entities])
+        for entity in cand1.entities:
+            related_uris = set(NgramService.get_wiki_links_cooccur(entity.uri).keys())
+            intersect = related_uris.intersection(cand2_entities)
+            if intersect:
+                new_cand1_entities.append(entity)
+                new_cand2_entities.extend([e for e in cand2.entities if e.uri in intersect])
+
+        if new_cand1_entities:
+            cand1.entities = new_cand1_entities
+        if new_cand2_entities:
+            cand2.entities = new_cand2_entities
+
+
 def extract_candidates(pos_tokens):
     """
     :param pos_tokens: list of words annotated with POS tags
