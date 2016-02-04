@@ -38,7 +38,7 @@ class DataSet(object):
                 datafile = DataFile(line[0], line[1])
             except IndexError:
                 continue
-            truth_data = dict(zip(line[2::2], [x.replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
+            truth_data = dict(zip(line[2::2], [x.encode('utf-8').replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
             tweet_ne_list = parse_tweet_entities(datafile.text)
             tweet_ne_names = set([x['text'] for x in tweet_ne_list])
             ner_list = parse_entities(strip_tweet_entities(datafile.text))
