@@ -39,6 +39,10 @@ class DataSet(object):
             except IndexError:
                 continue
             truth_data = dict(zip(line[2::2], [x.encode('utf-8').replace('http://dbpedia.org/resource/', '') for x in line[3::2]]))
+            # fix the redirects
+            for text, uri in truth_data.iteritems():
+                truth_data[text] = self.ner.redirects_file.get(uri, uri)
+
             tweet_ne_list = parse_tweet_entities(datafile.text)
             tweet_ne_names = set([x['text'] for x in tweet_ne_list])
             ner_list = parse_entities(strip_tweet_entities(datafile.text))
