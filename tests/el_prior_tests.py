@@ -3,7 +3,7 @@ import unittest
 from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram.dataset.entity_linking.msnbc import DataSet
 from kilogram.dataset.entity_linking.microposts import DataSet as Tweets
-from kilogram.entity_linking import syntactic_subsumption
+from kilogram.entity_linking import syntactic_subsumption, closeness_pruning
 from kilogram.entity_linking.evaluation import Metrics
 from kilogram.entity_types.prediction import NgramTypePredictor
 from kilogram import NgramService
@@ -78,10 +78,16 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
                                       handles_file='../extra/data/microposts2016/users.tsv')
 
     def test_a2kb(self):
+        import pickle
         print('REL-RW, A2KB')
         metric = Metrics()
+        try:
+            pickle_dict = pickle.load(open('related_uris.pcl'))
+        except:
+            pickle_dict = {}
         for datafile in self.microposts_data.data:
             syntactic_subsumption(datafile.candidates)
+            closeness_pruning(datafile.candidates, pickle_dict)
             #for candidate in datafile:
             #    candidate.init_context_types(ngram_predictor)
             for candidate in datafile:
@@ -95,6 +101,7 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
                         print(uri, candidate.truth_data, candidate.cand_string)
                 metric.evaluate(candidate.truth_data, uri)
         metric.print_metrics()
+        pickle.dump(pickle_dict, open('related_uris.pcl', 'w'))
 
 
 if __name__ == '__main__':
