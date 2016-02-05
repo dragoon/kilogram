@@ -193,6 +193,7 @@ def syntactic_subsumption(candidates):
 def closeness_pruning(candidates, pickle_dict=None):
     import itertools
     for cand1, cand2 in itertools.combinations(candidates, 2):
+        prev_max_count = 0
         new_cand1_entities = []
         new_cand2_entities = []
         if cand1.cand_string == cand2.cand_string:
@@ -210,8 +211,16 @@ def closeness_pruning(candidates, pickle_dict=None):
                 pickle_dict[entity.uri] = related_uris
             intersect = set(related_uris.keys()).intersection(cand2_entities)
             if intersect:
-                new_cand1_entities.append(entity)
-                new_cand2_entities.extend([e for e in cand2.entities if e.uri in intersect])
+                for intersect_uri in intersect:
+                    pickle_dict[intersect_uri] = NgramService.get_wiki_links_cooccur(intersect_uri)
+                    max_count = int(related_uris[intersect_uri]) + int(pickle_dict[intersect_uri].get(entity.uri, 0))
+                    if prev_max_count < max_count:
+                        new_cand1_entities = [entity]
+                        new_cand2_entities = [e for e in cand2.entities if e.uri == intersect_uri]
+                        prev_max_count = max_count
+                    elif prev_max_count == max_count:
+                        new_cand1_entities.append(entity)
+                        new_cand2_entities.extend([e for e in cand2.entities if e.uri == intersect_uri])
 
         if new_cand1_entities:
             cand1.entities = new_cand1_entities
