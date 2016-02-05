@@ -49,7 +49,7 @@ pig -p table=CC -p path=/user/roman/SOTA_EL/CC_processed ../extra/hbase_upload_a
 
 
 # lowercased anchors
-hdfs dfs -rm -r /user/roman/wiki_anchors_lower /user/roman/wiki_urls_lower
+hdfs dfs -rm -r /user/roman/SOTA_EL/candidate_ngram_links_nospace
 spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py --nospace "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors" "/user/roman/SOTA_EL/candidate_ngram_links_nospace"
 echo "disable 'wiki_anchor_ngrams_nospace'" | hbase shell -n
 echo "drop 'wiki_anchor_ngrams_nospace'" | hbase shell -n
