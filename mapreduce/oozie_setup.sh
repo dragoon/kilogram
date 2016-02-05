@@ -50,9 +50,8 @@ pig -p table=CC -p path=/user/roman/SOTA_EL/CC_processed ../extra/hbase_upload_a
 
 # lowercased anchors
 hdfs dfs -rm -r /user/roman/wiki_anchors_lower /user/roman/wiki_urls_lower
-spark-submit --executor-memory 5g --num-executors 10 --master yarn-client ./wikipedia/spark_anchors.py "/user/ded/link_mention" "/user/roman/wiki_anchors_lower" "/user/roman/wiki_urls_lower"
-spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py --lowercase "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors_lower" "/user/roman/SOTA_EL/candidate_ngram_links_lower"
-echo "disable 'wiki_anchor_ngrams_lower'" | hbase shell -n
-echo "drop 'wiki_anchor_ngrams_lower'" | hbase shell -n
-echo "create 'wiki_anchor_ngrams_lower', 'ngram'" | hbase shell -n
-pig -p table=wiki_anchor_ngrams_lower -p path=/user/roman/SOTA_EL/candidate_ngram_links_lower ../extra/hbase_upload_array.pig
+spark-submit --master yarn-client --num-executors 10 --executor-memory 5g ./entity_linking/spark_candidate_ngrams.py --nospace "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors" "/user/roman/SOTA_EL/candidate_ngram_links_nospace"
+echo "disable 'wiki_anchor_ngrams_nospace'" | hbase shell -n
+echo "drop 'wiki_anchor_ngrams_nospace'" | hbase shell -n
+echo "create 'wiki_anchor_ngrams_nospace', 'ngram'" | hbase shell -n
+pig -p table=wiki_anchor_ngrams_nospace -p path=/user/roman/SOTA_EL/candidate_ngram_links_nospace ../extra/hbase_upload_array.pig
