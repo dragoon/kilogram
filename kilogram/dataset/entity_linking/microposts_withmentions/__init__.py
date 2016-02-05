@@ -55,7 +55,10 @@ class DataSet(object):
                 continue
             truth_data = self.truth_data[datafile.filename]
             start_i, end_i, mention = line[1:4]
-            candidates = [x.rsplit(',', 1) for x in line[4:]]
+            try:
+                candidates = [x.rsplit(',', 1) for x in line[4].split()]
+            except:
+                continue
             candidates = [(uri, float(count)) for uri, count in candidates]
 
             cand_string = self.handles_dict.get(mention, mention)
@@ -70,12 +73,14 @@ class DataSet(object):
                 del truth_data[mention]
 
         for filename, truth_data in self.truth_data.iteritems():
-            for uri, text in truth_data.items():
+            for text, uri in truth_data.items():
                 candidate = CandidateEntity(0, 0, text, ner=self.ner)
                 astr_uri = self._astrology_uri(candidate.cand_string)
                 if astr_uri:
                     candidate.entities = [Entity(astr_uri, 1, self.ner)]
                 candidate.truth_data = {'uri': uri, 'exists': True}
+                if filename not in data:
+                    data[filename] = DataFile(filename, None)
                 data[filename].candidates.append(candidate)
         return data.values()
 
