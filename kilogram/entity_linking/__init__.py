@@ -64,7 +64,8 @@ class CandidateEntity:
         for uri, count in uri_counts.items():
             self.entities.append(Entity(uri, count, ner))
 
-    def __init__(self, start_i, end_i, cand_string, noun_index=None, e_type=None, context=None, ner=None):
+    def __init__(self, start_i, end_i, cand_string, noun_index=None, e_type=None,
+                 context=None, ner=None, candidates=None):
         self.type = e_type
         self.context = context
         self.cand_string = cand_string
@@ -76,7 +77,10 @@ class CandidateEntity:
         uri_counts = {}
 
         # take Xs percentile to remove noisy candidates
-        temp_candidates = self._get_uri_counts()
+        if candidates:
+            temp_candidates = candidates
+        else:
+            temp_candidates = self._get_uri_counts()
         if temp_candidates is None:
             return
         total_c = sum(zip(*temp_candidates)[1])
