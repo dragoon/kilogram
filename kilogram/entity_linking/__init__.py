@@ -51,8 +51,17 @@ class CandidateEntity:
             res = NgramService.hbase_raw(table, cand_string, column)
             if res:
                 candidates = ListPacker.unpack(res)
+                self.cand_string = cand_string
                 return [(uri, float(count)) for uri, count in candidates]
             prev_cand_string = cand_string
+
+        res = NgramService.hbase_raw("wiki_anchor_ngrams_nospace",
+                                     self.cand_string.replace(' ', '').lower(), column)
+        if res:
+            candidates = ListPacker.unpack(res)
+            self.cand_string = self.cand_string.replace(' ', '').lower()
+            return [(uri, float(count)) for uri, count in candidates]
+
         return None
 
     def init_context_types(self, type_predictor):
@@ -230,6 +239,10 @@ def closeness_pruning(candidates, pickle_dict=None):
             cand1.entities = new_cand1_entities
         if new_cand2_entities:
             cand2.entities = new_cand2_entities
+
+    for cand in candidates:
+        if cand.cand_string.islower() and len(cand.entities) > 1:
+            cand.entities = []
 
 
 def extract_candidates(pos_tokens):
