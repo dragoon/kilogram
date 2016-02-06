@@ -191,7 +191,9 @@ def parse_entities(sentence):
     """
 
     from .. import NER_HOSTNAME, NER_PORT
-    text = _stanford_socket(NER_HOSTNAME, NER_PORT, strip_unicode(sentence)).strip()
+    sentence = strip_unicode(sentence)
+
+    text = _stanford_socket(NER_HOSTNAME, NER_PORT, _strip_tweet_entities(sentence)).strip()
     ne_list = []
     words_i = 0
     for i, c in enumerate(text):
@@ -201,10 +203,26 @@ def parse_entities(sentence):
             # check end
             match = ENTITY_MATCH_RE.match(text[i:])
             if match:
-                uri_text = match.group(2)
+                uri_text = match.group(2).decode('utf-8')
                 e_type = dbp_type(match.group(1))
-                ne_list.append({'text': uri_text, 'type': e_type, 'start': words_i,
-                                'context': replace_types(get_context(i, match.end()+i, text))})
+                if uri_text in sentence:
+                    parts = [uri_text]
+                else:
+                    parts = [uri_text.split()[0]]
+                    for part in uri_text.split()[1:]:
+                        if '#'+part in sentence:
+                            parts.append('#'+part)
+                        elif parts[-1] + ' ' + part in sentence:
+                            parts[-1] += ' ' + part
+                        else:
+                            parts.append(part)
+
+                for part in parts:
+                    start_i = sentence.index(part)
+                    ne_list.append({'text': part, 'type': e_type, 'start': words_i,
+                                    'context': replace_types(get_context(i, match.end()+i, text)),
+                                    'start_i': start_i, 'end_i': start_i+len(part),
+                                    'orig_entity': uri_text})
     return ne_list
 
 def parse_tweet_entities(text):
@@ -223,9 +241,10 @@ def parse_tweet_entities(text):
                 if match is None:
                     continue
                 entities.append({'text': text[i+1:i+match.end()], 'type': 'TWITTER', 'start': words_i,
-                                'context': get_context(i, match.end()+i, text)})
+                                'context': get_context(i, match.end()+i, text),
+                                 'start_i': i+1, 'end_i': i+match.end()})
         return entities
 
 
-def strip_tweet_entities(text):
-    return text.replace('#', '').replace('@', '')
+def _strip_tweet_entities(text):
+    return text.replace(' #', ' ')

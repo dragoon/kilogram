@@ -1,7 +1,7 @@
 from __future__ import division
 import codecs
 from entity_linking import CandidateEntity, Entity
-from kilogram.lang import parse_entities, parse_tweet_entities, strip_tweet_entities
+from kilogram.lang import parse_entities, parse_tweet_entities
 
 
 class DataSet(object):
@@ -45,13 +45,13 @@ class DataSet(object):
 
             tweet_ne_list = parse_tweet_entities(datafile.text)
             tweet_ne_names = set([x['text'] for x in tweet_ne_list])
-            ner_list = parse_entities(strip_tweet_entities(datafile.text))
+            ner_list = parse_entities(datafile.text)
             ner_list = [x for x in ner_list if x['text'] not in tweet_ne_names] + tweet_ne_list
 
             visited = set()
             for values in ner_list:
-                cand_string = self.handles_dict.get(values['text'], values['text'].decode('utf-8'))
-                candidate = CandidateEntity(0, 0, cand_string, e_type=values['type'],
+                cand_string = self.handles_dict.get(values['text'], values['text'])
+                candidate = CandidateEntity(values['start_i'], values['end_i'], cand_string, e_type=values['type'],
                                             context=values['context'], ner=self.ner)
                 astr_uri = self._astrology_uri(candidate.cand_string)
                 if astr_uri:
