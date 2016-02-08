@@ -200,7 +200,7 @@ def syntactic_subsumption(candidates):
                     candidate.entities.append(max_ent)
                 candidate.has_super = True
                 if candidate.truth_data and candidate.truth_data['uri'] is not None and candidate.truth_data['uri'] not in [x.uri for x in candidate.entities]:
-                    print 'Not in truth!', candidate
+                    print('Not in truth!', candidate)
 
 
 def closeness_pruning(candidates, pickle_dict=None):
