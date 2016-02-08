@@ -33,7 +33,7 @@ class Metrics(object):
     def print_metrics(self):
         if self.save_file:
             self.save_file.close()
-        print self.tp, self.fp, self.fn, self.tn
+        print(self.tp, self.fp, self.fn, self.tn)
         precision = self.tp / (self.tp+self.fp)
         recall = self.tp / (self.tp+self.fn)
-        print 'P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall)
+        print('P =', precision, 'R =', recall, 'F1 =', 2*precision*recall/(precision+recall))
