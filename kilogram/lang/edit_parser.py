@@ -1,8 +1,6 @@
 import difflib
 import re
 
-import unicodecsv as csv
-
 from ..edit import Edit
 from . import strip_determiners, pos_tag
 from .tokenize import default_tokenize_func
@@ -24,7 +22,6 @@ def _prefilter_line(row):
     for edit in row:
         edit = edit.strip()
         if '\n' in edit:
-            print 'LOL'
             return
         # replace special formatting
         edit = edit.replace('*', '')
@@ -102,7 +99,7 @@ def extract_edits(edit_file, substitutions=None, tokenize_func=default_tokenize_
                         edit_n += 1
 
         del csvreader.__class__.__len__
-    print 'Total edits extracted:', edit_n
+    print('Total edits extracted:', edit_n)
     return edits
 
 
@@ -131,5 +128,5 @@ def extract_filtered(edit_file, filter_func, tokenize_func=default_tokenize_func
                     edits.append(Edit(edit2, edit2, (i1, i1+1), (i1, i1+1)))
                     edit_n += 1
         del csvreader.__class__.__len__
-    print 'Total edits extracted:', edit_n
+    print('Total edits extracted:', edit_n)
     return edits

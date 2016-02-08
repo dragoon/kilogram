@@ -15,8 +15,8 @@ def get_single_feature_classify(edit):
     try:
         return edit.get_single_feature(EditCollection.SUBSTITUTIONS)
     except AssertionError:
-        print 'IGNORED EDIT:', edit
-        print
+        print('IGNORED EDIT:', edit)
+        print()
         return None
 
 
@@ -24,7 +24,7 @@ def get_single_feature_detect(edit):
     try:
         return edit.get_single_feature([edit.edit1])
     except AssertionError:
-        print 'IGNORED EDIT:', edit
+        print('IGNORED EDIT:', edit)
         print
         return None
 
@@ -118,11 +118,11 @@ class EditCollection(object):
 
         # multiprocessing association measures population
         pool = multiprocessing.Pool(12)
-        print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
+        print('Started data loading: {0:%H:%M:%S}'.format(datetime.now()))
 
         get_single_feature1 = functools.partial(self.feature_func)
         collection = pool.map(get_single_feature1, balanced_collection)
-        print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
+        print('Finish data loading: {0:%H:%M:%S}'.format(datetime.now()))
 
         for features_labels in collection:
             # avoid assertion errors
@@ -142,11 +142,11 @@ class EditCollection(object):
         self.test_correct_positions = []
 
         pool = multiprocessing.Pool(12)
-        print 'Started data loading: {0:%H:%M:%S}'.format(datetime.now())
+        print('Started data loading: {0:%H:%M:%S}'.format(datetime.now()))
 
         get_single_feature1 = functools.partial(self.feature_func)
         test_collection = pool.map(get_single_feature1, test_col)
-        print 'Finish data loading: {0:%H:%M:%S}'.format(datetime.now())
+        print('Finish data loading: {0:%H:%M:%S}'.format(datetime.now()))
 
         def predict_substitution(features, clf, correct_edit):
             if not features:
