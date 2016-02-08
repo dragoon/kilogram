@@ -74,13 +74,15 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
 
     def __init__(self, methodName='runTest'):
         super(TestEntityLinkingKBMicroposts, self).__init__(methodName)
-        self.microposts_data = Tweets('../extra/data/microposts2016/training_microposts.txt', ner,
+        self.microposts_data = Tweets('../extra/data/microposts2016/test_microposts.tsv', ner,
                                       handles_file='../extra/data/microposts2016/users.tsv')
 
     def test_a2kb(self):
         import pickle
         print('REL-RW, A2KB')
         metric = Metrics()
+        import codecs
+        out = codecs.open('results.tsv', 'w', 'utf-8')
         try:
             pickle_dict = pickle.load(open('related_uris.pcl'))
         except:
@@ -99,8 +101,16 @@ class TestEntityLinkingKBMicroposts(unittest.TestCase):
                         uri = candidate.get_max_uri()
                     if uri != candidate.truth_data['uri']:
                         print(uri, candidate.truth_data, candidate.cand_string)
+                if uri:
+                    uri = uri.decode('utf-8')
+                else:
+                    uri = unicode(uri)
                 metric.evaluate(candidate.truth_data, uri)
+                out.write(u'\t'.join([datafile.filename, candidate.cand_string,
+                                     unicode(candidate.start_i), unicode(candidate.end_i), uri, datafile.text]) + u'\n')
+
         metric.print_metrics()
+        out.close()
         pickle.dump(pickle_dict, open('related_uris.pcl', 'w'))
 
 
