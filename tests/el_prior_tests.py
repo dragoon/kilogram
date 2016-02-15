@@ -36,6 +36,7 @@ class TestEntityLinking(unittest.TestCase):
     def test_d2kb(self):
         print('Prior prob, D2KB')
         for data_col in self.datas:
+            print data_col.data_dir
             metric = Metrics()
             for datafile in data_col.data:
                 syntactic_subsumption(datafile.candidates)
