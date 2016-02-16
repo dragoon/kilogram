@@ -109,6 +109,9 @@ class CandidateEntity:
         self._init_entities(uri_counts, ner)
 
     def _prune_generic_types(self):
+        """
+        Used for a virtual experiment to keep only candidate that have types matching true entity types
+        """
         true_entity = None
         for entity in self.entities:
             if self.truth_data and entity.uri == self.truth_data['uri']:
@@ -118,9 +121,12 @@ class CandidateEntity:
             return
 
         if true_entity.types:
-            self.entities = [e for e in self.entities if e.types is None or e.get_generic_type() == true_entity.get_generic_type()]
+            self.entities = [e for e in self.entities if e.types and e.get_generic_type() == true_entity.get_generic_type()]
 
     def _prune_specific_types(self):
+        """
+        Used for a virtual experiment to keep only candidate that have types matching true entity types
+        """
         true_entity = None
         for entity in self.entities:
             if self.truth_data and entity.uri == self.truth_data['uri']:
@@ -205,6 +211,8 @@ def syntactic_subsumption(candidates):
 
 def closeness_pruning(candidates, pickle_dict=None):
     import itertools
+    if pickle_dict is None:
+        pickle_dict = {}
     for cand1, cand2 in itertools.combinations(candidates, 2):
         prev_max_count = 0
         new_cand1_entities = []
