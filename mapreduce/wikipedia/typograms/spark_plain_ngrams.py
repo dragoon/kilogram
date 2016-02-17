@@ -46,7 +46,12 @@ def generate_ngrams(line):
             for j in range(len(sentence), -1, -1):
                 token = ' '.join(sentence[i:j])
                 if i+1 == j:
-                    tokens_plain.append(token)
+                    # if first word in sentence -> skip if present in dbpedia, could be wrong (Apple)
+                    if i == 0:
+                        if token not in dbpedia_data:
+                            tokens_plain.append(token.lower())
+                    else:
+                        tokens_plain.append(token)
                 elif token in dbpedia_data:
                     tokens_plain.append(token)
                     i = j-1
