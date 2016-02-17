@@ -4,9 +4,8 @@ hdfs dfs -cat /user/roman/wikipedia_ngrams/* | python spark_typed_ngrams_from_pl
 import sys
 from kilogram.dataset.dbpedia import NgramEntityResolver
 
-ner = NgramEntityResolver("dbpedia_types.txt", "dbpedia_uri_excludes.txt",
-                          "dbpedia_lower_includes.txt", "dbpedia_redirects.txt",
-                          "dbpedia_2015-04.owl")
+ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_uri_excludes.txt",
+                          "dbpedia_lower_includes.txt", "dbpedia_2015-04.owl")
 
 for line in sys.stdin:
     ngram, count = line.strip().split('\t')

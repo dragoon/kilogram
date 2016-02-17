@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cd /tmp
 git clone https://github.com/dragoon/kilogram.git
 cd kilogram/mapreduce
