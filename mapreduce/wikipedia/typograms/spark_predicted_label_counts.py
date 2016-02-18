@@ -27,7 +27,7 @@ def generate_ngrams(line):
         sentence = sentence.split()
         i = 0
         while i < len(sentence):
-            for j in range(min(len(sentence), 20), i, -1):
+            for j in range(min(len(sentence), i+20), i, -1):
                 token = ' '.join(sentence[i:j])
                 if i+1 == j and i == 0:
                     # if first word in sentence -> skip, could be wrong (Apple)
