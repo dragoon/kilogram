@@ -47,4 +47,18 @@ def collect_tokens(value1, value2):
     return value2
 
 wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(collect_tokens)
-wiki_predicted_labels.saveAsTextFile(sys.argv[2])
+
+def printer(item):
+    uri = item[0][1]
+    label_lower = item[0][1]
+    count_dict = item[1]
+    count_lower = '0'
+    count_normal = '0'
+    if label_lower in count_dict:
+        count_lower = count_dict[label_lower]
+        del count_dict[label_lower]
+    if len(count_dict) > 0:
+        label_lower, count_normal = count_dict.items()[0]
+    return uri + '\t' + label_lower + '\t' + str(count_normal)+','+str(count_lower)
+
+wiki_predicted_labels.map(printer).saveAsTextFile(sys.argv[2])
