@@ -49,8 +49,6 @@ def collect_tokens(value1, value2):
 
 wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(collect_tokens)
 
-wiki_predicted_labels.saveAsTextFile('/user/roman/temp')
-
 def printer(item):
     uri = item[0][1]
     label_lower = item[0][0]
