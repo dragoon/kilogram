@@ -15,7 +15,7 @@ def unpack_achors(line):
     # should be only one
     uri_count = uri_list.split(" ")[0]
     uri, count = uri_count.rsplit(',', 1)
-    return uri, (label, count)
+    return label.lower(), (uri, label, count)
 
 
 def filter_ambiguous(line):
@@ -34,24 +34,21 @@ anchor_counts = lines.filter(filter_ambiguous).map(unpack_achors)
 
 dbp_data_file = sc.textFile(sys.argv[1])
 
-anchor_counts_lower = anchor_counts.filter(lambda x: x[1][0].islower())
-anchor_counts_normal = anchor_counts.filter(lambda x: not x[1][0].islower())
+anchor_counts_lower = anchor_counts.filter(lambda x: x[1][1].islower())
+anchor_counts_normal = anchor_counts.filter(lambda x: not x[1][1].islower())
 
 anchors_join = anchor_counts_lower.fullOuterJoin(anchor_counts_normal)
 
 def map_join(elem):
-    uri, elem = elem
+    _, elem = elem
     lower_elem = elem[0]
     normal_elem = elem[1]
     lower_count = '0'
     normal_count = '0'
-    label = None
     if lower_elem:
-        lower_count = lower_elem[1]
-        label = lower_elem[0]
+        uri, label, lower_count = lower_elem
     if normal_elem:
-        normal_count = normal_elem[1]
-        label = normal_elem[0]
+        uri, label, normal_count = normal_elem
     return uri, (label, (normal_count, lower_count))
 
 anchors_join = anchors_join.map(map_join)
