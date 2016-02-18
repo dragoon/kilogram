@@ -59,7 +59,11 @@ def printer(item):
         count_lower = count_dict[label_lower]
         del count_dict[label_lower]
     if len(count_dict) > 0:
-        label_lower, count_normal = count_dict.items()[0]
-    return uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower)
+        result = []
+        for label_lower, count_normal in count_dict.items():
+            result.append(uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower))
+        return result
+    else:
+        return [uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower)]
 
-wiki_predicted_labels.map(printer).saveAsTextFile(sys.argv[2])
+wiki_predicted_labels.flatMap(printer).saveAsTextFile(sys.argv[2])
