@@ -53,7 +53,7 @@ wiki_predicted_labels.saveAsTextFile('/user/roman/temp')
 
 def printer(item):
     uri = item[0][1]
-    label_lower = item[0][1]
+    label_lower = item[0][0]
     count_dict = item[1]
     count_lower = '0'
     count_normal = '0'
