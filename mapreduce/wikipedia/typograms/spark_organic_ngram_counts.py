@@ -1,5 +1,5 @@
 """
-spark-submit --master yarn-client ./wikipedia/spark_orig_ngram_counts.py "/user/roman/wikipedia_anchors_orig" "/user/roman/orig_ngram_counts"
+spark-submit --master yarn-client ./wikipedia/spark_orig_ngram_counts.py "/user/roman/wiki_anchors" "/user/roman/organic_ngram_counts"
 """
 import sys
 from pyspark import SparkContext
