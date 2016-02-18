@@ -2,6 +2,7 @@
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ./wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts"
 """
 import sys
+import codecs
 from pyspark import SparkContext
 from kilogram.lang.tokenize import default_tokenize_func
 from kilogram.dataset.edit_histories.wikipedia import line_filter
@@ -12,7 +13,7 @@ wiki_plain = sc.textFile(sys.argv[1])
 
 organic_label_dict = {}
 
-for line in open("organic_label_counts.txt"):
+for line in codecs.open("organic_label_counts.txt", 'r', 'utf-8'):
     uri, label, counts = line.split('\t')
     if not label.islower():
         organic_label_dict[label.lower()] = uri
@@ -48,6 +49,8 @@ def collect_tokens(value1, value2):
 
 wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(collect_tokens)
 
+wiki_predicted_labels.saveAsTextFile('/user/roman/temp')
+
 def printer(item):
     uri = item[0][1]
     label_lower = item[0][1]
@@ -59,6 +62,6 @@ def printer(item):
         del count_dict[label_lower]
     if len(count_dict) > 0:
         label_lower, count_normal = count_dict.items()[0]
-    return uri + '\t' + label_lower + '\t' + str(count_normal)+','+str(count_lower)
+    return uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower)
 
 wiki_predicted_labels.map(printer).saveAsTextFile(sys.argv[2])
