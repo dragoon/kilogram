@@ -1,5 +1,5 @@
 """
-spark-submit --executor-memory 3g --num-executors 10 --master yarn-client --files organic_label_counts.txt ./wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts"
+spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ./wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts"
 """
 import sys
 from pyspark import SparkContext
@@ -32,11 +32,19 @@ def generate_ngrams(line):
                     # if first word in sentence -> skip, could be wrong (Apple)
                     continue
                 elif token in organic_label_dict:
-                    labels.append((token.lower(), organic_label_dict[token], token, 1))
+                    labels.append(((token.lower(), organic_label_dict[token]), {token: 1}))
                     i = j-1
                     break
             i += 1
     return labels
 
-wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams)
+def collect_tokens(value1, value2):
+    for label, count in value1.items():
+        if label in value2:
+            value2[label] += count
+        else:
+            value2[label] = count
+    return value2
+
+wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(collect_tokens)
 wiki_predicted_labels.saveAsTextFile(sys.argv[2])
