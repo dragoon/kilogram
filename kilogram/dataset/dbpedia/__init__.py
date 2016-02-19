@@ -74,10 +74,10 @@ class NgramEntityResolver:
             else:
                 yield word
 
-    def get_type(self, word, order):
-        types = self.dbpedia_types[word]
+    def get_type(self, uri, order):
+        types = self.dbpedia_types[uri]
         return '<dbpedia:' + self.ontology.get_ordered_types(types)[order] + '>'
 
-    def get_types(self, word):
-        types = self.dbpedia_types[word]
-        return ['<dbpedia:' + x + '>' for x in  self.ontology.get_ordered_types(types)]
+    def get_types(self, uri):
+        types = self.dbpedia_types[uri]
+        return ['<dbpedia:' + x + '>' for x in self.ontology.get_ordered_types(types)]
