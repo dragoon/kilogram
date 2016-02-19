@@ -3,6 +3,16 @@ cd /tmp
 git clone https://github.com/dragoon/kilogram.git
 cd kilogram/mapreduce
 
+
+wget http://downloads.dbpedia.org/2015-04/dbpedia_2015-04.owl.bz2
+wget http://downloads.dbpedia.org/2015-04/core/disambiguations_en.nt.bz2
+wget -O redirects_transitive_en.nt.bz2 http://downloads.dbpedia.org/2015-04/core-i18n/en/transitive-redirects_en.nt.bz2
+
+# types
+wget http://downloads.dbpedia.org/2015-04/core-i18n/en/instance_types_sdtyped-dbo_en.nt.bz2
+wget http://downloads.dbpedia.org/2015-04/core-i18n/en/instance-types-transitive_en.nt.bz2
+wget http://downloads.dbpedia.org/2015-04/core-i18n/en/instance-types_en.nt.bz2
+
 # dbpedia_data generation
 python dbpedia_dbp.py
 
