@@ -6,7 +6,7 @@ from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram.lang.tokenize import default_tokenize_func
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
-N = int(sys.argv[4])
+N = int(sys.argv[3])
 
 sc = SparkContext(appName="SparkGenerateTypedNgrams")
 
@@ -18,6 +18,9 @@ ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
     label, uri = line.split('\t')
     unambiguous_labels[label] = uri
+
+# free some space
+ner.redirects_file = None
 
 
 # Split each line into words
