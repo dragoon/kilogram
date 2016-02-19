@@ -12,7 +12,7 @@ python ./wikipedia/typograms/generate_unambiguous_labels.py
 
 
 ### Generate up to 3-grams
-spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files unambiguous_labels.txt,/home/roman/dbpedia/dbpedia_data.txt,/home/roman/dbpedia/dbpedia_2015-04.owl ./wikipedia/typograms/spark_generate_typograms.py "/data/wikipedia2015_plaintext_annotated" "/user/roman/wikipedia_typed_ngrams" 3
+spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files unambiguous_labels.txt,/home/roman/dbpedia/dbpedia_data.txt,/home/roman/dbpedia/dbpedia_2015-04.owl ./wikipedia/typograms/spark_generate_typograms.py "/data/wikipedia_plaintext" "/user/roman/wikipedia_typed_ngrams" 3
 
 
 ../../run_job.py -m ./type_prediction/mapper.py -r ./type_prediction/reducer.py "/user/roman/wikipedia_typed_ngrams" "/user/roman/hbase_wikipedia_typed_ngrams"

@@ -2,7 +2,7 @@ import sys
 import nltk
 import codecs
 from pyspark import SparkContext
-from dataset.dbpedia import NgramEntityResolver
+from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram.lang.tokenize import default_tokenize_func
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
