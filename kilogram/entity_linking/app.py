@@ -33,8 +33,6 @@ args = parser.parse_args()
 NgramService.configure(hbase_host=(args.hbase_host, args.hbase_port))
 kilogram.NER_HOSTNAME = args.ner_host
 ner = NgramEntityResolver(os.path.join(args.dbpedia_data_dir, "dbpedia_data.txt"),
-                          os.path.join(args.dbpedia_data_dir, "dbpedia_uri_excludes.txt"),
-                          os.path.join(args.dbpedia_data_dir, "dbpedia_lower_includes.txt"),
                           os.path.join(args.dbpedia_data_dir, "dbpedia_2015-04.owl"))
 
 

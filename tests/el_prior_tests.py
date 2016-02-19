@@ -14,8 +14,6 @@ kilogram.DEBUG = False
 NgramService.configure(hbase_host=('diufpc304', '9090'))
 kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
 ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
 
 ngram_predictor = NgramTypePredictor('typogram')
@@ -44,7 +42,10 @@ class TestEntityLinking(unittest.TestCase):
                     # D2KB condition
                     if candidate.truth_data['uri'] is None:
                         continue
-                    metric.evaluate(candidate.truth_data, candidate.get_max_uri())
+                    max_uri = candidate.get_max_uri()
+                    if max_uri != candidate.truth_data['uri'] and max_uri is not None:
+                        print('cand', candidate.cand_string,'max_uri:', max_uri, 'true_uri', candidate.truth_data['uri'], candidate.context)
+                    metric.evaluate(candidate.truth_data, max_uri)
             metric.print_metrics()
             print()
 

@@ -16,8 +16,6 @@ kilogram.DEBUG = False
 NgramService.configure(hbase_host=('diufpc304', '9090'), subst_table='typogram')
 kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
 ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
 ngram_predictor = NgramTypePredictor('typogram')
 

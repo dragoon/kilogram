@@ -11,8 +11,6 @@ import kilogram
 NgramService.configure(hbase_host=('diufpc304', '9090'))
 kilogram.NER_HOSTNAME = 'diufpc54.unifr.ch'
 ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_uri_excludes.txt",
-                          "/Users/dragoon/Downloads/dbpedia/dbpedia_lower_includes.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")
 msnbc_data = DataSet('../extra/data/msnbc/texts/',
                         '../extra/data/msnbc/msnbc_truth.txt', ner)
