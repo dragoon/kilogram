@@ -22,7 +22,7 @@ def generate_ngrams(line):
                 token = ' '.join(sentence[i:j])
                 if i+1 == j and i == 0:
                     # if first word in sentence -> do not attempt to link, could be wrong (Apple)
-                    tokens_plain.append(token.lower())
+                    continue
                 elif token in unambiguous_labels:
                     uri = unambiguous_labels[token]
                     # get types
