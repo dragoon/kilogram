@@ -14,13 +14,9 @@ lines = sc.textFile(sys.argv[1])
 
 unambiguous_labels = {}
 
-ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
     label, uri = line.split('\t')
     unambiguous_labels[label] = uri
-
-# free some space
-ner.redirects_file = None
 
 
 # Split each line into words
@@ -40,7 +36,7 @@ def generate_ngrams(line):
                 elif token in unambiguous_labels:
                     uri = unambiguous_labels[token]
                     # get types
-                    tokens_plain.append(ner.get_type(uri, -1))
+                    tokens_plain.append('<dbpedia:'+uri+'>')
                     i = j-1
                     break
             i += 1
@@ -50,6 +46,10 @@ def generate_ngrams(line):
     return result
 
 ngrams = lines.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1 + n2).filter(lambda x: x[1] > 1)
+
+#ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
+# free some space
+#ner.redirects_file = None
 
 
 def printer(value):
