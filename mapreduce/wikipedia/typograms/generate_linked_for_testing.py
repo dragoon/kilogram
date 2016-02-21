@@ -26,7 +26,7 @@ def generate_ngrams(line):
                 elif token in unambiguous_labels:
                     uri = unambiguous_labels[token]
                     # get types
-                    print(token + '\t' + uri + '\t' + ' '.join(sentence).decode('utf-8'))
+                    print(token.encode('utf-8') + '\t' + uri.encode('utf-8') + '\t' + ' '.join(sentence))
                     i = j-1
                     break
             i += 1
