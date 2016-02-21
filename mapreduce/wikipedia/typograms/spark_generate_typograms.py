@@ -1,7 +1,7 @@
 import sys
 from pyspark import SparkContext
 from kilogram.dataset.dbpedia import NgramEntityResolver
-from kilogram.ngram_service import SUBSTITUTION_TOKEN
+from kilogram.ngram_service import SUBSTITUTION_TOKEN, ListPacker
 
 sc = SparkContext(appName="SparkGenerateTypedNgrams")
 
@@ -24,13 +24,21 @@ def generate_typed_ngram(line):
             entity_type = ngram[type_index]
             subst_ngram[type_index] = SUBSTITUTION_TOKEN
             new_ngram = " ".join(subst_ngram)
-            result.append((new_ngram, entity_type, int(count)))
+            result.append((new_ngram, {entity_type: int(count)}))
+
+def collect_counts(value1, value2):
+    for label, count in value1.items():
+        if label in value2:
+            value2[label] += count
+        else:
+            value2[label] = count
+    return value2
 
 
-typed_ngrams = lines.map(generate_typed_ngram).filter(lambda x: x[1] > 1)
+typed_ngrams = lines.map(generate_typed_ngram).filter(lambda x: x[1] >= 10).reduceByKey(collect_counts)
 
 
 def printer(value):
-    return value[0] + '\t' + str(value[1])
+    return value[0] + '\t' + ListPacker.pack(value[1].items())
 
 typed_ngrams.map(printer).saveAsTextFile(sys.argv[2])
