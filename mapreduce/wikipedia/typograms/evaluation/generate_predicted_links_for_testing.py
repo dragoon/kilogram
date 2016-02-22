@@ -1,4 +1,5 @@
 import sys
+import re
 import codecs
 from kilogram.lang.tokenize import default_tokenize_func
 from kilogram.dataset.edit_histories.wikipedia import line_filter
@@ -11,11 +12,14 @@ for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
     unambiguous_labels[label] = uri
 
 
+ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
+
 # Split each line into words
 def generate_ngrams(line):
     line = line.strip()
     for sentence in line_filter(' '.join(default_tokenize_func(line))):
-        sentence = sentence.split()
+        sentence_plain = ENTITY_MATCH_RE.sub('\g<2>', sentence).replace('_', ' ')
+        sentence = sentence_plain.split()
         i = 0
         while i < len(sentence):
             for j in range(min(len(sentence), i+20), i, -1):
