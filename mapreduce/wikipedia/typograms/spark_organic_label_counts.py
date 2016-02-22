@@ -23,7 +23,7 @@ def filter_ambiguous(line):
     Filter out anchors that have more than 1 uri
     """
     ngram, uri_list = line.split('\t')
-    uri_set = set(x.split(',')[0].lower() for x in uri_list.split(' '))
+    uri_set = set(x.rsplit(',', 1)[0].lower() for x in uri_list.split(' '))
     if len(uri_set) == 1:
         return True
     return False
