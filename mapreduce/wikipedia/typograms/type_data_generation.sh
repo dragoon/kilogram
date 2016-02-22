@@ -23,4 +23,6 @@ pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/
 # EVALUATION
 bzcat ../../nfs/Wikipedia_Text/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt
 # randomly select 20 articles from Wikipedia, output to EVAL
-python generate_eval.py -n 20 --output_dir EVAL
+python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --output_dir EVAL
+cat EVAL/* | python ./wikipedia/typograms/evaluation/generate_organic_links_for_testing.py > eval_organic.txt
+cat EVAL/* | python ./wikipedia/typograms/evaluation/generate_predicted_links_for_testing.py > eval_predicted.txt

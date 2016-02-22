@@ -8,7 +8,7 @@ import argparse
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-n', dest='article_num', action='store', required=False, type=int,
                     default=20, help='number of articles to select')
-parser.add_argument('output_dir', required=True,
+parser.add_argument('--output_dir', required=True,
                     help='path to the directory to output random articles')
 
 args = parser.parse_args()
