@@ -3,6 +3,7 @@ spark-submit --master yarn-client ./wikipedia/typograms/spark_organic_ngram_coun
 """
 import sys
 from pyspark import SparkContext
+from kilogram.lang.tokenize import default_tokenize_func
 
 
 sc = SparkContext(appName="WikipediaAnchors")
@@ -12,6 +13,8 @@ lines = sc.textFile(sys.argv[2])
 # Split each line into words
 def unpack_achors(line):
     label, uri_list = line.split('\t')
+    # tokenize for commas
+    label = default_tokenize_func(label)
     # should be only one
     uri_count = uri_list.split(" ")[0]
     uri, count = uri_count.rsplit(',', 1)
