@@ -1,7 +1,7 @@
 import sys
 import re
 import codecs
-from kilogram.lang.tokenize import default_tokenize_func
+from kilogram.lang.tokenize import wiki_tokenize_func
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 
@@ -17,7 +17,7 @@ ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
 # Split each line into words
 def generate_ngrams(line):
     line = line.strip()
-    for sentence in line_filter(' '.join(default_tokenize_func(line))):
+    for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
         sentence_plain = ENTITY_MATCH_RE.sub('\g<2>', sentence).replace('_', ' ')
         sentence = sentence_plain.split()
         i = 0
