@@ -17,9 +17,9 @@ ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
 # Split each line into words
 def generate_ngrams(line):
     line = line.strip()
+    line = ENTITY_MATCH_RE.sub('\g<2>', line).replace('_', ' ')
     for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
-        sentence_plain = ENTITY_MATCH_RE.sub('\g<2>', sentence).replace('_', ' ')
-        sentence = sentence_plain.split()
+        sentence = sentence.split()
         i = 0
         while i < len(sentence):
             for j in range(min(len(sentence), i+20), i, -1):
