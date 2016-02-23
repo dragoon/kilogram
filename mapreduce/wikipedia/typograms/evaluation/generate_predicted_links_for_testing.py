@@ -7,6 +7,8 @@ from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 unambiguous_labels = {}
 
+# TODO: do not link single letters
+
 for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
     label, uri = line.strip().split('\t')
     unambiguous_labels[label] = uri
@@ -28,11 +30,15 @@ def generate_ngrams(line):
                     # if first word in sentence -> do not attempt to link, could be wrong (Apple)
                     continue
                 elif token in unambiguous_labels:
-                    uri = unambiguous_labels[token]
-                    # get types
-                    print(token.encode('utf-8') + '\t' + uri.encode('utf-8') + '\t' + ' '.join(sentence))
-                    i = j-1
-                    break
+                    # check token doesn't span titles
+                    if j + 1 < len(sentence) and sentence[j+1][0].isupper():
+                        pass
+                    else:
+                        uri = unambiguous_labels[token]
+                        # get types
+                        print(token.encode('utf-8') + '\t' + uri.encode('utf-8') + '\t' + ' '.join(sentence))
+                        i = j-1
+                        break
             i += 1
 
 for line in sys.stdin:
