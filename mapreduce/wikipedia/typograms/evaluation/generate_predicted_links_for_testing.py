@@ -31,7 +31,7 @@ def generate_ngrams(line):
                     continue
                 elif token in unambiguous_labels:
                     # check token doesn't span titles
-                    if j + 1 < len(sentence) and sentence[j+1][0].isupper():
+                    if j + 1 < len(sentence) and sentence[j][0].isupper():
                         pass
                     else:
                         uri = unambiguous_labels[token]
