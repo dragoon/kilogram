@@ -35,6 +35,8 @@ def generate_ngrams(line):
                         pass
                     else:
                         uri = unambiguous_labels[token]
+                        if token.endswith("'s"):
+                            token = token[:-3]
                         # get types
                         print(token.encode('utf-8') + '\t' + uri.encode('utf-8') + '\t' + ' '.join(sentence))
                         i = j-1
