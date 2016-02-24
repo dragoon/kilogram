@@ -19,7 +19,7 @@ _SIMPLE_PUNCT = set('!"()*,:;<=>?[]{}.?\'')
 _SIMPLE_PUNCT_WIKI = set('!"()*,:;=?[]{}.?\'')
 
 
-def tokenize_possesive(tokens):
+def tokenize_possessive(tokens):
     new_tokens = []
     for token in tokens:
         if token.endswith("'s"):
@@ -27,6 +27,7 @@ def tokenize_possesive(tokens):
             new_tokens.append("'s")
         else:
             new_tokens.append(token)
+    return new_tokens
 
 
 def wiki_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT_WIKI):
