@@ -1,7 +1,7 @@
 import sys
 import re
 from kilogram.dataset.dbpedia import NgramEntityResolver
-from kilogram.lang.tokenize import wiki_tokenize_func
+from kilogram.lang.tokenize import wiki_tokenize_func, tokenize_possessive
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 
@@ -12,7 +12,7 @@ ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 # Split each line into words
 def generate_ngrams(line):
     line = line.strip()
-    for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
+    for sentence in line_filter(' '.join(tokenize_possessive(wiki_tokenize_func(line)))):
         sentence_plain = ENTITY_MATCH_RE.sub('\g<2>', sentence).replace('_', ' ')
         for match in ENTITY_MATCH_RE.finditer(sentence):
             uri = match.group(1)
