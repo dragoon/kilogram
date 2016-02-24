@@ -20,10 +20,13 @@ for line in codecs.open("organic_label_counts.txt", 'r', 'utf-8'):
     organic_label_dict[label] = uri
 
 
+# tokenize 's also
+PUNCT_SET = set('!"()*,:;<=>?[]{}.?\'')
+
 def generate_ngrams(line):
     labels = []
     line = line.strip()
-    for sentence in line_filter(' '.join(default_tokenize_func(line))):
+    for sentence in line_filter(' '.join(default_tokenize_func(line, punct_set=PUNCT_SET))):
         sentence = sentence.split()
         i = 0
         while i < len(sentence):
