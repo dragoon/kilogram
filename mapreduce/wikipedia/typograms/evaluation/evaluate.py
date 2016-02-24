@@ -17,6 +17,7 @@ gold_data = {}
 
 for line in open(args.gold_file):
     correct, uri_equals, full_url, token, uri, orig_sentence = line.strip().split('\t')
+    token = token.replace(" '", "'").replace("'s", "")
     sentence = orig_sentence.replace('"', '').replace(" ", "")
     gold_data[(token, uri, sentence)] = int(correct)
 
@@ -29,11 +30,9 @@ labels = []
 for line in open(args.eval_file):
     token, uri, orig_sentence = line.strip().split('\t')
     sentence = orig_sentence.replace('"', '').replace(" ", "")
+    token = token.replace(" '", "'").replace("'s", "")
     if (token, uri, sentence) in gold_data:
         label = gold_data[(token, uri, sentence)]
-        labels.append(label)
-    elif (token.replace(" '", "'"), uri, sentence) in gold_data:
-        label = gold_data[(token.replace(" '", "'"), uri, sentence)]
         labels.append(label)
     else:
         not_ranked_file.write('\t'.join([token, uri, orig_sentence])+'\n')
