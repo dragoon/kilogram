@@ -1,13 +1,12 @@
 import sys
 import re
-import codecs
 from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 
 unambiguous_labels = {}
 
-for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
+for line in open("unambiguous_labels.txt", 'r'):
     label, uri = line.strip().split('\t')
     unambiguous_labels[label] = uri
 
@@ -38,7 +37,7 @@ def generate_ngrams(line):
                         if token.endswith("'s"):
                             token = token[:-3]
                         # get types
-                        print(token.encode('utf-8') + '\t' + uri.encode('utf-8') + '\t' + ' '.join(sentence))
+                        print(token + '\t' + uri + '\t' + ' '.join(sentence))
                         i = j-1
                         break
             i += 1
