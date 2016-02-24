@@ -22,6 +22,7 @@ for line in open(args.gold_file):
 
 
 not_ranked_file = open(args.out_file, 'w')
+total_correct = sum(gold_data.values())
 
 
 labels = []
@@ -31,9 +32,13 @@ for line in open(args.eval_file):
     if (token, uri, sentence) in gold_data:
         label = gold_data[(token, uri, sentence)]
         labels.append(label)
+    elif (token.replace(" '", "'"), uri, sentence) in gold_data:
+        label = gold_data[(token, uri, sentence)]
+        labels.append(label)
     else:
         not_ranked_file.write('\t'.join([token, uri, orig_sentence])+'\n')
 
 not_ranked_file.close()
 
 print('Precision:', sum(labels)/len(labels))
+print('Recall:', sum(labels)/total_correct)
