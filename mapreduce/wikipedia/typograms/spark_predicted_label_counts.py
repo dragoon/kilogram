@@ -4,7 +4,7 @@ spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --file
 import sys
 import codecs
 from pyspark import SparkContext
-from kilogram.lang.tokenize import default_tokenize_func
+from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive
 from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 sc = SparkContext(appName="WikipediaPredictedLabelCounts")
@@ -20,13 +20,10 @@ for line in codecs.open("organic_label_counts.txt", 'r', 'utf-8'):
     organic_label_dict[label] = uri
 
 
-# tokenize 's also
-PUNCT_SET = set('!"()*,:;<=>?[]{}.?\'')
-
 def generate_ngrams(line):
     labels = []
     line = line.strip()
-    for sentence in line_filter(' '.join(default_tokenize_func(line, punct_set=PUNCT_SET))):
+    for sentence in line_filter(' '.join(tokenize_possessive(default_tokenize_func(line)))):
         sentence = sentence.split()
         i = 0
         while i < len(sentence):

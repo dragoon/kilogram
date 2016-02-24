@@ -19,7 +19,7 @@ _SIMPLE_PUNCT = set('!"()*,:;<=>?[]{}.?\'')
 _SIMPLE_PUNCT_WIKI = set('!"()*,:;=?[]{}.?\'')
 
 
-def tokenize_possesive(tokens):
+def tokenize_possessive(tokens):
     new_tokens = []
     for token in tokens:
         if token.endswith("'s"):
