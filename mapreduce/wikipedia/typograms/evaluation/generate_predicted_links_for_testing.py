@@ -7,8 +7,6 @@ from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 unambiguous_labels = {}
 
-# TODO: do not link single letters
-
 for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
     label, uri = line.strip().split('\t')
     unambiguous_labels[label] = uri
@@ -16,11 +14,13 @@ for line in codecs.open("unambiguous_labels.txt", 'r', 'utf-8'):
 
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
 
+TOKENIZE_PUNCT = set('!"()*,:;=?[]{}.?\'')
+
 # Split each line into words
 def generate_ngrams(line):
     line = line.strip()
     line = ENTITY_MATCH_RE.sub('\g<2>', line).replace('_', ' ')
-    for sentence in line_filter(' '.join(wiki_tokenize_func(line))):
+    for sentence in line_filter(' '.join(wiki_tokenize_func(line, punct_set=TOKENIZE_PUNCT))):
         sentence = sentence.split()
         i = 0
         while i < len(sentence):
@@ -32,6 +32,8 @@ def generate_ngrams(line):
                 elif token in unambiguous_labels:
                     # check token doesn't span titles
                     if j + 1 < len(sentence) and sentence[j][0].isupper():
+                        pass
+                    elif i > 0 and sentence[i-1][0].isupper():
                         pass
                     else:
                         uri = unambiguous_labels[token]
