@@ -15,8 +15,18 @@ _DOT_TOKENS = {'i.e.', 'u.s.', 'u.s.a.', 'e.g.', 'ft.', 'cf.', 'etc.', 'approx.'
                'a.m.', 'p.m.',  # time
                'corp.', 'inc.', 'ltd.', 'bros.', 'co.'}  # organizations
 
-_SIMPLE_PUNCT = set('!"()*,:;<=>?[]{}.?')
-_SIMPLE_PUNCT_WIKI = set('!"()*,:;=?[]{}.?')
+_SIMPLE_PUNCT = set('!"()*,:;<=>?[]{}.?\'')
+_SIMPLE_PUNCT_WIKI = set('!"()*,:;=?[]{}.?\'')
+
+
+def tokenize_possesive(tokens):
+    new_tokens = []
+    for token in tokens:
+        if token.endswith("'s"):
+            new_tokens.append(token[:-2])
+            new_tokens.append("'s")
+        else:
+            new_tokens.append(token)
 
 
 def wiki_tokenize_func(sentence, punct_set=_SIMPLE_PUNCT_WIKI):
@@ -71,17 +81,17 @@ def generate_possible_splits(words, max_seq_len=None):
 if __name__ == '__main__':
     # some tests
     text = 'non-violence (anarcho-pacifism), while others'
-    tokens = default_tokenize_func(text)
-    assert ' '.join(tokens) == 'non-violence ( anarcho-pacifism ) , while others'
+    test_tokens = default_tokenize_func(text)
+    assert ' '.join(test_tokens) == 'non-violence ( anarcho-pacifism ) , while others'
 
     text = 'reclassic and Classic (roughly 500 BC to 800 AD). The site was the capital of a Maya city-state located'
-    tokens = default_tokenize_func(text)
-    assert ' '.join(tokens) == 'reclassic and Classic ( roughly 500 BC to 800 AD ) . The site was the capital of a Maya city-state located'
+    test_tokens = default_tokenize_func(text)
+    assert ' '.join(test_tokens) == 'reclassic and Classic ( roughly 500 BC to 800 AD ) . The site was the capital of a Maya city-state located'
 
     text = 'The same Latin stem gives rise to the terms a.m. (ante meridiem) and p.m. (post meridiem)'
-    tokens = default_tokenize_func(text)
-    assert ' '.join(tokens) == 'The same Latin stem gives rise to the terms a.m. ( ante meridiem ) and p.m. ( post meridiem )'
+    test_tokens = default_tokenize_func(text)
+    assert ' '.join(test_tokens) == 'The same Latin stem gives rise to the terms a.m. ( ante meridiem ) and p.m. ( post meridiem )'
 
     text = 'Around .4 percent'
-    tokens = default_tokenize_func(text)
-    assert ' '.join(tokens) == 'Around .4 percent'
+    test_tokens = default_tokenize_func(text)
+    assert ' '.join(test_tokens) == 'Around .4 percent'
