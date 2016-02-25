@@ -31,11 +31,13 @@ total_correct = sum(gold_data.values())
 evaluations = [('organic', generate_organic_links),
                ('organic-precise', generate_organic_plus),
                ('inferred', partial(generate_links, generators=[unambig_generator])),
-               ('inferred+organic', partial(generate_organic_plus,
+               ('inferred + organic-precise', partial(generate_organic_plus,
                             evaluator=partial(generate_links, generators=[unambig_generator]))),
                ('labels', partial(generate_links, generators=[label_generator])),
-               ('inferred+labels', partial(generate_links,
-                                           generators=[unambig_generator, label_generator]))]
+               ('inferred + labels', partial(generate_links,
+                                           generators=[unambig_generator, label_generator])),
+               ('inferred + labels + organic-precise', partial(generate_organic_plus,
+                            evaluator=partial(generate_links, generators=[unambig_generator, label_generator])))]
 
 for eval_name, evaluator in evaluations:
     labels = []
