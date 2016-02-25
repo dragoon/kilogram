@@ -30,9 +30,10 @@ def generate_organic_plus(line, evaluator=None):
         if token.lower().replace(' ', '_') in uri.lower():
             organic_precise.add((token, uri, sentence))
             yield token, uri, sentence
-    for token, uri, sentence in evaluator(line):
-        if (token, uri, sentence) not in organic_precise:
-            yield token, uri, sentence
+    if evaluator:
+        for token, uri, sentence in evaluator(line):
+            if (token, uri, sentence) not in organic_precise:
+                yield token, uri, sentence
 
 
 def generate_organic_links(line):
@@ -77,9 +78,9 @@ def generate_links(line, generators=None):
                 else:
                     match = False
                     for link_generator in generators:
-                        uri, token = link_generator(token)
+                        uri, new_token = link_generator(token)
                         if uri:
-                            yield token, uri, ' '.join(sentence)
+                            yield new_token, uri, ' '.join(sentence)
                             i = j-1
                             match = True
                             break
