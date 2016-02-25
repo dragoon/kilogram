@@ -64,12 +64,16 @@ def generate_links(line, generators=None):
                 elif i > 0 and sentence[i-1][0].isupper():
                     continue
                 else:
+                    match = False
                     for link_generator in generators:
                         uri, token = link_generator(token)
                         if uri:
                             yield token, uri, ' '.join(sentence)
                             i = j-1
+                            match = True
                             break
+                    if match:
+                        break
             i += 1
 
 

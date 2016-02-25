@@ -28,19 +28,19 @@ for line in open(args.gold_file):
 not_ranked_file = open(args.out_file, 'w')
 total_correct = sum(gold_data.values())
 
-evaluations = {'organic': generate_organic_links,
-               'inferred': partial(generate_links, generators=[unambig_generator]),
-               'inferred+organic': [],
-               'label-based': partial(generate_links, generators=[label_generator]),
-               'inferred+labels': partial(generate_links,
-                                          generators=[unambig_generator, label_generator])}
+evaluations = [('organic', generate_organic_links),
+               ('inferred', partial(generate_links, generators=[unambig_generator])),
+               ('inferred+organic', []),
+               ('label-based', partial(generate_links, generators=[label_generator])),
+               ('inferred+labels', partial(generate_links,
+                                           generators=[unambig_generator, label_generator]))]
 
 for eval_name, evaluator in evaluations:
     labels = []
     print('Evaluating:', eval_name)
     for filename in os.listdir(args.eval_dir):
-        for line in open(filename):
-            for token, uri, orig_sentence in evaluator:
+        for line in open(args.eval_dir + '/' + filename):
+            for token, uri, orig_sentence in evaluator(line):
                 sentence = orig_sentence.replace('"', '').replace(" ", "")
                 token = token.replace(" '", "'").replace("'s", "")
                 if (token, uri, sentence) in gold_data:
