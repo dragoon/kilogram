@@ -1,12 +1,15 @@
 from __future__ import division
 import argparse
-
+from functools import partial
+import os
+from .link_generators import generate_organic_links, generate_links, unambig_generator,\
+    label_generator
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--gold-file', required=True,
                     help='path to the file with the ground truth')
-parser.add_argument('--eval-file', required=True,
-                    help='path to the file to evaluate')
+parser.add_argument('--eval-dir', required=True,
+                    help='path to the directory to evaluate')
 parser.add_argument('--out-file', default="not_ranked.txt",
                     help='path to the file to output non-ranked items')
 
@@ -25,19 +28,28 @@ for line in open(args.gold_file):
 not_ranked_file = open(args.out_file, 'w')
 total_correct = sum(gold_data.values())
 
+evaluations = {'organic': generate_organic_links,
+               'inferred': partial(generate_links, generators=[unambig_generator]),
+               'inferred+organic': [],
+               'label-based': partial(generate_links, generators=[label_generator]),
+               'inferred+labels': partial(generate_links,
+                                          generators=[unambig_generator, label_generator])}
 
-labels = []
-for line in open(args.eval_file):
-    token, uri, orig_sentence = line.strip().split('\t')
-    sentence = orig_sentence.replace('"', '').replace(" ", "")
-    token = token.replace(" '", "'").replace("'s", "")
-    if (token, uri, sentence) in gold_data:
-        label = gold_data[(token, uri, sentence)]
-        labels.append(label)
-    else:
-        not_ranked_file.write('\t'.join([token, uri, orig_sentence])+'\n')
+for eval_name, evaluator in evaluations:
+    labels = []
+    print('Evaluating:', eval_name)
+    for filename in os.listdir(args.eval_dir):
+        for line in open(filename):
+            for token, uri, orig_sentence in evaluator:
+                sentence = orig_sentence.replace('"', '').replace(" ", "")
+                token = token.replace(" '", "'").replace("'s", "")
+                if (token, uri, sentence) in gold_data:
+                    label = gold_data[(token, uri, sentence)]
+                    labels.append(label)
+                else:
+                    not_ranked_file.write('\t'.join([token, uri, orig_sentence])+'\n')
+    print('Precision:', sum(labels)/len(labels))
+    print('Recall:', sum(labels)/total_correct)
+    print('.')
 
 not_ranked_file.close()
-
-print('Precision:', sum(labels)/len(labels))
-print('Recall:', sum(labels)/total_correct)
