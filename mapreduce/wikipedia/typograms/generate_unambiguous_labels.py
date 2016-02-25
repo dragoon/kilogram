@@ -35,7 +35,7 @@ for row in counts_df.iterrows():
         continue
     # if label appears only in lowercase - add to lower includes
     if row['organ_normal'] == 0:  # means label is lowercase
-        if row['organ_lower'] > 1:
+        if row['organ_lower'] > 1 and row['infer_lower']/(row['organ_lower']) < 20:
             includes.write(label+'\t'+uri+'\n')
         continue
     else:
@@ -44,8 +44,12 @@ for row in counts_df.iterrows():
         if infer_ratio == 0:
             # weird label, p. ex. 中华人民共和国
             continue
-        # always write a normal-case label
-        includes.write(label+'\t'+uri+'\n')
-        if orig_ratio/infer_ratio < 2 and row['infer_lower'] > 0:
+        # write a normal-case label if ratio is less than 20 (means we do not link something that suddenly become super popular - probably an error)
+        if row['infer_normal']/row['organ_normal'] < 20 and row['organ_normal'] > 1:
+            includes.write(label+'\t'+uri+'\n')
+        # infer_lower == 0 simply irrelevant, we could not find it
+        # again check < 20 condition
+        if row['infer_lower'] > 0 and row['organ_lower'] > 1 and row['infer_lower']/row['organ_lower'] < 20:
+        #if orig_ratio/infer_ratio < 2:
             includes.write(label.lower()+'\t'+uri+'\n')
 includes.close()
