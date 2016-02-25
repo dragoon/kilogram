@@ -24,6 +24,17 @@ del dbp_labels['.']
 ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 
 
+def generate_organic_plus(line, evaluator=None):
+    organic_precise = set()
+    for token, uri, sentence in generate_organic_links(line):
+        if token.lower().replace(' ', '_') in uri.lower():
+            organic_precise.add((token, uri, sentence))
+            yield token, uri, sentence
+    for token, uri, sentence in evaluator(line):
+        if (token, uri, sentence) not in organic_precise:
+            yield token, uri, sentence
+
+
 def generate_organic_links(line):
     line = line.strip()
     for sentence in line_filter(' '.join(tokenize_possessive(wiki_tokenize_func(line)))):

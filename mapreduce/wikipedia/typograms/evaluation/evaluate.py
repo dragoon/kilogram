@@ -3,7 +3,7 @@ import argparse
 from functools import partial
 import os
 from .link_generators import generate_organic_links, generate_links, unambig_generator,\
-    label_generator
+    label_generator,  generate_organic_plus
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--gold-file', required=True,
@@ -30,7 +30,8 @@ total_correct = sum(gold_data.values())
 
 evaluations = [('organic', generate_organic_links),
                ('inferred', partial(generate_links, generators=[unambig_generator])),
-               ('inferred+organic', []),
+               ('inferred+organic', partial(generate_organic_plus,
+                            evaluator=partial(generate_links, generators=[unambig_generator]))),
                ('label-based', partial(generate_links, generators=[label_generator])),
                ('inferred+labels', partial(generate_links,
                                            generators=[unambig_generator, label_generator]))]
