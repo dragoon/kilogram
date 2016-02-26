@@ -2,6 +2,7 @@ from __future__ import division
 import argparse
 from functools import partial
 import os
+import re
 from .link_generators import generate_organic_links, generate_links, unambig_generator,\
     label_generator,  generate_organic_plus
 
@@ -14,6 +15,8 @@ parser.add_argument('--out-file', default="not_ranked.txt",
                     help='path to the file to output non-ranked items')
 
 args = parser.parse_args()
+
+SENT_STRIP_RE = re.compile(r'[\"\'\s]')
 
 
 def get_unambiguous_labels(filename):
@@ -29,7 +32,7 @@ def get_gold_data():
     for line in open(args.gold_file):
         correct, uri_equals, full_url, token, uri, orig_sentence = line.strip().split('\t')
         token = token.replace(" '", "'").replace("'s", "")
-        sentence = orig_sentence.replace('"', '').replace(" ", "")
+        sentence = SENT_STRIP_RE.sub("", orig_sentence)
         gold_data[(token, uri, sentence)] = int(correct)
     return gold_data
 
@@ -47,7 +50,7 @@ def evaluate(eval_name, evaluator):
     for filename in os.listdir(args.eval_dir):
         for line in open(args.eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
-                sentence = orig_sentence.replace('"', '').replace(" ", "")
+                sentence = SENT_STRIP_RE.sub("", orig_sentence)
                 token = token.replace(" '", "'").replace("'s", "")
                 if (token, uri, sentence) in gold_data:
                     label = gold_data[(token, uri, sentence)]
