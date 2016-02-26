@@ -8,6 +8,8 @@ from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--percentile', default=0.9, type=float,
                     help='percentile to filter')
+parser.add_argument('--min-count', default=1, type=int,
+                    help='min count to filter')
 args = parser.parse_args()
 
 
@@ -20,7 +22,7 @@ def filter_labels(line):
     total = sum(zip(*uri_counts)[1])
 
     for uri, count in uri_counts:
-        if count/total > args.percentile:
+        if count/total > args.percentile and count > args.min_count:
             print(label, uri)
             break
 
