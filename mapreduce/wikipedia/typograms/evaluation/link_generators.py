@@ -6,11 +6,6 @@ from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
 
-unambiguous_labels = {}
-for line in open("unambiguous_labels.txt", 'r'):
-    label, uri = line.strip().split('\t')
-    unambiguous_labels[label] = uri
-
 
 dbp_labels = {}
 for line in open("dbpedia_data.txt"):
@@ -89,7 +84,7 @@ def generate_links(line, generators=None):
             i += 1
 
 
-def unambig_generator(token):
+def unambig_generator(token, unambiguous_labels=None):
     if token in unambiguous_labels:
         uri = unambiguous_labels[token]
         # prefer non-possessives

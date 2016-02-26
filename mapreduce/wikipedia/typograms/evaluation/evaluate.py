@@ -15,6 +15,14 @@ parser.add_argument('--out-file', default="not_ranked.txt",
 
 args = parser.parse_args()
 
+unambiguous_labels = {}
+for line in open("unambiguous_labels.txt", 'r'):
+    label, uri = line.strip().split('\t')
+    unambiguous_labels[label] = uri
+
+
+unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
+
 
 gold_data = {}
 
