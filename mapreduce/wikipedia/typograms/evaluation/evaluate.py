@@ -48,7 +48,7 @@ def evaluate(eval_name, evaluator, eval_dir):
     labels = []
     print('Evaluating:', eval_name)
     for filename in os.listdir(eval_dir):
-        for line in open(args.eval_dir + '/' + filename):
+        for line in open(eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
                 sentence = SENT_STRIP_RE.sub("", orig_sentence)
                 token = token.replace(" '", "'").replace("'s", "")
@@ -109,6 +109,6 @@ for eval_name, evaluator in evaluations:
 
 # evaluate spotlight
 for spot_dir in os.listdir('./spotlight'):
-    evaluate('spotlight', generate_organic_links, './spotlight/' + spot_dir)
+    evaluate('spotlight-' + spot_dir, generate_organic_links, './spotlight/' + spot_dir)
 
 not_ranked_file.close()
