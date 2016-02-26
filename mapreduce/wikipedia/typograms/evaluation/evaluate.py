@@ -39,7 +39,7 @@ def get_gold_data():
 gold_data = get_gold_data()
 
 
-def evaluate(eval_name, evaluator):
+def evaluate(eval_name, evaluator, eval_dir):
     """
     :param eval_name: name of the evaluator, can be anything
     :param evaluator: evaluator function (see examples)
@@ -47,7 +47,7 @@ def evaluate(eval_name, evaluator):
     """
     labels = []
     print('Evaluating:', eval_name)
-    for filename in os.listdir(args.eval_dir):
+    for filename in os.listdir(eval_dir):
         for line in open(args.eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
                 sentence = SENT_STRIP_RE.sub("", orig_sentence)
@@ -78,12 +78,12 @@ for filename in os.listdir('.'):
         print('Evaluating ' + filename)
         unambiguous_labels = get_unambiguous_labels(filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]))
+        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
     if filename.startswith('unambiguous_percentile_labels'):
         print('Evaluating ' + filename)
         unambiguous_labels = get_unambiguous_labels(filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]))
+        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
     if precision > max_precision:
         max_precision = precision
         max_filename = filename
@@ -105,6 +105,10 @@ evaluations = [('organic', generate_organic_links),
 
 
 for eval_name, evaluator in evaluations:
-    evaluate(eval_name, evaluator)
+    evaluate(eval_name, evaluator, args.eval_dir)
+
+# evaluate spotlight
+for spot_dir in os.listdir('./spotlight'):
+    evaluate('spotlight', generate_organic_links, spot_dir)
 
 not_ranked_file.close()
