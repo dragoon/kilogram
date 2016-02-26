@@ -109,6 +109,6 @@ for eval_name, evaluator in evaluations:
 
 # evaluate spotlight
 for spot_dir in os.listdir('./spotlight'):
-    evaluate('spotlight', generate_organic_links, spot_dir)
+    evaluate('spotlight', generate_organic_links, './spotlight' + spot_dir)
 
 not_ranked_file.close()
