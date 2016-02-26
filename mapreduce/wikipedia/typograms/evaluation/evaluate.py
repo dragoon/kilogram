@@ -67,13 +67,25 @@ total_correct = sum(gold_data.values())
 
 print('Evaluating parameters...')
 
+max_precision = precision = 0
+max_filename = None
+
 for filename in os.listdir('.'):
     if filename.startswith('unambiguous_labels'):
         print('Evaluating ' + filename)
         unambiguous_labels = get_unambiguous_labels(filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
         precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]))
+    if filename.startswith('unambiguous_percentile_labels'):
+        print('Evaluating ' + filename)
+        unambiguous_labels = get_unambiguous_labels(filename)
+        unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
+        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]))
+    if precision > max_precision:
+        max_precision = precision
+        max_filename = filename
 
+unambiguous_labels = get_unambiguous_labels(max_filename)
 unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
 
 
