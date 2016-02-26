@@ -15,39 +15,33 @@ parser.add_argument('--out-file', default="not_ranked.txt",
 
 args = parser.parse_args()
 
-unambiguous_labels = {}
-for line in open("unambiguous_labels.txt", 'r'):
-    label, uri = line.strip().split('\t')
-    unambiguous_labels[label] = uri
+
+def get_unambiguous_labels(filename):
+    unambiguous_labels = {}
+    for line in open(filename, 'r'):
+        label, uri = line.strip().split('\t')
+        unambiguous_labels[label] = uri
+    return unambiguous_labels
 
 
-unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
+def get_gold_data():
+    gold_data = {}
+    for line in open(args.gold_file):
+        correct, uri_equals, full_url, token, uri, orig_sentence = line.strip().split('\t')
+        token = token.replace(" '", "'").replace("'s", "")
+        sentence = orig_sentence.replace('"', '').replace(" ", "")
+        gold_data[(token, uri, sentence)] = int(correct)
+    return gold_data
+
+gold_data = get_gold_data()
 
 
-gold_data = {}
-
-for line in open(args.gold_file):
-    correct, uri_equals, full_url, token, uri, orig_sentence = line.strip().split('\t')
-    token = token.replace(" '", "'").replace("'s", "")
-    sentence = orig_sentence.replace('"', '').replace(" ", "")
-    gold_data[(token, uri, sentence)] = int(correct)
-
-
-not_ranked_file = open(args.out_file, 'w')
-total_correct = sum(gold_data.values())
-
-evaluations = [('organic', generate_organic_links),
-               ('organic-precise', generate_organic_plus),
-               ('inferred', partial(generate_links, generators=[unambig_generator])),
-               ('inferred + organic-precise', partial(generate_organic_plus,
-                            evaluator=partial(generate_links, generators=[unambig_generator]))),
-               ('labels', partial(generate_links, generators=[label_generator])),
-               ('inferred + labels', partial(generate_links,
-                                           generators=[unambig_generator, label_generator])),
-               ('inferred + labels + organic-precise', partial(generate_organic_plus,
-                            evaluator=partial(generate_links, generators=[unambig_generator, label_generator])))]
-
-for eval_name, evaluator in evaluations:
+def evaluate(eval_name, evaluator):
+    """
+    :param eval_name: name of the evaluator, can be anything
+    :param evaluator: evaluator function (see examples)
+    :return: precision
+    """
     labels = []
     print('Evaluating:', eval_name)
     for filename in os.listdir(args.eval_dir):
@@ -63,5 +57,39 @@ for eval_name, evaluator in evaluations:
     print('Precision:', sum(labels)/len(labels))
     print('Recall:', sum(labels)/total_correct)
     print('.')
+    return sum(labels)/len(labels)
+
+
+not_ranked_file = open(args.out_file, 'w')
+total_correct = sum(gold_data.values())
+
+
+
+print('Evaluating parameters...')
+
+for filename in os.listdir('.'):
+    if filename.startswith('unambiguous_labels'):
+        print('Evaluating ' + filename)
+        unambiguous_labels = get_unambiguous_labels(filename)
+        unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
+        precision = evaluate('inferred',  partial(generate_links, generators=[unambig_generator]))
+
+unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
+
+
+evaluations = [('organic', generate_organic_links),
+               ('organic-precise', generate_organic_plus),
+               ('inferred', partial(generate_links, generators=[unambig_generator])),
+               ('inferred + organic-precise', partial(generate_organic_plus,
+                            evaluator=partial(generate_links, generators=[unambig_generator]))),
+               ('labels', partial(generate_links, generators=[label_generator])),
+               ('inferred + labels', partial(generate_links,
+                                           generators=[unambig_generator, label_generator])),
+               ('inferred + labels + organic-precise', partial(generate_organic_plus,
+                            evaluator=partial(generate_links, generators=[unambig_generator, label_generator])))]
+
+
+for eval_name, evaluator in evaluations:
+    evaluate(eval_name, evaluator)
 
 not_ranked_file.close()
