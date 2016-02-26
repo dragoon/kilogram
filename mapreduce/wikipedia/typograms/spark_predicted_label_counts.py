@@ -14,9 +14,7 @@ wiki_plain = sc.textFile(sys.argv[1])
 organic_label_dict = {}
 
 for line in codecs.open("organic_label_counts.txt", 'r', 'utf-8'):
-    uri, label, counts = line.split('\t')
-    if not label.islower():
-        organic_label_dict[label.lower()] = uri
+    label, uri, count = line.split('\t')
     organic_label_dict[label] = uri
 
 
@@ -33,37 +31,17 @@ def generate_ngrams(line):
                     # if first word in sentence -> skip, could be wrong (Apple)
                     continue
                 elif token in organic_label_dict:
-                    labels.append(((token.lower(), organic_label_dict[token]), {token: 1}))
+                    labels.append(((token, organic_label_dict[token]), 1))
                     i = j-1
                     break
             i += 1
     return labels
 
-def collect_tokens(value1, value2):
-    for label, count in value1.items():
-        if label in value2:
-            value2[label] += count
-        else:
-            value2[label] = count
-    return value2
 
-wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(collect_tokens)
+wiki_predicted_labels = wiki_plain.flatMap(generate_ngrams).reduceByKey(lambda n1, n2: n1+n2)
 
 def printer(item):
-    uri = item[0][1]
-    label_lower = item[0][0]
-    count_dict = item[1]
-    count_lower = '0'
-    count_normal = '0'
-    if label_lower in count_dict:
-        count_lower = count_dict[label_lower]
-        del count_dict[label_lower]
-    if len(count_dict) > 0:
-        result = []
-        for label_lower, count_normal in count_dict.items():
-            result.append(uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower))
-        return result
-    else:
-        return [uri + '\t' + label_lower + '\t' + unicode(count_normal)+','+unicode(count_lower)]
+    (label, uri), count = item
+    return [label + '\t' + uri + '\t' + unicode(count)]
 
 wiki_predicted_labels.flatMap(printer).saveAsTextFile(sys.argv[2])
