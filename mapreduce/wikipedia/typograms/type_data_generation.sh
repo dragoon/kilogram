@@ -2,13 +2,13 @@
 
 
 ### Compute organic link counts
-spark-submit --master yarn-client --num-executors 10 --executor-memory 3g ./wikipedia/typograms/spark_organic_label_counts.py "/user/roman/dbpedia_data.txt" "/user/roman/wiki_anchors" "/user/roman/organic_label_counts"
-hdfs dfs -cat /user/roman/organic_label_counts/* > organic_label_counts.txt
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/spark_organic_label_counts.py > organic_label_counts.txt
+hdfs dfs -rm -r /user/roman/predicted_label_counts
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ./wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts"
 hdfs dfs -cat /user/roman/predicted_label_counts/* > predicted_label_counts.txt
 
 ### Generate unambiguous_labels.txt (only for typed entities)
-python ./wikipedia/typograms/generate_unambiguous_labels.py
+python ./wikipedia/typograms/generate_unambiguous_labels.py > unambiguous_labels.txt
 
 
 ### Generate up to 3-grams
@@ -21,8 +21,8 @@ pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/
 
 
 # EVALUATION
-bzcat ../../nfs/Wikipedia_Text/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt
+bzcat ../../datasets/wikipedia/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt &
 # randomly select 20 articles from Wikipedia, output to EVAL
 python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --output_dir EVAL
-cat EVAL/* | python ./wikipedia/typograms/evaluation/generate_organic_links_for_testing.py > eval_organic.txt
-cat EVAL/* | python ./wikipedia/typograms/evaluation/generate_predicted_links_for_testing.py > eval_predicted.txt
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99
+python -m wikipedia.typograms.evaluation.evaluate  --gold-file gold_typogram.tsv --eval-dir EVAL
