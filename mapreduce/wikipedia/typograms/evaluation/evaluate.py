@@ -37,6 +37,7 @@ def get_gold_data():
     return gold_data
 
 gold_data = get_gold_data()
+not_ranked_data = set()
 
 
 def evaluate(eval_name, evaluator, eval_dir):
@@ -56,14 +57,13 @@ def evaluate(eval_name, evaluator, eval_dir):
                     label = gold_data[(token, uri, sentence)]
                     labels.append(label)
                 else:
-                    not_ranked_file.write('\t'.join([token, uri, orig_sentence])+'\n')
+                    not_ranked_data.add((token, uri, orig_sentence))
     print('Precision:', sum(labels)/len(labels))
     print('Recall:', sum(labels)/total_correct)
     print('.')
     return sum(labels)/len(labels)
 
 
-not_ranked_file = open(args.out_file, 'w')
 total_correct = sum(gold_data.values())
 
 
@@ -111,4 +111,8 @@ for eval_name, evaluator in evaluations:
 for spot_dir in os.listdir('./spotlight'):
     evaluate('spotlight-' + spot_dir, generate_organic_links, './spotlight/' + spot_dir)
 
+
+not_ranked_file = open(args.out_file, 'w')
+for values in not_ranked_data:
+    not_ranked_file.write('\t'.join(values)+'\n')
 not_ranked_file.close()
