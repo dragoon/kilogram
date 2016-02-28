@@ -2,7 +2,7 @@
 
 
 ### Compute organic link counts
-hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/spark_organic_label_counts.py > organic_label_counts.txt
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_organic_label_counts.py > organic_label_counts.txt
 hdfs dfs -rm -r /user/roman/predicted_label_counts
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ./wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts"
 hdfs dfs -cat /user/roman/predicted_label_counts/* > predicted_label_counts.txt
