@@ -31,7 +31,7 @@ def get_gold_data():
     gold_data = {}
     for line in open(args.gold_file):
         correct, uri_equals, full_url, token, uri, orig_sentence = line.strip().split('\t')
-        token = token.replace(" '", "'").replace("'s", "")
+        token = token.replace(" ", "").replace("'s", "")
         sentence = SENT_STRIP_RE.sub("", orig_sentence)
         gold_data[(token, uri, sentence)] = int(correct)
     return gold_data
@@ -52,7 +52,7 @@ def evaluate(eval_name, evaluator, eval_dir):
         for line in open(eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
                 sentence = SENT_STRIP_RE.sub("", orig_sentence)
-                token = token.replace(" '", "'").replace("'s", "")
+                token = token.replace(" ", "").replace("'s", "")
                 if (token, uri, sentence) in gold_data:
                     label = gold_data[(token, uri, sentence)]
                     labels.append(label)
