@@ -9,16 +9,20 @@ NON_CHAR_RE = re.compile(r'[\W\d]+$')
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--ratio-limit', default=20, type=int,
                     help='ratio limit for labels')
+parser.add_argument('--organic-file', default='organic_label_counts.txt',
+                    help='file with organic counts')
+parser.add_argument('--predicted-file', default='predicted_label_counts.txt',
+                    help='file with predicted counts')
 
 args = parser.parse_args()
 
 
 count_dict = {}
-for line in open('predicted_label_counts.txt'):
+for line in open(args.predicted_file):
     label, uri, count = line.split('\t')
     count_dict[(uri, label)] = {'infer_count': int(count), 'len': len(label.split('_')),
                        'label': label, 'organ_count': 0, 'uri': uri}
-for line in open('organic_label_counts.txt'):
+for line in open(args.organic_file):
     label, uri, count = line.split('\t')
     if (uri, label) in count_dict:
         count_dict[(uri, label)].update({'organ_count': int(count)})
