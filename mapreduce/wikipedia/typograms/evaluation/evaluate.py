@@ -52,13 +52,14 @@ def evaluate(eval_name, evaluator, eval_dir):
     for filename in os.listdir(eval_dir):
         for line in open(eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
+                orig_token = token
                 sentence = SENT_STRIP_RE.sub("", orig_sentence)
                 token = SENT_STRIP_RE.sub("", token.replace("'s", ""))
                 if (token, uri, sentence) in gold_data:
                     label = gold_data[(token, uri, sentence)]
                     labels.append(label)
                 else:
-                    not_ranked_data.add((token, uri, orig_sentence))
+                    not_ranked_data.add((orig_token, uri, orig_sentence))
     print('Precision:', sum(labels)/len(labels))
     print('Recall:', sum(labels)/total_correct)
     print('.')
