@@ -19,12 +19,23 @@ del dbp_labels['.']
 ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 
 
-def generate_organic_plus(line, evaluator=None):
+def generate_organic_precise_plus(line, evaluator=None):
     organic_precise = set()
     for token, uri, sentence in generate_organic_links(line):
         if token.lower().replace(' ', '_') in uri.lower():
             organic_precise.add((token, uri, sentence))
             yield token, uri, sentence
+    if evaluator:
+        for token, uri, sentence in evaluator(line):
+            if (token, uri, sentence) not in organic_precise:
+                yield token, uri, sentence
+
+
+def generate_organic_plus(line, evaluator=None):
+    organic_precise = set()
+    for token, uri, sentence in generate_organic_links(line):
+        organic_precise.add((token, uri, sentence))
+        yield token, uri, sentence
     if evaluator:
         for token, uri, sentence in evaluator(line):
             if (token, uri, sentence) not in organic_precise:

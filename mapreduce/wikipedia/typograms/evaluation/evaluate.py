@@ -5,7 +5,7 @@ from functools import partial
 import os
 import re
 from .link_generators import generate_organic_links, generate_links, unambig_generator,\
-    label_generator,  generate_organic_plus
+    label_generator,  generate_organic_plus, generate_organic_precise_plus
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--gold-file', required=True,
@@ -82,11 +82,13 @@ for filename in os.listdir('.'):
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
         evaluate('inferred-labels ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
         evaluate('inferred + organic-precise ' + filename,
+                 partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
+        evaluate('inferred + organic ' + filename,
                  partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
         evaluate('inferred + all-dbpedia-labels ' + filename,
                  partial(generate_links, generators=[unambig_generator, label_generator]), args.eval_dir)
         evaluate('inferred + all-dbpedia-labels + organic-precise ' + filename,
-                 partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir)
+                 partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir)
 
 print('Evaluating unambiguous labels by percentiles...')
 for filename in os.listdir('.'):

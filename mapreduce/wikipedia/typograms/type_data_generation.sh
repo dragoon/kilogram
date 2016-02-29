@@ -24,5 +24,9 @@ pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/
 bzcat ../../datasets/wikipedia/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt &
 # randomly select 20 articles from Wikipedia, output to EVAL
 python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --output_dir EVAL
-hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99 > unambig_percentile_labels_99.tsv
+cd unambig_percentile
+hdfs dfs -rm -r /user/roman/predicted_label_counts_percentile
+spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ../wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts_percentile"
+hdfs dfs -cat /user/roman/predicted_label_counts_percentile/* > predicted_label_counts.txt
 python -m wikipedia.typograms.evaluation.evaluate  --gold-file gold_typogram.tsv --eval-dir EVAL
