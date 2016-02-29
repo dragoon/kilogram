@@ -27,7 +27,7 @@ def filter_labels(line):
     for uri, count in uri_counts:
         if count/total > args.percentile and count > args.min_count:
             if uri in ner.dbpedia_types:
-                print(label + '\t' + uri + '\t' + unicode(count))
+                print(label + '\t' + uri + '\t' + str(count))
             break
 
 
