@@ -103,7 +103,7 @@ for filename in os.listdir('.'):
 print('Evaluating organic...')
 
 evaluations = [('organic', generate_organic_links),
-               ('organic-precise', generate_organic_plus),
+               ('organic-precise', generate_organic_precise_plus),
                ('all-dbpedia-labels', partial(generate_links, generators=[label_generator]))
                ]
 
