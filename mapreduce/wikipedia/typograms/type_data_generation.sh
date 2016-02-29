@@ -8,7 +8,14 @@ spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --file
 hdfs dfs -cat /user/roman/predicted_label_counts/* > predicted_label_counts.txt
 
 ### Generate unambiguous_labels.txt (only for typed entities)
-python ./wikipedia/typograms/generate_unambiguous_labels.py > unambiguous_labels.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 5 > unambiguous_labels5.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 8 > unambiguous_labels8.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 10 > unambiguous_labels10.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 20 > unambiguous_labels20.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 30 > unambiguous_labels30.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 40 > unambiguous_labels40.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 50 > unambiguous_labels50.txt
+
 
 
 ### Generate up to 3-grams
@@ -24,7 +31,8 @@ pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/
 bzcat ../../datasets/wikipedia/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt &
 # randomly select 20 articles from Wikipedia, output to EVAL
 python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --output_dir EVAL
-hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99 > unambig_percentile_labels_99.tsv
+mkdir unambig_percentile
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99 --min-count 2 > unambig_percentile/unambiguous_percentile_labels99_2.tsv
 cd unambig_percentile
 hdfs dfs -rm -r /user/roman/predicted_label_counts_percentile
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ../wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts_percentile"
