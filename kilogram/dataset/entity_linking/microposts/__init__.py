@@ -19,7 +19,8 @@ class DataSet(object):
             self.handles_dict = {}
         self.data = self._parse_data()
 
-    def _astrology_uri(self, cand_string):
+    @staticmethod
+    def _astrology_uri(cand_string):
         signs = {'Leo', 'Capricorn', 'Pisces', 'Libra', 'Virgo', 'Cancer', 'Aquarius',
                  'Gemini', 'Taurus', 'Aries', 'Sagittarius', 'Scorpio'}
         if cand_string.title() in signs:
