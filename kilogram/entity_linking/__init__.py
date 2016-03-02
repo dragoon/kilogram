@@ -40,8 +40,35 @@ class CandidateEntity:
     context = None
     context_types = None
     has_super = None
+    uri_counts_local = None
+
+    @staticmethod
+    def init_uri_counts_local():
+        uri_counts_local = {}
+        file = "/Users/dragoon/Downloads/candidate_ngram_links.tsv"
+        for line in open(file):
+            try:
+                label, uris = line.strip().split('\t')
+            except:
+                continue
+            candidates = ListPacker.unpack(uris)
+            uri_counts_local[label] = [(uri, float(count)) for uri, count in candidates]
+        return uri_counts_local
+
+    def _get_uri_counts_local(self):
+        for cand_string in (self.cand_string, self.cand_string.title(), split_camel_case(self.cand_string)):
+            if cand_string in self.uri_counts_local:
+                self.cand_string = cand_string
+                return self.uri_counts_local[self.cand_string]
+        return None
 
     def _get_uri_counts(self):
+        if self.uri_counts_local:
+            return self._get_uri_counts_local()
+        else:
+            return self._get_uri_counts_hbase()
+
+    def _get_uri_counts_hbase(self):
         table = "wiki_anchor_ngrams"
         column = "ngram:value"
         prev_cand_string = None
