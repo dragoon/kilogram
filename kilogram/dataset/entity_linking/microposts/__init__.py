@@ -1,6 +1,6 @@
 from __future__ import division
 import codecs
-from entity_linking import CandidateEntity, Entity
+from kilogram.entity_linking import CandidateEntity, Entity
 from kilogram.lang import parse_entities, parse_tweet_entities
 
 
