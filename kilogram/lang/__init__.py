@@ -185,23 +185,15 @@ def get_context(start, end, text):
     return ' '.join(prev_ngrams) + ' NONE ' + ' '.join(next_ngrams)
 
 
-def parse_entities(sentence):
-    """
-    /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
-    """
-
-    from .. import NER_HOSTNAME, NER_PORT
-    sentence = strip_unicode(sentence)
-
-    text = _stanford_socket(NER_HOSTNAME, NER_PORT, _strip_tweet_entities(sentence)).strip()
+def parse_entities_from_xml(sentence, sentence_pos):
     ne_list = []
     words_i = 0
-    for i, c in enumerate(text):
+    for i, c in enumerate(sentence_pos):
         if c == ' ':
             words_i += 1
         elif c == '<':
             # check end
-            match = ENTITY_MATCH_RE.match(text[i:])
+            match = ENTITY_MATCH_RE.match(sentence_pos[i:])
             if match:
                 uri_text = match.group(2).decode('utf-8')
                 e_type = dbp_type(match.group(1))
@@ -218,12 +210,27 @@ def parse_entities(sentence):
                             parts.append(part)
 
                 for part in parts:
-                    start_i = sentence.index(part)
+                    try:
+                        start_i = sentence.index(part)
+                    except ValueError:
+                        continue
                     ne_list.append({'text': part, 'type': e_type, 'start': words_i,
-                                    'context': replace_types(get_context(i, match.end()+i, text)),
+                                    'context': replace_types(get_context(i, match.end()+i, sentence_pos)),
                                     'start_i': start_i, 'end_i': start_i+len(part),
                                     'orig_entity': uri_text})
     return ne_list
+
+
+def parse_entities(sentence):
+    """
+    /usr/lib/jvm/java-8-oracle/bin/java -mx500m -cp stanford-corenlp-3.5.1-models.jar:stanford-corenlp-3.5.1.jar edu.stanford.nlp.ie.NERServer -port 9191 -outputFormat inlineXML &
+    """
+
+    from .. import NER_HOSTNAME, NER_PORT
+    sentence = strip_unicode(sentence)
+    sentence_pos = _stanford_socket(NER_HOSTNAME, NER_PORT, _strip_tweet_entities(sentence)).strip()
+    return parse_entities_from_xml(sentence, sentence_pos)
+
 
 def parse_tweet_entities(text):
         """

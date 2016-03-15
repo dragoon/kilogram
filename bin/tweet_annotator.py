@@ -3,7 +3,7 @@ import kilogram
 from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram.dataset.entity_linking.microposts import DataFile, DataSet
 from kilogram.entity_linking import CandidateEntity, Entity, syntactic_subsumption
-from kilogram.lang import parse_tweet_entities, parse_entities
+from kilogram.lang import parse_tweet_entities, parse_entities_from_xml
 
 print('Loading data...')
 CandidateEntity.uri_counts_local = CandidateEntity.init_uri_counts_local()
@@ -17,12 +17,12 @@ import codecs
 out = codecs.open('results.tsv', 'w', 'utf-8')
 for line in sys.stdin:
     line = line.decode('utf-8')
-    tweet_id, timestamp, user_id, user_name, user_description, tweet = line.strip().split('\t')
+    tweet_id, timestamp, user_id, user_name, user_description, tweet, tweet_ner = line.strip().split('\t')
     datafile = DataFile(tweet_id, tweet)
 
     tweet_ne_list = parse_tweet_entities(datafile.text)
     tweet_ne_names = set([x['text'] for x in tweet_ne_list])
-    ner_list = parse_entities(datafile.text)
+    ner_list = parse_entities_from_xml(datafile.text, tweet_ner)
     ner_list = [x for x in ner_list if x['text'] not in tweet_ne_names] + tweet_ne_list
 
     for values in ner_list:
