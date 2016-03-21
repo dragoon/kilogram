@@ -195,7 +195,11 @@ def parse_entities_from_xml(sentence, sentence_pos):
             # check end
             match = ENTITY_MATCH_RE.match(sentence_pos[i:])
             if match:
-                uri_text = match.group(2).decode('utf-8')
+                uri_text = match.group(2)
+                try:
+                    uri_text = uri_text.decode('utf-8')
+                except:
+                    pass
                 e_type = dbp_type(match.group(1))
                 if uri_text in sentence:
                     parts = [uri_text]
