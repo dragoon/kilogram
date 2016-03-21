@@ -6,7 +6,7 @@ from kilogram.entity_linking import CandidateEntity, Entity, syntactic_subsumpti
 from kilogram.lang import parse_tweet_entities, parse_entities_from_xml
 
 print('Loading data...')
-CandidateEntity.uri_counts_local = CandidateEntity.init_uri_counts_local()
+CandidateEntity.uri_counts_local = CandidateEntity.init_uri_counts_local("/Users/dragoon/Downloads/candidate_ngram_links.tsv")
 
 ner = NgramEntityResolver("/Users/dragoon/Downloads/dbpedia/dbpedia_data.txt",
                           "/Users/dragoon/Downloads/dbpedia/dbpedia_2015-04.owl")

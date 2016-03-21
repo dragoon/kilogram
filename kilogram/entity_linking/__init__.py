@@ -43,10 +43,9 @@ class CandidateEntity:
     uri_counts_local = None
 
     @staticmethod
-    def init_uri_counts_local():
+    def init_uri_counts_local(local_counts_file):
         uri_counts_local = {}
-        file = "/Users/dragoon/Downloads/candidate_ngram_links.tsv"
-        for line in open(file):
+        for line in open(local_counts_file):
             try:
                 label, uris = line.strip().split('\t')
             except:
