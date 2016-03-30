@@ -48,7 +48,6 @@ def evaluate(eval_name, evaluator, eval_dir):
     :return: precision
     """
     labels = []
-    print('Evaluating:', eval_name)
     for filename in os.listdir(eval_dir):
         for line in open(eval_dir + '/' + filename):
             for token, uri, orig_sentence in evaluator(line):
@@ -60,9 +59,8 @@ def evaluate(eval_name, evaluator, eval_dir):
                     labels.append(label)
                 else:
                     not_ranked_data.add((orig_token, uri, orig_sentence))
-    print('Precision:', sum(labels)/len(labels))
-    print('Recall:', sum(labels)/total_correct)
-    print('.')
+    print(eval_name, '\t', 'Precision', '\t', sum(labels)/len(labels), '\t',
+          'Recall', '\t', sum(labels)/total_correct)
     return sum(labels)/len(labels)
 
 
@@ -81,14 +79,14 @@ for filename in os.listdir('.'):
     if filename.startswith('unambiguous_labels'):
         unambiguous_labels = get_unambiguous_labels(filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        evaluate('inferred ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
-        evaluate('inferred + organic-precise ' + filename,
+        evaluate('inferred: ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
+        evaluate('inferred + organic-precise: ' + filename,
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
-        evaluate('inferred + organic ' + filename,
+        evaluate('inferred + organic: ' + filename,
                  partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
-        evaluate('inferred + all-dbpedia-labels ' + filename,
+        evaluate('inferred + all-dbpedia-labels: ' + filename,
                  partial(generate_links, generators=[unambig_generator, label_generator]), args.eval_dir)
-        evaluate('inferred + all-dbpedia-labels + organic-precise ' + filename,
+        evaluate('inferred + all-dbpedia-labels + organic-precise: ' + filename,
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir)
 
 print('Evaluating unambiguous labels by percentiles...')
@@ -99,14 +97,14 @@ for filename in os.listdir(percentile_dir):
         print('Evaluating ' + filename)
         unambiguous_labels = get_unambiguous_labels(percentile_dir + '/' + filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        evaluate('inferred-percentile ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
-        evaluate('inferred + organic-precise ' + filename,
+        evaluate('inferred-percentile: ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir)
+        evaluate('inferred-percentile + organic-precise: ' + filename,
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
-        evaluate('inferred + organic ' + filename,
+        evaluate('inferred-percentile + organic: ' + filename,
                  partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir)
-        evaluate('inferred + all-dbpedia-labels ' + filename,
+        evaluate('inferred-percentile + all-dbpedia-labels: ' + filename,
                  partial(generate_links, generators=[unambig_generator, label_generator]), args.eval_dir)
-        evaluate('inferred + all-dbpedia-labels + organic-precise ' + filename,
+        evaluate('inferred-percentile + all-dbpedia-labels + organic-precise: ' + filename,
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir)
 
 
