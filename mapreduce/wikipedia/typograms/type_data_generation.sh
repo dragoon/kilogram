@@ -34,7 +34,28 @@ python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --outpu
 mkdir unambig_percentile
 hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99 --min-count 2 > unambig_percentile/unambiguous_percentile_labels99_2.tsv
 cd unambig_percentile
+
+
 hdfs dfs -rm -r /user/roman/predicted_label_counts_percentile
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts.txt ../wikipedia/typograms/spark_predicted_label_counts.py "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts_percentile"
 hdfs dfs -cat /user/roman/predicted_label_counts_percentile/* > predicted_label_counts.txt
+
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels99_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 20 > unambiguous_percentile_labels99_2_ratio20.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels99_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 10 > unambiguous_percentile_labels99_2_ratio10.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels99_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 5 > unambiguous_percentile_labels99_2_ratio5.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels95_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 5 > unambiguous_percentile_labels95_2_ratio5.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels99_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 50 > unambiguous_percentile_labels99_2_ratio50.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels95_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 10 > unambiguous_percentile_labels95_2_ratio10.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels95_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 20 > unambiguous_percentile_labels95_2_ratio20.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels95_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 50 > unambiguous_percentile_labels95_2_ratio50.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels90_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 50 > unambiguous_percentile_labels90_2_ratio50.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels90_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 20 > unambiguous_percentile_labels90_2_ratio20.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels90_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 10 > unambiguous_percentile_labels90_2_ratio10.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels90_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 5 > unambiguous_percentile_labels90_2_ratio5.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels85_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 5 > unambiguous_percentile_labels85_2_ratio5.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels85_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 10 > unambiguous_percentile_labels85_2_ratio10.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels85_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 20 > unambiguous_percentile_labels85_2_ratio20.tsv
+python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels85_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 50 > unambiguous_percentile_labels85_2_ratio50.tsv
+
+
 python -m wikipedia.typograms.evaluation.evaluate  --gold-file gold_typogram.tsv --eval-dir EVAL
