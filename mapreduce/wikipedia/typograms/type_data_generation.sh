@@ -17,22 +17,20 @@ python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 40 > u
 python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 50 > unambiguous_labels50.txt
 
 
-
-### Generate up to 3-grams
-spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files unambiguous_labels.txt ./wikipedia/typograms/spark_generate_linked_ngrams.py "/data/wikipedia_plaintext" "/user/roman/wikipedia_linked_ngrams" 3
-spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files dbpedia_data.txt,dbpedia_2015-04.owl ./wikipedia/typograms/spark_generate_typograms.py "/user/roman/wikipedia_linked_ngrams" "/user/roman/wikipedia_typed_ngrams"
-
-
-### Put into Hbase:
-pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/hbase_upload_array.pig
-
-
 # EVALUATION
 bzcat ../../datasets/wikipedia/enwiki-20150602-pages-articles.xml.bz2 | python WikiExtractor.py > out.txt &
-# randomly select 20 articles from Wikipedia, output to EVAL
-python ../wikipedia/typograms/evaluation/select_random_articles.py -n 20 --output_dir EVAL
+# randomly select 30 articles from Wikipedia, output to EVAL
+python ../wikipedia/typograms/evaluation/select_random_articles.py -n 30 --output_dir EVAL
+# evaluation
+python -m wikipedia.typograms.evaluation.evaluate  --gold-file gold_typogram.tsv --eval-dir EVAL
+## END: EVALUATION
+
+
 mkdir unambig_percentile
 hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.99 --min-count 2 > unambig_percentile/unambiguous_percentile_labels99_2.tsv
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.95 --min-count 2 > unambig_percentile/unambiguous_percentile_labels95_2.tsv
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.90 --min-count 2 > unambig_percentile/unambiguous_percentile_labels90_2.tsv
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_unambiguous_percentile_labels.py --percentile 0.85 --min-count 2 > unambig_percentile/unambiguous_percentile_labels85_2.tsv
 cd unambig_percentile
 
 
@@ -58,4 +56,12 @@ python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unam
 python ../wikipedia/typograms/generate_unambiguous_labels.py --organic-file unambiguous_percentile_labels85_2.tsv --predicted-file predicted_label_counts.txt --ratio-limit 50 > unambiguous_percentile_labels85_2_ratio50.tsv
 
 
-python -m wikipedia.typograms.evaluation.evaluate  --gold-file gold_typogram.tsv --eval-dir EVAL
+
+## Different PROJECT
+### Generate up to 3-grams
+spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files unambiguous_labels.txt ./wikipedia/typograms/spark_generate_linked_ngrams.py "/data/wikipedia_plaintext" "/user/roman/wikipedia_linked_ngrams" 3
+spark-submit --num-executors 10 --executor-memory 5g --master yarn-client --files dbpedia_data.txt,dbpedia_2015-04.owl ./wikipedia/typograms/spark_generate_typograms.py "/user/roman/wikipedia_linked_ngrams" "/user/roman/wikipedia_typed_ngrams"
+
+
+### Put into Hbase:
+pig -p table=typogram -p path=/user/roman/hbase_wikipedia_typed_ngrams ../extra/hbase_upload_array.pig
