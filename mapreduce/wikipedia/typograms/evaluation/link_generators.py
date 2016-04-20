@@ -7,6 +7,14 @@ from kilogram.dataset.edit_histories.wikipedia import line_filter
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')
 
 
+def get_unambiguous_labels(filename):
+    unambiguous_labels = {}
+    for line in open(filename, 'r'):
+        label, uri = line.strip().split('\t')
+        unambiguous_labels[label] = uri
+    return unambiguous_labels
+
+
 dbp_labels = {}
 for line in open("dbpedia_data.txt"):
     entity, entity_types, redirects = line.split('\t')

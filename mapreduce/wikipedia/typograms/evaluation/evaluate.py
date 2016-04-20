@@ -5,7 +5,7 @@ from functools import partial
 import os
 import re
 from .link_generators import generate_organic_links, generate_links, unambig_generator,\
-    label_generator,  generate_organic_plus, generate_organic_precise_plus
+    label_generator,  generate_organic_plus, generate_organic_precise_plus, get_unambiguous_labels
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--gold-file', required=True,
@@ -18,14 +18,6 @@ parser.add_argument('--out-file', default="not_ranked.txt",
 args = parser.parse_args()
 
 SENT_STRIP_RE = re.compile(r'[\"\'\s]')
-
-
-def get_unambiguous_labels(filename):
-    unambiguous_labels = {}
-    for line in open(filename, 'r'):
-        label, uri = line.strip().split('\t')
-        unambiguous_labels[label] = uri
-    return unambiguous_labels
 
 
 def get_gold_data():
