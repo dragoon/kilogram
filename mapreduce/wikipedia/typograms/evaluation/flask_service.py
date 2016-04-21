@@ -20,11 +20,14 @@ linker = partial(generate_organic_precise_plus,
 
 app = Flask(__name__)
 
-@app.route('/entity-linking-unambig', methods=['GET'])
+@app.route('/entity-linking/a2kb/unambig', methods=['GET'])
 def link():
     text = request.args.get('text', '')
+    mentions = []
+    for token, uri, orig_sentence in linker(text):
+        mentions.append({'name': token, 'uri': uri})
 
-    return jsonify({'entities': list(linker(text))})
+    return jsonify({'mentions': mentions})
 
 
 @app.after_request
