@@ -6,7 +6,7 @@
 from flask import Flask, jsonify, request
 
 from functools import partial
-from wikipedia.typograms.evaluation.link_generators import generate_organic_precise_plus, generate_links, unambig_generator,\
+from kilogram.entity_linking.unambig_labels.link_generators import generate_organic_precise_plus, generate_links, unambig_generator,\
     get_unambiguous_labels
 
 __author__ = 'dragoon'

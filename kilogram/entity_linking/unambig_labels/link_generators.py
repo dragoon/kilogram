@@ -1,7 +1,7 @@
 import re
-from kilogram.dataset.dbpedia import NgramEntityResolver
-from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive, wiki_tokenize_func
-from kilogram.dataset.edit_histories.wikipedia import line_filter
+from ...dataset.dbpedia import NgramEntityResolver
+from ...lang.tokenize import default_tokenize_func, tokenize_possessive, wiki_tokenize_func
+from ...dataset.edit_histories.wikipedia import line_filter
 
 
 ENTITY_MATCH_RE = re.compile(r'<([^\s]+?)\|([^\s]+?)>')

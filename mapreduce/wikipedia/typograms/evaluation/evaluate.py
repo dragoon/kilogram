@@ -4,7 +4,7 @@ import argparse
 from functools import partial
 import os
 import re
-from .link_generators import generate_organic_links, generate_links, unambig_generator,\
+from kilogram.entity_linking.unambig_labels.link_generators import generate_organic_links, generate_links, unambig_generator,\
     label_generator,  generate_organic_plus, generate_organic_precise_plus, get_unambiguous_labels
 
 parser = argparse.ArgumentParser(description=__doc__)
