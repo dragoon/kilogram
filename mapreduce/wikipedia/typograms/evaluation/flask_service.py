@@ -24,6 +24,7 @@ def link():
     result = request.get_json(force=True)
     text = result['text']
     uid = result['uid']
+    context = result['context']
     mentions = []
     cur_index = 0
     for token, uri, orig_sentence in linker(text):
@@ -33,7 +34,7 @@ def link():
         except ValueError:
             continue
         mentions.append({'name': token, 'uri': uri, 'start': start_i, 'end': start_i+len(token),
-                         'uid': uid})
+                         'uid': uid, 'context': context})
         cur_index = start_i + len(token)
 
     return jsonify({'mentions': mentions})
