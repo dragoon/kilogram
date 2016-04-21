@@ -6,7 +6,7 @@
 from flask import Flask, jsonify, request
 
 from functools import partial
-from kilogram.entity_linking.unambig_labels.link_generators import generate_organic_precise_plus, generate_links, unambig_generator,\
+from kilogram.entity_linking.unambig_labels.link_generators import generate_links, unambig_generator,\
     get_unambiguous_labels
 
 __author__ = 'dragoon'
@@ -15,8 +15,7 @@ import sys
 
 unambiguous_labels = get_unambiguous_labels(sys.argv[1])
 unambig_generator_local = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-linker = partial(generate_organic_precise_plus,
-                 evaluator=partial(generate_links, generators=[unambig_generator_local]))
+linker = partial(generate_links, generators=[unambig_generator_local])
 
 app = Flask(__name__)
 
