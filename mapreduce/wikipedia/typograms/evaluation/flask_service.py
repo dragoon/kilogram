@@ -23,6 +23,7 @@ app = Flask(__name__)
 def link():
     result = request.get_json(force=True)
     text = result['text']
+    uid = result['uid']
     mentions = []
     cur_index = 0
     for token, uri, orig_sentence in linker(text):
@@ -31,7 +32,8 @@ def link():
             start_i = text.index(token, cur_index)
         except ValueError:
             continue
-        mentions.append({'name': token, 'uri': uri, 'start': start_i, 'end': start_i+len(token)})
+        mentions.append({'name': token, 'uri': uri, 'start': start_i, 'end': start_i+len(token),
+                         'uid': uid})
         cur_index = start_i + len(token)
 
     return jsonify({'mentions': mentions})
