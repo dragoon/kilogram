@@ -27,7 +27,10 @@ def link():
     cur_index = 0
     for token, uri, orig_sentence in linker(text):
         token = token.replace(" 's", "'s")
-        start_i = text.index(token, cur_index)
+        try:
+            start_i = text.index(token, cur_index)
+        except ValueError:
+            continue
         mentions.append({'name': token, 'uri': uri, 'start': start_i, 'end': start_i+len(token)})
         cur_index = start_i + len(token)
 
