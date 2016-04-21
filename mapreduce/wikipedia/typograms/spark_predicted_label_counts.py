@@ -9,11 +9,11 @@ from kilogram.dataset.edit_histories.wikipedia import line_filter
 
 sc = SparkContext(appName="WikipediaPredictedLabelCounts")
 
-wiki_plain = sc.textFile(sys.argv[1])
+wiki_plain = sc.textFile(sys.argv[2])
 
 organic_label_dict = {}
 
-for line in codecs.open("organic_label_counts.txt", 'r', 'utf-8'):
+for line in codecs.open(sys.argv[1], 'r', 'utf-8'):
     label, uri, count = line.split('\t')
     organic_label_dict[label] = uri
 
@@ -44,4 +44,4 @@ def printer(item):
     (label, uri), count = item
     return [label + '\t' + uri + '\t' + unicode(count)]
 
-wiki_predicted_labels.flatMap(printer).saveAsTextFile(sys.argv[2])
+wiki_predicted_labels.flatMap(printer).saveAsTextFile(sys.argv[3])
