@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+### Generate all counts of labels, including ambiguous (to check most popular labels)
+hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_organic_label_counts_all.py > organic_label_counts_all.txt
+
 
 ### Compute organic link counts
 hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_organic_label_counts.py > organic_label_counts.txt

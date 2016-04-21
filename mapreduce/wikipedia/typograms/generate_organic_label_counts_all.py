@@ -9,10 +9,8 @@ def unpack_achors(line):
     label = ' '.join(tokenize_possessive(default_tokenize_func(label)))
     # should be only one
     uri_counts = ListPacker.unpack(uri_list)
-    if len(uri_counts) > 1:
-        return
-    uri, count = uri_counts[0]
-    print(label + '\t' + uri + '\t' + count)
+    total_count = sum(int(c) for _, c in uri_counts)
+    print(label + '\t' + 'uri\t' + str(total_count))
 
 
 for line in sys.stdin:
