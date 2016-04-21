@@ -19,9 +19,10 @@ linker = partial(generate_links, generators=[unambig_generator_local])
 
 app = Flask(__name__)
 
-@app.route('/entity-linking/a2kb/unambig', methods=['GET'])
+@app.route('/entity-linking/a2kb/unambig', methods=['POST'])
 def link():
-    text = request.args.get('text', '')
+    result = request.get_json(force=True)
+    text = result['text']
     mentions = []
     for token, uri, orig_sentence in linker(text):
         mentions.append({'name': token, 'uri': uri})
