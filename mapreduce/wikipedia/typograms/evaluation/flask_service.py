@@ -33,7 +33,7 @@ def link():
             start_i = text.index(token, cur_index)
         except ValueError:
             continue
-        mentions.append({'name': token, 'uri': uri, 'start': start_i, 'end': start_i+len(token),
+        mentions.append({'name': token, 'uri': 'http://dbpedia.org/resource/' + uri, 'start': start_i, 'end': start_i+len(token),
                          'uid': uid, 'context': context})
         cur_index = start_i + len(token)
 
