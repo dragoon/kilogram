@@ -33,6 +33,7 @@ def generate_ngrams(line):
                     # if first word in sentence -> do not attempt to link, could be wrong (Apple)
                     tokens_plain.append(token.lower())
                 elif token in unambiguous_labels:
+                    # TODO: check it doesn't span titles
                     uri = unambiguous_labels[token]
                     # get types
                     tokens_plain.append('<dbpedia:'+uri+'>')
