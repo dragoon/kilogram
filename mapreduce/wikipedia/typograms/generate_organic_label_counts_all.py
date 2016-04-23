@@ -10,7 +10,7 @@ def unpack_achors(line):
     # should be only one
     uri_counts = ListPacker.unpack(uri_list)
     total_count = sum(int(c) for _, c in uri_counts)
-    print(label + '\t' + 'uri\t' + str(total_count))
+    print(label + '\t' + str(len(uri_counts)) + '\t' + str(total_count))
 
 
 for line in sys.stdin:
