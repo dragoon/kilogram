@@ -14,7 +14,11 @@ wiki_plain = sc.textFile(sys.argv[2])
 organic_label_dict = {}
 
 for line in codecs.open(sys.argv[1], 'r', 'utf-8'):
-    label, uri, count = line.split('\t')
+    try:
+        label, uri, count = line.strip().split('\t')
+    except:
+        # sometimes labels are empty
+        continue
     organic_label_dict[label] = uri
 
 
