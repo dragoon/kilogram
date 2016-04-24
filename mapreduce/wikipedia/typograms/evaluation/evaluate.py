@@ -72,14 +72,14 @@ for filename in os.listdir('.'):
         ratio = re.findall(r'unambiguous_labels(\d+)', filename)[0]
         unambiguous_labels = get_unambiguous_labels(filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        evaluate('inferred: ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir, ratio=ratio)
-        evaluate('inferred + organic-precise: ' + filename,
+        evaluate('inferred',  partial(generate_links, generators=[unambig_generator]), args.eval_dir, ratio=ratio)
+        evaluate('inferred + organic-precise',
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir, ratio=ratio)
-        evaluate('inferred + organic: ' + filename,
+        evaluate('inferred + organic',
                  partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir, ratio=ratio)
-        evaluate('inferred + all-dbpedia-labels: ' + filename,
+        evaluate('inferred + all-dbpedia-labels',
                  partial(generate_links, generators=[unambig_generator, label_generator]), args.eval_dir, ratio=ratio)
-        evaluate('inferred + all-dbpedia-labels + organic-precise: ' + filename,
+        evaluate('inferred + all-dbpedia-labels + organic-precise',
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir, ratio=ratio)
 
 print('Evaluating unambiguous labels by percentiles...')
@@ -91,14 +91,14 @@ for filename in os.listdir(percentile_dir):
         percentile = re.findall(r'percentile_labels(\d+)', filename)[0]
         unambiguous_labels = get_unambiguous_labels(percentile_dir + '/' + filename)
         unambig_generator = partial(unambig_generator, unambiguous_labels=unambiguous_labels)
-        evaluate('inferred-percentile: ' + filename,  partial(generate_links, generators=[unambig_generator]), args.eval_dir, ratio=ratio, percentile=percentile)
-        evaluate('inferred-percentile + organic-precise: ' + filename,
+        evaluate('inferred-percentile',  partial(generate_links, generators=[unambig_generator]), args.eval_dir, ratio=ratio, percentile=percentile)
+        evaluate('inferred-percentile + organic-precise',
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir, ratio=ratio, percentile=percentile)
-        evaluate('inferred-percentile + organic: ' + filename,
+        evaluate('inferred-percentile + organic',
                  partial(generate_organic_plus, evaluator=partial(generate_links, generators=[unambig_generator])), args.eval_dir, ratio=ratio, percentile=percentile)
-        evaluate('inferred-percentile + all-dbpedia-labels: ' + filename,
+        evaluate('inferred-percentile + all-dbpedia-labels',
                  partial(generate_links, generators=[unambig_generator, label_generator]), args.eval_dir, ratio=ratio, percentile=percentile)
-        evaluate('inferred-percentile + all-dbpedia-labels + organic-precise: ' + filename,
+        evaluate('inferred-percentile + all-dbpedia-labels + organic-precise',
                  partial(generate_organic_precise_plus, evaluator=partial(generate_links, generators=[unambig_generator, label_generator])), args.eval_dir, ratio=ratio, percentile=percentile)
 
 
