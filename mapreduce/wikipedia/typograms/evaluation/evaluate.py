@@ -51,8 +51,8 @@ def evaluate(eval_name, evaluator, eval_dir, ratio='', percentile=''):
                     labels.append(label)
                 else:
                     not_ranked_data.add((orig_token, uri, orig_sentence))
-    print(eval_name, '\t', 'Precision', '\t', sum(labels)/len(labels), '\t',
-          'Recall', '\t', sum(labels)/total_correct, '\t', ratio, '\t', percentile)
+    print(eval_name, '\t', sum(labels)/len(labels), '\t', sum(labels)/total_correct,
+          '\t', ratio, '\t', percentile)
     return sum(labels)/len(labels)
 
 
