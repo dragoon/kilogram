@@ -38,9 +38,5 @@ def generate_ngrams(line):
 for line in sys.stdin:
     for item in generate_ngrams(line):
         (label, uri), count = item
-        print([label + '\t' + uri + '\t' + unicode(count)])
+        print(label + '\t' + uri + '\t' + unicode(count))
 
-
-def printer(item):
-    (label, uri), count = item
-    print(label + '\t' + uri + '\t' + unicode(count))
