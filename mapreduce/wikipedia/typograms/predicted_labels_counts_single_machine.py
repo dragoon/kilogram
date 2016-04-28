@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import codecs
 from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive
