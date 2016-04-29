@@ -2,6 +2,7 @@
 
 ### Generate all counts of labels, including ambiguous (to check most popular labels)
 hdfs dfs -cat /user/roman/wiki_anchors/* | python wikipedia/typograms/generate_organic_label_counts_all.py > organic_label_counts_all.txt
+hdfs dfs -rm -r /user/roman/predicted_label_counts_all
 spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --files organic_label_counts_all.txt ./wikipedia/typograms/spark_predicted_label_counts.py "organic_label_counts_all.txt" "/data/wikipedia_plaintext" "/user/roman/predicted_label_counts_all"
 hdfs dfs -cat /user/roman/predicted_label_counts_all/* > predicted_label_counts_all.txt
 
@@ -13,9 +14,9 @@ spark-submit --executor-memory 5g --num-executors 10 --master yarn-client --file
 hdfs dfs -cat /user/roman/predicted_label_counts/* > predicted_label_counts.txt
 
 ### Generate unambiguous_labels.txt (only for typed entities)
-python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 5 > unambiguous_labels1.txt
-python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 5 > unambiguous_labels2.txt
-python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 5 > unambiguous_labels3.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 1 > unambiguous_labels1.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 2 > unambiguous_labels2.txt
+python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 3 > unambiguous_labels3.txt
 python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 5 > unambiguous_labels5.txt
 python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 8 > unambiguous_labels8.txt
 python ./wikipedia/typograms/generate_unambiguous_labels.py --ratio-limit 10 > unambiguous_labels10.txt
