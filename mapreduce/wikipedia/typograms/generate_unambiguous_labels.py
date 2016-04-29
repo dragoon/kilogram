@@ -39,10 +39,6 @@ for row in counts_df.iterrows():
     if NON_CHAR_RE.match(label):
         continue
 
-    # skip uppercase
-    if label.isupper():
-        print(label+'\t'+uri)
-        continue
     # write a normal-case label if ratio is less than 20 (means we do not link something that suddenly become super popular - probably an error)
     if row['organ_count'] > 1 and row['infer_count']/(row['organ_count']) < args.ratio_limit:
         print(label+'\t'+uri)
