@@ -20,11 +20,14 @@ linker = partial(generate_links, generators=[unambig_generator_local])
 
 app = Flask(__name__)
 
-replacement_dict = pickle.load(open("gerbilmsnbcdict.pcl"))
 
 @app.route('/entity-linking/a2kb/unambig', methods=['POST'])
 def link():
     result = request.get_json(force=True)
+    try:
+        replacement_dict = pickle.load(open("dict_%s.pcl" % result['dataset']))
+    except:
+        replacement_dict = {}
     text = result['text']
     uid = result['uid']
     context = result['context']
