@@ -4,6 +4,7 @@
 """
 
 from flask import Flask, jsonify, request
+import pickle
 
 from functools import partial
 from kilogram.entity_linking.unambig_labels.link_generators import generate_links, unambig_generator,\
@@ -19,6 +20,8 @@ linker = partial(generate_links, generators=[unambig_generator_local])
 
 app = Flask(__name__)
 
+replacement_dict = pickle.load(open("gerbilmsnbcdict.pcl"))
+
 @app.route('/entity-linking/a2kb/unambig', methods=['POST'])
 def link():
     result = request.get_json(force=True)
@@ -33,7 +36,7 @@ def link():
             start_i = text.index(token, cur_index)
         except ValueError:
             continue
-        mentions.append({'name': token, 'uri': 'http://dbpedia.org/resource/' + uri, 'start': start_i, 'end': start_i+len(token),
+        mentions.append({'name': token, 'uri': 'http://dbpedia.org/resource/' + replacement_dict.get(uri, uri), 'start': start_i, 'end': start_i+len(token),
                          'uid': uid, 'context': context})
         cur_index = start_i + len(token)
 
