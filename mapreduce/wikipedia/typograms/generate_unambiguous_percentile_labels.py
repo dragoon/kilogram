@@ -1,7 +1,6 @@
 from __future__ import division
 import argparse
 import sys
-from kilogram.dataset.dbpedia import NgramEntityResolver
 from kilogram import ListPacker
 from kilogram.lang.tokenize import default_tokenize_func, tokenize_possessive
 
@@ -12,8 +11,6 @@ parser.add_argument('--percentile', default=0.9, type=float,
 parser.add_argument('--min-count', default=1, type=int,
                     help='min count to filter')
 args = parser.parse_args()
-
-ner = NgramEntityResolver("dbpedia_data.txt", "dbpedia_2015-04.owl")
 
 
 def filter_labels(line):
@@ -26,8 +23,7 @@ def filter_labels(line):
 
     for uri, count in uri_counts:
         if count/total > args.percentile and count > args.min_count:
-            if uri in ner.dbpedia_types:
-                print(label + '\t' + uri + '\t' + str(count))
+            print(label + '\t' + uri + '\t' + str(count))
             break
 
 
