@@ -58,8 +58,6 @@ def generate_organic_links(line):
             uri = match.group(1)
             uri = uri[0].upper() + uri[1:]
             uri = ner.redirects_file.get(uri, uri)
-            if not uri in ner.dbpedia_types:
-                continue
 
             anchor = match.group(2).replace('_', ' ')
             yield anchor, uri, sentence_plain
