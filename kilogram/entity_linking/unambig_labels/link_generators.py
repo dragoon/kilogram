@@ -103,14 +103,15 @@ def generate_links(line, generators=None):
             i += 1
 
 
-def unambig_generator(token, unambiguous_labels=None):
-    if token in unambiguous_labels:
-        uri = unambiguous_labels[token]
-        # prefer non-possessives
-        if token.endswith("'s"):
-            token = token[:-3]
-        return uri, token
-    return None, None
+def unambig_generator(orig_token, unambiguous_labels=None):
+    for token in (orig_token, orig_token.title()):
+        if token in unambiguous_labels:
+            uri = unambiguous_labels[token]
+            # prefer non-possessives
+            if orig_token.endswith("'s"):
+                orig_token = token[:-3]
+            return uri, orig_token
+        return None, None
 
 
 def label_generator(token):

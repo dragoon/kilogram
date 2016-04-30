@@ -9,6 +9,7 @@ import pickle
 from functools import partial
 from kilogram.entity_linking.unambig_labels.link_generators import generate_links, unambig_generator,\
     get_unambiguous_labels
+from kilogram.lang import strip_unicode
 
 __author__ = 'dragoon'
 
@@ -28,7 +29,7 @@ def link():
         replacement_dict = pickle.load(open("dict_%s.pcl" % result['dataset']))
     except:
         replacement_dict = {}
-    text = result['text']
+    text = strip_unicode(result['text'])
     uid = result['uid']
     context = result['context']
     mentions = []
